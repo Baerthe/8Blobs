@@ -1,0 +1,1 @@
+This is just a storage folder to pass common settings between dev systems. It can be ignored if you have your own setup.
