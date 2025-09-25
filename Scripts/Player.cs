@@ -4,20 +4,31 @@ using System;
 public partial class Player : Area2D
 {
 	[Signal]
+	/// <summary>
+	/// Delegate for when the player is hit by an enemy.
+	/// </summary>
 	public delegate void HitEventHandler();
+	[Export]
+	public int Health { get; set; } = 4;
 	[Export]
 	public int Speed { get; set; } = 400;
 	[Export]
-	public AnimatedSprite2D sprite { get; private set; }
-	public PlayerDirection playerDirection { get; private set; }
+	public AnimatedSprite2D Sprite2D { get; private set; }
+	[Export]
+	public CollisionShape2D Collision2D { get; private set; }
+	public PlayerDirection CurrentPlayerDirection { get; private set; }
 	private Vector2 _screenSize;
-	// Called when the node enters the scene tree for the first time.
+	public void Start(Vector2 position)
+	{
+		Position = position;
+		Show();
+		Collision2D.Disabled = false;
+	}
 	public override void _Ready()
 	{
-		//Hide();
+		Hide();
 		_screenSize = GetViewportRect().Size;
 	}
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
 		var velocity = Vector2.Zero;
@@ -25,62 +36,74 @@ public partial class Player : Area2D
 		if (Input.IsActionPressed("move_up"))
 		{
 			velocity.Y -= 1;
-			playerDirection = PlayerDirection.Up;
+			CurrentPlayerDirection = PlayerDirection.Up;
 		}
 		if (Input.IsActionPressed("move_down"))
 		{
 			velocity.Y += 1;
-			playerDirection = PlayerDirection.Down;
+			CurrentPlayerDirection = PlayerDirection.Down;
 		}
 		if (Input.IsActionPressed("move_left"))
 		{
 			velocity.X -= 1;
-			playerDirection = PlayerDirection.Left;
+			CurrentPlayerDirection = PlayerDirection.Left;
 		}
 		if (Input.IsActionPressed("move_right"))
 		{
 			velocity.X += 1;
-			playerDirection = PlayerDirection.Right;
+			CurrentPlayerDirection = PlayerDirection.Right;
 		}
 		// If the player is going two directions, ie diagonal, set special state.
 		if (velocity.Y != 0 && velocity.X != 0)
-			playerDirection = PlayerDirection.Diagonal;
+			CurrentPlayerDirection = PlayerDirection.Diagonal;
 		if (velocity.Length() > 0)
 		{
 			velocity = velocity.Normalized() * Speed;
-			sprite.Play();
+			Sprite2D.Play();
 		}
 		else
-			sprite.Stop();
+			Sprite2D.Stop();
 		// Move the player.
 		Position += velocity * (float)delta;
 		Position = new Vector2(x: Mathf.Clamp(Position.X, 0, _screenSize.X), y: Mathf.Clamp(Position.Y, 0, _screenSize.Y));
-		sprite.FlipV = false; // Make sure we never flip vertically
-		// Set animation based on direction
-		switch (playerDirection)
+		Sprite2D.FlipV = false; // Make sure we never flip vertically
+							  // Set animation based on direction
+		switch (CurrentPlayerDirection)
 		{
 			case PlayerDirection.Up:
-				sprite.Animation = "Up";
+				Sprite2D.Animation = "Up";
 				break;
 			case PlayerDirection.Down:
-				sprite.Animation = "Down";
+				Sprite2D.Animation = "Down";
 				break;
 			case PlayerDirection.Diagonal:
-				sprite.Animation = "Right";
-				sprite.FlipH = velocity.X < 0;
+				Sprite2D.Animation = "Right";
+				Sprite2D.FlipH = velocity.X < 0;
 				break;
 			case PlayerDirection.Left:
-				sprite.FlipH = true;
-				sprite.Animation = "Right";
+				Sprite2D.FlipH = true;
+				Sprite2D.Animation = "Right";
 				break;
 			case PlayerDirection.Right:
-				sprite.FlipH = false;
-				sprite.Animation = "Right";
+				Sprite2D.FlipH = false;
+				Sprite2D.Animation = "Right";
 				break;
 			default:
-				sprite.Animation = "Idle";
+				Sprite2D.Animation = "Idle";
 				break;
 		}
+	}
+	private void OnBodyEntered(Node2D body)
+	{
+		Health -= 1;
+		EmitSignal(SignalName.Hit);
+		Collision2D.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
+		if (Health <= 0)
+			OnDeath();
+	}
+	private void OnDeath()
+	{
+		Hide();
 	}
 	public enum PlayerDirection : byte
 	{
