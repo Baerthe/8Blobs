@@ -1,12 +1,11 @@
 using Godot;
 using System;
-
+/// <summary>
+/// The player is the main character that the user controls. This class handles movement, health, and collisions with mobs.
+/// </summary>
 public partial class Player : Area2D
 {
 	[Signal]
-	/// <summary>
-	/// Delegate for when the player is hit by an enemy.
-	/// </summary>
 	public delegate void HitEventHandler();
 	[Export]
 	public int Health { get; set; } = 4;
@@ -17,7 +16,6 @@ public partial class Player : Area2D
 	[Export]
 	public CollisionShape2D Collision2D { get; private set; }
 	public PlayerDirection CurrentPlayerDirection { get; private set; }
-	private Vector2 _screenSize;
 	public void Start(Vector2 position)
 	{
 		Position = position;
@@ -27,7 +25,6 @@ public partial class Player : Area2D
 	public override void _Ready()
 	{
 		Hide();
-		_screenSize = GetViewportRect().Size;
 	}
 	public override void _Process(double delta)
 	{
@@ -65,7 +62,6 @@ public partial class Player : Area2D
 			Sprite2D.Stop();
 		// Move the player.
 		Position += velocity * (float)delta;
-		Position = new Vector2(x: Mathf.Clamp(Position.X, 0, _screenSize.X), y: Mathf.Clamp(Position.Y, 0, _screenSize.Y));
 		Sprite2D.FlipV = false; // Make sure we never flip vertically
 							  // Set animation based on direction
 		switch (CurrentPlayerDirection)
