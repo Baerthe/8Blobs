@@ -67,7 +67,7 @@ region = Rect2(32, 0, 16, 16)
 atlas = ExtResource("6_ksbbd")
 region = Rect2(48, 0, 16, 16)
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_c43xd"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_5ixxa"]
 animations = [{
 "frames": [{
 "duration": 1.0,
@@ -144,20 +144,22 @@ animations = [{
 radius = 6.0
 height = 16.0
 
-[node name="Player" type="Area2D" node_paths=PackedStringArray("Sprite2D", "Collision2D")]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("Sprite2D", "HitBox2D")]
 script = ExtResource("1_52ee3")
-Speed = 200
 Sprite2D = NodePath("AnimatedSprite2D")
-Collision2D = NodePath("CollisionShape2D")
-metadata/_edit_group_ = true
+HitBox2D = NodePath("HitBox/HitBoxCollision")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
-sprite_frames = SubResource("SpriteFrames_c43xd")
+sprite_frames = SubResource("SpriteFrames_5ixxa")
 animation = &"Idle"
-frame_progress = 0.1961705
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="PhysicsCollision2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_nn08x")
 
-[connection signal="body_entered" from="." to="." method="OnBodyEntered"]
+[node name="HitBox" type="Area2D" parent="."]
+
+[node name="HitBoxCollision" type="CollisionShape2D" parent="HitBox"]
+shape = SubResource("CapsuleShape2D_nn08x")
+
+[connection signal="body_entered" from="HitBox" to="." method="OnBodyEntered"]

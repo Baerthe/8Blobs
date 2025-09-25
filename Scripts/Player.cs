@@ -3,30 +3,57 @@ using System;
 /// <summary>
 /// The player is the main character that the user controls. This class handles movement, health, and collisions with mobs.
 /// </summary>
-public partial class Player : Area2D
+public partial class Player : CharacterBody2D
 {
 	[Signal]
-	public delegate void HitEventHandler();
+	public delegate void OnHitEventHandler();
 	[Export]
-	public int Health { get; set; } = 4;
+	public int Health { get; set; } = 5; //Counts Zero lol.
 	[Export]
 	public int Speed { get; set; } = 400;
 	[Export]
 	public AnimatedSprite2D Sprite2D { get; private set; }
 	[Export]
-	public CollisionShape2D Collision2D { get; private set; }
+	public CollisionShape2D HitBox2D { get; private set; }
 	public PlayerDirection CurrentPlayerDirection { get; private set; }
 	public void Start(Vector2 position)
 	{
 		Position = position;
 		Show();
-		Collision2D.Disabled = false;
+		HitBox2D.Disabled = false;
 	}
 	public override void _Ready()
 	{
 		Hide();
 	}
 	public override void _Process(double delta)
+	{
+		// Set animation based on direction
+		switch (CurrentPlayerDirection)
+		{
+			case PlayerDirection.Up:
+				Sprite2D.Animation = "Up";
+				break;
+			case PlayerDirection.Down:
+				Sprite2D.Animation = "Down";
+				break;
+			case PlayerDirection.Diagonal:
+				Sprite2D.Animation = "Right";
+				break;
+			case PlayerDirection.Left:
+				Sprite2D.FlipH = true;
+				Sprite2D.Animation = "Right";
+				break;
+			case PlayerDirection.Right:
+				Sprite2D.FlipH = false;
+				Sprite2D.Animation = "Right";
+				break;
+			default:
+				Sprite2D.Animation = "Idle";
+				break;
+		}
+	}
+	public override void _PhysicsProcess(double delta)
 	{
 		var velocity = Vector2.Zero;
 		//What direction is the player going?
@@ -63,37 +90,14 @@ public partial class Player : Area2D
 		// Move the player.
 		Position += velocity * (float)delta;
 		Sprite2D.FlipV = false; // Make sure we never flip vertically
-							  // Set animation based on direction
-		switch (CurrentPlayerDirection)
-		{
-			case PlayerDirection.Up:
-				Sprite2D.Animation = "Up";
-				break;
-			case PlayerDirection.Down:
-				Sprite2D.Animation = "Down";
-				break;
-			case PlayerDirection.Diagonal:
-				Sprite2D.Animation = "Right";
-				Sprite2D.FlipH = velocity.X < 0;
-				break;
-			case PlayerDirection.Left:
-				Sprite2D.FlipH = true;
-				Sprite2D.Animation = "Right";
-				break;
-			case PlayerDirection.Right:
-				Sprite2D.FlipH = false;
-				Sprite2D.Animation = "Right";
-				break;
-			default:
-				Sprite2D.Animation = "Idle";
-				break;
-		}
+		Sprite2D.FlipH = velocity.X < 0;
+		MoveAndSlide();
 	}
 	private void OnBodyEntered(Node2D body)
 	{
 		Health -= 1;
-		EmitSignal(SignalName.Hit);
-		Collision2D.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
+		EmitSignal(SignalName.OnHit);
+		HitBox2D.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
 		if (Health <= 0)
 			OnDeath();
 	}

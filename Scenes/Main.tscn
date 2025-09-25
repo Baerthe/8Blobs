@@ -9,6 +9,27 @@
 [ext_resource type="LabelSettings" uid="uid://dae0ujns4cmco" path="res://Main.tres" id="4_jw32o"]
 [ext_resource type="TileSet" uid="uid://c1okyqiwq2m7e" path="res://Resources/Tileset.tres" id="7_jw32o"]
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_rgh2o"]
+atlas = ExtResource("2_kln2b")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_pbw6q"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rgh2o")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="Curve2D" id="Curve2D_rgh2o"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, -8, -8, 0, 0, 0, 0, 264, -8, 0, 0, 0, 0, 264, 248, 0, 0, 0, 0, -8, 248, 0, 0, 0, 0, -8, -8)
+}
+point_count = 5
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_50glp"]
 resource_name = "MainTileSet"
 texture = ExtResource("2_idj7w")
@@ -257,7 +278,9 @@ texture = ExtResource("2_idj7w")
 2:15/0 = 0
 2:15/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 3:15/0 = 0
+3:15/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 4:15/0 = 0
+4:15/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 5:15/0 = 0
 6:15/0 = 0
 7:15/0 = 0
@@ -275,7 +298,9 @@ texture = ExtResource("2_idj7w")
 2:16/0 = 0
 2:16/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 3:16/0 = 0
+3:16/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 4:16/0 = 0
+4:16/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 5:16/0 = 0
 6:16/0 = 0
 7:16/0 = 0
@@ -507,47 +532,29 @@ texture = ExtResource("2_idj7w")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_50glp")
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_rgh2o"]
-atlas = ExtResource("2_kln2b")
-region = Rect2(0, 0, 16, 16)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_pbw6q"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_rgh2o")
-}],
-"loop": true,
-"name": &"default",
-"speed": 5.0
-}]
-
-[sub_resource type="Curve2D" id="Curve2D_rgh2o"]
-_data = {
-"points": PackedVector2Array(0, 0, 0, 0, -8, -8, 0, 0, 0, 0, 264, -8, 0, 0, 0, 0, 264, 248, 0, 0, 0, 0, -8, 248, 0, 0, 0, 0, -8, -8)
-}
-point_count = 5
-
-[node name="Main" type="Node2D" node_paths=PackedStringArray("Player", "PlayerStart", "Camera")]
+[node name="Main" type="Node2D" node_paths=PackedStringArray("Player", "PlayerStart", "Camera", "ScoreLiteral", "HealthLiteral", "MobSpawnTimer", "ScoreTimer", "StartTimer")]
 texture_filter = 1
 script = ExtResource("1_r150o")
 Player = NodePath("Player")
 PlayerStart = NodePath("StartingPosition")
-Camera = NodePath("Camera2D")
+Camera = NodePath("Player/Camera2D")
+ScoreLiteral = NodePath("Player/Camera2D/Score")
+HealthLiteral = NodePath("Player/Camera2D/Health")
+MobSpawnTimer = NodePath("Timers/MobTimer")
+ScoreTimer = NodePath("Timers/ScoreTimer")
+StartTimer = NodePath("Timers/StartingTimer")
 MobScenes = Array[PackedScene]([ExtResource("2_v1gob")])
 
-[node name="Foreground" type="TileMapLayer" parent="."]
-tile_map_data = PackedByteArray("AAAAAP//AAABAA8AAAABAP//AAABAA8AAAACAP//AAABAA8AAAADAP//AAABAA8AAAAEAP//AAABAA8AAAAFAP//AAABAA8AAAAGAP//AAABAA8AAAAHAP//AAABAA8AAAAIAP//AAABAA8AAAAJAP//AAABAA8AAAAKAP//AAABAA8AAAALAP//AAABAA8AAAAMAP//AAABAA8AAAANAP//AAABAA8AAAAOAP//AAABAA8AAAAPAP//AAABAA8AAAAAAA8AAAABABEAAAABAA8AAAABABEAAAACAA8AAAABABEAAAADAA8AAAABABEAAAAEAA8AAAABABEAAAAFAA8AAAABABEAAAAGAA8AAAABABEAAAAHAA8AAAABABEAAAAIAA8AAAABABEAAAAJAA8AAAABABEAAAAKAA8AAAABABEAAAALAA8AAAABABEAAAAMAA8AAAABABEAAAANAA8AAAABABEAAAAOAA8AAAABABEAAAAPAA8AAAABABEAAAD//w8AAAAAABEAAAAQAA8AAAACABEAAAD//w4AAAAAABAAAAD//w0AAAAAABAAAAD//wwAAAAAABAAAAD//wsAAAAAABAAAAD//wkAAAAAABAAAAD//wgAAAAAABAAAAD//wcAAAAAABAAAAD//wYAAAAAABAAAAD//wUAAAAAABAAAAD//wQAAAAAABAAAAD//wMAAAAAABAAAAD//wIAAAAAABAAAAD//wEAAAAAABAAAAD//wAAAAAAABAAAAAQAA4AAAACABAAAAAQAA0AAAACABAAAAAQAAwAAAACABAAAAAQAAsAAAACABAAAAAQAAoAAAACABAAAAAQAAkAAAACABAAAAAQAAgAAAACABAAAAAQAAcAAAACABAAAAAQAAMAAAACABAAAAAQAAIAAAACABAAAAAQAAQAAAACABAAAAAQAAUAAAACABAAAAAQAAYAAAACABAAAAAQAAAAAAACABAAAAAQAAEAAAACABAAAAD/////AAAAAA8AAAAQAP//AAACAA8AAAD//woAAAAAABAAAAA=")
-tile_set = SubResource("TileSet_vy5pj")
-collision_visibility_mode = 1
-
 [node name="Player" parent="." instance=ExtResource("3_jw32o")]
+texture_filter = 1
 position = Vector2(-8, -24)
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="Player"]
+top_level = true
+texture_filter = 1
 position = Vector2(128, 120)
 
-[node name="ScoreLabel" type="Label" parent="Camera2D"]
+[node name="ScoreLabel" type="Label" parent="Player/Camera2D"]
 texture_filter = 1
 offset_left = -126.0
 offset_top = -112.0
@@ -556,7 +563,8 @@ offset_bottom = -89.0
 text = "SCORE"
 label_settings = ExtResource("4_jw32o")
 
-[node name="Score" type="Label" parent="Camera2D"]
+[node name="Score" type="Label" parent="Player/Camera2D"]
+texture_filter = 1
 offset_left = -126.0
 offset_top = -103.0
 offset_right = -52.0
@@ -564,7 +572,7 @@ offset_bottom = -80.0
 text = "00000000"
 label_settings = ExtResource("4_jw32o")
 
-[node name="HealthLabel" type="Label" parent="Camera2D"]
+[node name="HealthLabel" type="Label" parent="Player/Camera2D"]
 texture_filter = 1
 offset_left = 73.0
 offset_top = -112.0
@@ -574,12 +582,14 @@ text = "Health"
 label_settings = ExtResource("4_jw32o")
 horizontal_alignment = 2
 
-[node name="Health" type="Label" parent="Camera2D"]
+[node name="Health" type="Label" parent="Player/Camera2D"]
+texture_filter = 1
 offset_left = 52.0
 offset_top = -103.0
 offset_right = 126.0
 offset_bottom = -80.0
-text = "4"
+text = "00
+"
 label_settings = ExtResource("4_jw32o")
 horizontal_alignment = 2
 
@@ -614,6 +624,10 @@ curve = SubResource("Curve2D_rgh2o")
 [node name="Spawner" type="PathFollow2D" parent="SpawnPath"]
 position = Vector2(-8, -8)
 
+[node name="Foreground" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray("AAAAAP//AAABAA8AAAABAP//AAABAA8AAAACAP//AAABAA8AAAADAP//AAABAA8AAAAEAP//AAABAA8AAAAFAP//AAABAA8AAAAGAP//AAABAA8AAAAHAP//AAABAA8AAAAIAP//AAABAA8AAAAJAP//AAABAA8AAAAKAP//AAABAA8AAAALAP//AAABAA8AAAAMAP//AAABAA8AAAANAP//AAABAA8AAAAOAP//AAABAA8AAAAPAP//AAABAA8AAAAAAA8AAAABABEAAAABAA8AAAABABEAAAACAA8AAAABABEAAAADAA8AAAABABEAAAAEAA8AAAABABEAAAAFAA8AAAABABEAAAAGAA8AAAABABEAAAAHAA8AAAABABEAAAAIAA8AAAABABEAAAAJAA8AAAABABEAAAAKAA8AAAABABEAAAALAA8AAAABABEAAAAMAA8AAAABABEAAAANAA8AAAABABEAAAAOAA8AAAABABEAAAAPAA8AAAABABEAAAD//w8AAAAAABEAAAAQAA8AAAACABEAAAD//w4AAAAAABAAAAD//w0AAAAAABAAAAD//wwAAAAAABAAAAD//wsAAAAAABAAAAD//wkAAAAAABAAAAD//wgAAAAAABAAAAD//wcAAAAAABAAAAD//wYAAAAAABAAAAD//wUAAAAAABAAAAD//wQAAAAAABAAAAD//wMAAAAAABAAAAD//wIAAAAAABAAAAD//wEAAAAAABAAAAD//wAAAAAAABAAAAAQAA4AAAACABAAAAAQAA0AAAACABAAAAAQAAwAAAACABAAAAAQAAsAAAACABAAAAAQAAoAAAACABAAAAAQAAkAAAACABAAAAAQAAgAAAACABAAAAAQAAcAAAACABAAAAAQAAMAAAACABAAAAAQAAIAAAACABAAAAAQAAQAAAACABAAAAAQAAUAAAACABAAAAAQAAYAAAACABAAAAAQAAAAAAACABAAAAAQAAEAAAACABAAAAD/////AAAAAA8AAAAQAP//AAACAA8AAAD//woAAAAAABAAAAA=")
+tile_set = SubResource("TileSet_vy5pj")
+
 [node name="Background" type="TileMapLayer" parent="."]
 show_behind_parent = true
 texture_filter = 1
@@ -624,3 +638,7 @@ rendering_quadrant_size = 8
 collision_enabled = false
 physics_quadrant_size = 8
 navigation_enabled = false
+
+[connection signal="timeout" from="Timers/MobTimer" to="." method="OnMobTimerTimeout"]
+[connection signal="timeout" from="Timers/ScoreTimer" to="." method="OnScoreTimerTimeout"]
+[connection signal="timeout" from="Timers/StartingTimer" to="." method="OnStartTimerTimeout"]
