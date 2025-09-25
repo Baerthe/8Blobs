@@ -89,23 +89,25 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_76m6r"]
 radius = 6.0
 
-[node name="Mob" type="RigidBody2D" node_paths=PackedStringArray("sprite", "collision", "notifier2D")]
+[node name="Mob" type="RigidBody2D" node_paths=PackedStringArray("Sprite2D", "Collision2D", "Notifier2D")]
 collision_mask = 0
 gravity_scale = 0.0
 script = ExtResource("1_eodwm")
-sprite = NodePath("AnimatedSprite2D")
-collision = NodePath("CollisionShape2D")
-notifier2D = NodePath("VisibleOnScreenNotifier2D")
+Sprite2D = NodePath("AnimatedSprite2D")
+Collision2D = NodePath("CollisionShape2D")
+Notifier2D = NodePath("VisibleOnScreenNotifier2D")
 metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_s73cu")
 animation = &"Walk"
-frame_progress = 0.8601794
+frame_progress = 0.21430786
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_76m6r")
 
 [node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
 rect = Rect2(-4, -4, 8, 8)
+
+[connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="OnSceneExit"]
