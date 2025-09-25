@@ -1,44 +1,44 @@
 [gd_scene load_steps=16 format=3 uid="uid://bykyt1m4a7fdw"]
 
-[ext_resource type="Script" uid="uid://ssajupdaaog2" path="res://Scripts/Mob.cs" id="1_eodwm"]
-[ext_resource type="Texture2D" uid="uid://ckl3j3k4v30ks" path="res://Resources/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_Blob Death.png" id="2_sxj3b"]
-[ext_resource type="Texture2D" uid="uid://u1hq66aul865" path="res://Resources/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_Blob Hurt.png" id="3_c5qnd"]
-[ext_resource type="Texture2D" uid="uid://ckwfoiljcxtf2" path="res://Resources/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_Blob Walk.png" id="4_u40of"]
+[ext_resource type="Script" uid="uid://cequpayj1ldbg" path="res://Scripts/Mobs/Blob.cs" id="1_lu2i0"]
+[ext_resource type="Texture2D" uid="uid://ckl3j3k4v30ks" path="res://Resources/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_Blob Death.png" id="2_7ypx7"]
+[ext_resource type="Texture2D" uid="uid://u1hq66aul865" path="res://Resources/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_Blob Hurt.png" id="3_2f3j2"]
+[ext_resource type="Texture2D" uid="uid://ckwfoiljcxtf2" path="res://Resources/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_Blob Walk.png" id="4_uf4pq"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_spujv"]
-atlas = ExtResource("2_sxj3b")
+atlas = ExtResource("2_7ypx7")
 region = Rect2(0, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8ivhl"]
-atlas = ExtResource("2_sxj3b")
+atlas = ExtResource("2_7ypx7")
 region = Rect2(16, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_das2q"]
-atlas = ExtResource("2_sxj3b")
+atlas = ExtResource("2_7ypx7")
 region = Rect2(32, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_88dyv"]
-atlas = ExtResource("3_c5qnd")
+atlas = ExtResource("3_2f3j2")
 region = Rect2(0, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1j0qt"]
-atlas = ExtResource("4_u40of")
+atlas = ExtResource("4_uf4pq")
 region = Rect2(0, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_u0piq"]
-atlas = ExtResource("4_u40of")
+atlas = ExtResource("4_uf4pq")
 region = Rect2(16, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_noq7v"]
-atlas = ExtResource("4_u40of")
+atlas = ExtResource("4_uf4pq")
 region = Rect2(32, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_n3x6j"]
-atlas = ExtResource("4_u40of")
+atlas = ExtResource("4_uf4pq")
 region = Rect2(48, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jrko4"]
-atlas = ExtResource("4_u40of")
+atlas = ExtResource("4_uf4pq")
 region = Rect2(64, 0, 16, 16)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_s73cu"]
@@ -89,10 +89,11 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_76m6r"]
 radius = 6.0
 
-[node name="Mob" type="RigidBody2D" node_paths=PackedStringArray("Sprite2D", "Collision2D", "Notifier2D")]
+[node name="BlobMob" type="RigidBody2D" node_paths=PackedStringArray("Sprite2D", "Collision2D", "Notifier2D")]
+editor_description = "The Blob Mob, weakest type."
 collision_mask = 0
 gravity_scale = 0.0
-script = ExtResource("1_eodwm")
+script = ExtResource("1_lu2i0")
 Sprite2D = NodePath("AnimatedSprite2D")
 Collision2D = NodePath("CollisionShape2D")
 Notifier2D = NodePath("VisibleOnScreenNotifier2D")

@@ -1,14 +1,11 @@
 using Godot;
 using System;
-
-public partial class Mob : RigidBody2D
+/// <summary>
+/// A mob is a mobile enemy that moves around the screen and can collide with the player. This is a base class for all mobs.
+/// </summary>
+public abstract partial class Mob : RigidBody2D
 {
-    public enum MobMovement : byte
-    {
-        LinearDirection,
-        PlayerAttracted,
-        RandomDirection
-    }
+    [ExportCategory("Statistics")]
     [Export] public MobMovement MovementType { get; private set; } = MobMovement.LinearDirection;
     [Export] public int Speed { get; set; } = 100;
     [ExportCategory("Parts")]
@@ -22,6 +19,12 @@ public partial class Mob : RigidBody2D
     public override void _Process(double delta)
     {
 
+    }
+    public enum MobMovement : byte
+    {
+        LinearDirection,
+        PlayerAttracted,
+        RandomDirection
     }
     private void OnSceneExit() => QueueFree();
 }
