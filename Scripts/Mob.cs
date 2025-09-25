@@ -9,16 +9,31 @@ public abstract partial class Mob : RigidBody2D
     [Export] public MobMovement MovementType { get; private set; } = MobMovement.LinearDirection;
     [Export] public int Speed { get; set; } = 100;
     [ExportCategory("Parts")]
-    [Export] public AnimatedSprite2D Sprite2D { get; private set; }
-    [Export] public CollisionShape2D Collision2D { get; private set; }
-    [Export] public VisibleOnScreenNotifier2D Notifier2D { get; private set; }
+    [Export] private AnimatedSprite2D _sprite2D;
+    [Export] private CollisionShape2D _collision2D;
+    [Export] private VisibleOnScreenNotifier2D _notifier2D;
     public override void _Ready()
     {
-        Sprite2D.Animation = "Walk";
+        _sprite2D.Animation = "Walk";
     }
     public override void _Process(double delta)
     {
-
+        _sprite2D.Play();
+        // Handle movement based on type
+        switch (MovementType)
+        {
+            case MobMovement.LinearDirection:
+                // Already handled by physics engine
+                break;
+            case MobMovement.PlayerAttracted:
+                // Move towards player (not implemented)
+                break;
+            case MobMovement.RandomDirection:
+                // Change direction randomly (not implemented)
+                break;
+            default:
+                break;
+        }
     }
     public enum MobMovement : byte
     {

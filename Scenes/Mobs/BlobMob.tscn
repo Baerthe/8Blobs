@@ -89,21 +89,23 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_76m6r"]
 radius = 6.0
 
-[node name="BlobMob" type="RigidBody2D" node_paths=PackedStringArray("Sprite2D", "Collision2D", "Notifier2D")]
+[node name="BlobMob" type="RigidBody2D" node_paths=PackedStringArray("_sprite2D", "_collision2D", "_notifier2D")]
 editor_description = "The Blob Mob, weakest type."
+collision_layer = 2
 collision_mask = 0
 gravity_scale = 0.0
 script = ExtResource("1_lu2i0")
-Sprite2D = NodePath("AnimatedSprite2D")
-Collision2D = NodePath("CollisionShape2D")
-Notifier2D = NodePath("VisibleOnScreenNotifier2D")
+Speed = 10
+_sprite2D = NodePath("AnimatedSprite2D")
+_collision2D = NodePath("CollisionShape2D")
+_notifier2D = NodePath("VisibleOnScreenNotifier2D")
 metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_s73cu")
 animation = &"Walk"
-frame_progress = 0.21430786
+frame_progress = 0.6508314
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_76m6r")

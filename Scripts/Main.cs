@@ -1,5 +1,5 @@
+using System.ComponentModel;
 using Godot;
-using System;
 /// <summary>
 /// The main class that handles the game logic, including spawning mobs and managing the game state.
 /// </summary>
@@ -7,43 +7,63 @@ public partial class Main : Node2D
 {
 	[ExportGroup("Singles")]
 	[ExportSubgroup("Core")]
+	[Export] public Menu Menu { get; private set; }
 	[Export] public Player Player { get; private set; }
 	[Export] public Marker2D PlayerStart { get; private set; }
 	[Export] public Camera2D Camera { get; private set; }
 	[ExportSubgroup("UI")]
-	[Export] public Label ScoreLiteral { get; private set; }
-	[Export] public Label HealthLiteral { get; private set; }
+	[Export] private Label _scoreLiteral;
+	[Export] private Label _healthLiteral;
+	[Export] private Label _middleScreenLabel;
 
 	[ExportSubgroup("Timers")]
-	[Export] public Timer MobSpawnTimer { get; private set; }
-	[Export] public Timer ScoreTimer { get; private set; }
-	[Export] public Timer StartTimer { get; private set; }
+	[Export] private Timer _mobSpawnTimer;
+	[Export] private Timer _scoreTimer;
+	[Export] private Timer _startTimer;
 	[ExportGroup("Spawnables")]
 	[ExportSubgroup("Mobs")]
 	[Export] public PackedScene[] MobScenes { get; private set; }
+	[Export] private PathFollow2D _mobSpawner;
 	private int _score = 0;
 	public override void _Ready()
 	{
 		Player.Start(PlayerStart.Position);
+		Camera.Position = Player.Position;
+		Menu.Show();
 	}
 	public override void _Process(double delta)
 	{
 		Camera.Position = Player.Position;
-		ScoreLiteral.Text = _score.ToString("D8");
-		HealthLiteral.Text = Player.Health.ToString("D2");
+		_scoreLiteral.Text = _score.ToString("D8");
+		_healthLiteral.Text = Player.Health.ToString("D2");
 	}
 	public void GameOver()
 	{
-
+		_scoreLiteral.Hide();
+		_healthLiteral.Hide();
+		_mobSpawnTimer.Stop();
+		_scoreTimer.Stop();
+		_middleScreenLabel.Text = "Game Over!\nScore: " + _score.ToString("D8") + "\nPress Enter to Restart";
 	}
 	public void NewGame()
 	{
 		_score = 0;
-		StartTimer.Start();
+		_startTimer.Start();
+		_scoreLiteral.Show();
+		_healthLiteral.Show();
+		_middleScreenLabel.Show();
+		_middleScreenLabel.Text = "Get Ready!";
 	}
 	private void OnMobTimerTimeout()
 	{
-		// init
+		Mob mob = (Mob)MobScenes[GD.Randi() % MobScenes.Length].Instantiate();
+		_mobSpawner.ProgressRatio = GD.Randf();
+		float direction = _mobSpawner.Rotation + Mathf.Pi / 2;
+		var velocity = new Vector2((float)GD.RandRange(150.0, 250.0), 0);
+		var mobBaseSpeed = (mob.Speed + (int)(GD.RandRange(-1.0, 0.5) % mob.Speed)) * new Vector2(1, 0).Rotated(direction);
+		mob.Position = _mobSpawner.Position;
+		mob.LinearVelocity = velocity.Rotated(direction) + mobBaseSpeed;
+		AddChild(mob);
 	}
 	private void OnScoreTimerTimeout()
 	{
@@ -51,7 +71,14 @@ public partial class Main : Node2D
 	}
 	private void OnStartTimerTimeout()
 	{
-		MobSpawnTimer.Start();
-		ScoreTimer.Start();
+		_mobSpawnTimer.Start();
+		_scoreTimer.Start();
+		_middleScreenLabel.Text = "";
+		_middleScreenLabel.Hide();
+	}
+	private void OnMenuStartGame()
+	{
+		Menu.Hide();
+		NewGame();
 	}
 }

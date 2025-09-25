@@ -144,10 +144,11 @@ animations = [{
 radius = 6.0
 height = 16.0
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("Sprite2D", "HitBox2D")]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("_sprite2D", "_hitBox2D")]
 script = ExtResource("1_52ee3")
-Sprite2D = NodePath("AnimatedSprite2D")
-HitBox2D = NodePath("HitBox/HitBoxCollision")
+Speed = 200
+_sprite2D = NodePath("AnimatedSprite2D")
+_hitBox2D = NodePath("HitBox/HitBoxCollision")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
@@ -158,6 +159,8 @@ animation = &"Idle"
 shape = SubResource("CapsuleShape2D_nn08x")
 
 [node name="HitBox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 2
 
 [node name="HitBoxCollision" type="CollisionShape2D" parent="HitBox"]
 shape = SubResource("CapsuleShape2D_nn08x")

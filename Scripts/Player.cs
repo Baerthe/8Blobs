@@ -8,19 +8,19 @@ public partial class Player : CharacterBody2D
 	[Signal]
 	public delegate void OnHitEventHandler();
 	[Export]
-	public int Health { get; set; } = 5; //Counts Zero lol.
+	public int Health { get; set; } = 4;
 	[Export]
 	public int Speed { get; set; } = 400;
 	[Export]
-	public AnimatedSprite2D Sprite2D { get; private set; }
+	private AnimatedSprite2D _sprite2D;
 	[Export]
-	public CollisionShape2D HitBox2D { get; private set; }
+	private CollisionShape2D _hitBox2D;
 	public PlayerDirection CurrentPlayerDirection { get; private set; }
 	public void Start(Vector2 position)
 	{
 		Position = position;
 		Show();
-		HitBox2D.Disabled = false;
+		_hitBox2D.Disabled = false;
 	}
 	public override void _Ready()
 	{
@@ -32,24 +32,24 @@ public partial class Player : CharacterBody2D
 		switch (CurrentPlayerDirection)
 		{
 			case PlayerDirection.Up:
-				Sprite2D.Animation = "Up";
+				_sprite2D.Animation = "Up";
 				break;
 			case PlayerDirection.Down:
-				Sprite2D.Animation = "Down";
+				_sprite2D.Animation = "Down";
 				break;
 			case PlayerDirection.Diagonal:
-				Sprite2D.Animation = "Right";
+				_sprite2D.Animation = "Right";
 				break;
 			case PlayerDirection.Left:
-				Sprite2D.FlipH = true;
-				Sprite2D.Animation = "Right";
+				_sprite2D.FlipH = true;
+				_sprite2D.Animation = "Right";
 				break;
 			case PlayerDirection.Right:
-				Sprite2D.FlipH = false;
-				Sprite2D.Animation = "Right";
+				_sprite2D.FlipH = false;
+				_sprite2D.Animation = "Right";
 				break;
 			default:
-				Sprite2D.Animation = "Idle";
+				_sprite2D.Animation = "Idle";
 				break;
 		}
 	}
@@ -83,21 +83,21 @@ public partial class Player : CharacterBody2D
 		if (velocity.Length() > 0)
 		{
 			velocity = velocity.Normalized() * Speed;
-			Sprite2D.Play();
+			_sprite2D.Play();
 		}
 		else
-			Sprite2D.Stop();
+			_sprite2D.Stop();
 		// Move the player.
 		Position += velocity * (float)delta;
-		Sprite2D.FlipV = false; // Make sure we never flip vertically
-		Sprite2D.FlipH = velocity.X < 0;
+		_sprite2D.FlipV = false; // Make sure we never flip vertically
+		_sprite2D.FlipH = velocity.X < 0;
 		MoveAndSlide();
 	}
 	private void OnBodyEntered(Node2D body)
 	{
 		Health -= 1;
 		EmitSignal(SignalName.OnHit);
-		HitBox2D.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
+		_hitBox2D.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
 		if (Health <= 0)
 			OnDeath();
 	}

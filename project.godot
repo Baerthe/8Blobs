@@ -54,6 +54,11 @@ move_left={
 ]
 }
 
+[layer_names]
+
+2d_render/layer_1="PhysicsCollision"
+2d_render/layer_2="HitBox"
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
