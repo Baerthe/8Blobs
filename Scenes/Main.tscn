@@ -563,6 +563,7 @@ navigation_enabled = false
 
 [node name="Player" parent="." instance=ExtResource("3_jw32o")]
 texture_filter = 1
+position = Vector2(128, 120)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 top_level = true
@@ -675,6 +676,7 @@ tile_set = SubResource("TileSet_vy5pj")
 visible = false
 top_level = true
 
+[connection signal="OnDeath" from="Player" to="." method="OnPlayerDeath"]
 [connection signal="timeout" from="Timers/MobTimer" to="." method="OnMobTimerTimeout"]
 [connection signal="timeout" from="Timers/ScoreTimer" to="." method="OnScoreTimerTimeout"]
 [connection signal="timeout" from="Timers/StartingTimer" to="." method="OnStartTimerTimeout"]

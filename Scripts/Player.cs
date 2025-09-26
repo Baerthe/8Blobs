@@ -7,20 +7,25 @@ public partial class Player : CharacterBody2D
 {
 	[Signal] public delegate void OnHitEventHandler();
 	[Signal] public delegate void OnDeathEventHandler();
-	[Export] public int Health { get; set; } = 4;
+	[Export] public int MaxHealth { get; set; } = 4;
+	public int Health { get { return _health; } }
 	[Export] public int Speed { get; set; } = 400;
 	[Export] private AnimatedSprite2D _sprite2D;
 	[Export] private CollisionShape2D _hitBox2D;
 	public PlayerDirection CurrentPlayerDirection { get; private set; }
 	private double _deltaTime = 0.1;
+	private int _health = 0;
 	public void Start(Vector2 position)
 	{
+		_health = MaxHealth;
 		Position = position;
-		Show();
 		_hitBox2D.Disabled = false;
+		Show();
+		SetPhysicsProcess(true);
 	}
 	public override void _Ready()
 	{
+		SetPhysicsProcess(false);
 		Hide();
 	}
 	public override void _Process(double delta)
@@ -93,25 +98,16 @@ public partial class Player : CharacterBody2D
 	}
 	private void OnBodyEntered(RigidBody2D body)
 	{
-		GD.Print("Player hit by mob");
-		Health -= 1;
-		EmitSignal(SignalName.OnHit);
+		_health -= 1;
 		_hitBox2D.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
 		ImmunityFrames();
-		if (Health <= 0)
+		if (_health <= 0)
 			Death();
+		EmitSignal(SignalName.OnHit);
 	}
-	private async void Death()
+	private void Death()
 	{
 		_sprite2D.Animation = "Death";
-		var deathTimer = new Timer();
-		deathTimer.WaitTime = 1.0;
-		deathTimer.OneShot = true;
-		AddChild(deathTimer);
-		deathTimer.Start();
-		await ToSignal(deathTimer, Timer.SignalName.Timeout);
-		Hide();
-		deathTimer.QueueFree();
 		EmitSignal(SignalName.OnDeath);
 	}
 	private async void ImmunityFrames()
