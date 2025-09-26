@@ -41,5 +41,20 @@ public abstract partial class Mob : RigidBody2D
         PlayerAttracted,
         RandomDirection
     }
-    private void OnSceneExit() => QueueFree();
+    private void OnSceneExit()
+    {
+        if (LinearVelocity.Length() < 10)
+            Death();
+    }
+    private void Death()
+    {
+        _sprite2D.Animation = "Death";
+        _collision2D.Disabled = true;
+        RemoveAfterAnimation();
+    }
+    private async void RemoveAfterAnimation()
+    {
+        await ToSignal(_sprite2D, "animation_finished");
+        QueueFree();
+    }
 }

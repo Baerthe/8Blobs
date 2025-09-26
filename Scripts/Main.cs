@@ -20,6 +20,7 @@ public partial class Main : Node2D
 	[Export] private Timer _mobSpawnTimer;
 	[Export] private Timer _scoreTimer;
 	[Export] private Timer _startTimer;
+	[Export] private Timer _messageTimer;
 	[ExportGroup("Spawnables")]
 	[ExportSubgroup("Mobs")]
 	[Export] public PackedScene[] MobScenes { get; private set; }
@@ -33,6 +34,8 @@ public partial class Main : Node2D
 	}
 	public override void _Process(double delta)
 	{
+		if (_messageTimer.TimeLeft == 0)
+			_middleScreenLabel.Hide();
 		Camera.Position = Player.Position;
 		_scoreLiteral.Text = _score.ToString("D8");
 		_healthLiteral.Text = Player.Health.ToString("D2");
@@ -47,12 +50,12 @@ public partial class Main : Node2D
 	}
 	public void NewGame()
 	{
+		GetTree().CallGroup("Mobs", Node.MethodName.QueueFree);
 		_score = 0;
 		_startTimer.Start();
 		_scoreLiteral.Show();
 		_healthLiteral.Show();
-		_middleScreenLabel.Show();
-		_middleScreenLabel.Text = "Get Ready!";
+		DisplayMessage("Get Ready!", _startTimer.WaitTime);
 	}
 	private void OnMobTimerTimeout()
 	{
@@ -73,12 +76,16 @@ public partial class Main : Node2D
 	{
 		_mobSpawnTimer.Start();
 		_scoreTimer.Start();
-		_middleScreenLabel.Text = "";
-		_middleScreenLabel.Hide();
 	}
 	private void OnMenuStartGame()
 	{
 		Menu.Hide();
 		NewGame();
+	}
+	private void DisplayMessage(string message, double duration = 2.0)
+	{
+		_middleScreenLabel.Text = message;
+		_middleScreenLabel.Show();
+		_messageTimer.Start(duration);
 	}
 }

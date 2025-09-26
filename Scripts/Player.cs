@@ -5,17 +5,14 @@ using System;
 /// </summary>
 public partial class Player : CharacterBody2D
 {
-	[Signal]
-	public delegate void OnHitEventHandler();
-	[Export]
-	public int Health { get; set; } = 4;
-	[Export]
-	public int Speed { get; set; } = 400;
-	[Export]
-	private AnimatedSprite2D _sprite2D;
-	[Export]
-	private CollisionShape2D _hitBox2D;
+	[Signal] public delegate void OnHitEventHandler();
+	[Signal] public delegate void OnDeathEventHandler();
+	[Export] public int Health { get; set; } = 4;
+	[Export] public int Speed { get; set; } = 400;
+	[Export] private AnimatedSprite2D _sprite2D;
+	[Export] private CollisionShape2D _hitBox2D;
 	public PlayerDirection CurrentPlayerDirection { get; private set; }
+	private double _deltaTime = 0.1;
 	public void Start(Vector2 position)
 	{
 		Position = position;
@@ -28,6 +25,7 @@ public partial class Player : CharacterBody2D
 	}
 	public override void _Process(double delta)
 	{
+		_deltaTime = delta;
 		// Set animation based on direction
 		switch (CurrentPlayerDirection)
 		{
@@ -93,17 +91,44 @@ public partial class Player : CharacterBody2D
 		_sprite2D.FlipH = velocity.X < 0;
 		MoveAndSlide();
 	}
-	private void OnBodyEntered(Node2D body)
+	private void OnBodyEntered(RigidBody2D body)
 	{
+		GD.Print("Player hit by mob");
 		Health -= 1;
 		EmitSignal(SignalName.OnHit);
 		_hitBox2D.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
+		ImmunityFrames();
 		if (Health <= 0)
-			OnDeath();
+			Death();
 	}
-	private void OnDeath()
+	private async void Death()
 	{
+		_sprite2D.Animation = "Death";
+		var deathTimer = new Timer();
+		deathTimer.WaitTime = 1.0;
+		deathTimer.OneShot = true;
+		AddChild(deathTimer);
+		deathTimer.Start();
+		await ToSignal(deathTimer, Timer.SignalName.Timeout);
 		Hide();
+		deathTimer.QueueFree();
+		EmitSignal(SignalName.OnDeath);
+	}
+	private async void ImmunityFrames()
+	{
+		var flashTimer = new Timer();
+		flashTimer.WaitTime = _deltaTime * 5;
+		flashTimer.OneShot = false;
+		AddChild(flashTimer);
+		flashTimer.Start();
+		for (int i = 0; i < 10; i++)
+		{
+			_sprite2D.Visible = !_sprite2D.Visible;
+			await ToSignal(flashTimer, Timer.SignalName.Timeout);
+		}
+		_sprite2D.Visible = true;
+		_hitBox2D.Disabled = false;
+		flashTimer.QueueFree();
 	}
 	public enum PlayerDirection : byte
 	{

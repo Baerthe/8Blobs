@@ -27,9 +27,9 @@ animations = [{
 
 [sub_resource type="Curve2D" id="Curve2D_rgh2o"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, -8, -8, 0, 0, 0, 0, 264, -8, 0, 0, 0, 0, 264, 248, 0, 0, 0, 0, -8, 248, 0, 0, 0, 0, -8, -8)
+"points": PackedVector2Array(0, 0, 0, 0, 0.49999905, 0.5333333, 0, 0, 0, 0, 255.49997, 0.5333333, 0, 0, 0, 0, 255.49997, 239.46664, 0, 0, 0, 0, 254.99997, 238.93332, 0, 0, 0, 0, 0.49999905, 239.46664, 0, 0, 0, 0, 0.49999905, 0.5333333)
 }
-point_count = 5
+point_count = 6
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_50glp"]
 resource_name = "MainTileSet"
@@ -533,7 +533,7 @@ texture = ExtResource("2_idj7w")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_50glp")
 
-[node name="Main" type="Node2D" node_paths=PackedStringArray("Menu", "Player", "PlayerStart", "Camera", "_scoreLiteral", "_healthLiteral", "_middleScreenLabel", "_mobSpawnTimer", "_scoreTimer", "_startTimer", "_mobSpawner")]
+[node name="Main" type="Node2D" node_paths=PackedStringArray("Menu", "Player", "PlayerStart", "Camera", "_scoreLiteral", "_healthLiteral", "_middleScreenLabel", "_mobSpawnTimer", "_scoreTimer", "_startTimer", "_messageTimer", "_mobSpawner")]
 texture_filter = 1
 script = ExtResource("1_r150o")
 Menu = NodePath("Menu")
@@ -546,6 +546,7 @@ _middleScreenLabel = NodePath("Player/Camera2D/MiddleScreenLabel")
 _mobSpawnTimer = NodePath("Timers/MobTimer")
 _scoreTimer = NodePath("Timers/ScoreTimer")
 _startTimer = NodePath("Timers/StartingTimer")
+_messageTimer = NodePath("Timers/MessageTimer")
 MobScenes = Array[PackedScene]([ExtResource("2_v1gob")])
 _mobSpawner = NodePath("SpawnPath/Spawner")
 
@@ -562,7 +563,6 @@ navigation_enabled = false
 
 [node name="Player" parent="." instance=ExtResource("3_jw32o")]
 texture_filter = 1
-position = Vector2(-8, -24)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 top_level = true
@@ -640,6 +640,11 @@ wait_time = 0.5
 wait_time = 2.0
 one_shot = true
 
+[node name="MessageTimer" type="Timer" parent="Timers"]
+editor_description = "How long messages are shown on screen before they fade."
+wait_time = 3.0
+one_shot = true
+
 [node name="StartingPosition" type="Marker2D" parent="."]
 editor_description = "Starting point for the player."
 texture_filter = 1
@@ -653,12 +658,12 @@ sprite_frames = SubResource("SpriteFrames_pbw6q")
 script = ExtResource("3_rgh2o")
 
 [node name="SpawnPath" type="Path2D" parent="."]
-position = Vector2(7.5294127, 7.5)
+position = Vector2(8, 8)
 scale = Vector2(0.94117653, 0.9375)
 curve = SubResource("Curve2D_rgh2o")
 
 [node name="Spawner" type="PathFollow2D" parent="SpawnPath"]
-position = Vector2(-8, -8)
+position = Vector2(0.49999905, 0.5333333)
 
 [node name="Foreground" type="TileMapLayer" parent="."]
 position = Vector2(4.7683716e-07, 4.7683716e-07)

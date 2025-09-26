@@ -145,6 +145,8 @@ radius = 6.0
 height = 16.0
 
 [node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("_sprite2D", "_hitBox2D")]
+collision_layer = 0
+safe_margin = 0.8
 script = ExtResource("1_52ee3")
 Speed = 200
 _sprite2D = NodePath("AnimatedSprite2D")
@@ -153,16 +155,19 @@ _hitBox2D = NodePath("HitBox/HitBoxCollision")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_5ixxa")
-animation = &"Idle"
+animation = &"Up"
 
 [node name="PhysicsCollision2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_nn08x")
 
 [node name="HitBox" type="Area2D" parent="."]
-collision_layer = 2
+collision_layer = 0
 collision_mask = 2
 
 [node name="HitBoxCollision" type="CollisionShape2D" parent="HitBox"]
+process_priority = 1
+light_mask = 2
+visibility_layer = 2
 shape = SubResource("CapsuleShape2D_nn08x")
 
 [connection signal="body_entered" from="HitBox" to="." method="OnBodyEntered"]
