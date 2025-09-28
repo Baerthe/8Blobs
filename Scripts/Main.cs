@@ -1,3 +1,4 @@
+using Equipment;
 using Godot;
 using Mobs;
 /// <summary>
@@ -18,6 +19,7 @@ public partial class Main : Node2D
 
 	[ExportSubgroup("Timers")]
 	[Export] private Timer _mobSpawnTimer;
+	[Export] private Timer _pickupSpawnTimer;
 	[Export] private Timer _scoreTimer;
 	[Export] private Timer _startTimer;
 	[ExportGroup("Spawnables")]
@@ -26,10 +28,16 @@ public partial class Main : Node2D
 	[Export] private PathFollow2D _mobSpawner;
 	[ExportSubgroup("Pickups")]
 	[Export] public PackedScene[] PickupScenes { get; private set; }
+	[Export] private Path2D _pickupPath;
+	[Export] private PathFollow2D _pickupSpawner;
 	private int _score = 0;
+	private double _pickupTimerDefaultWaitTime;
+	private Vector2 _distantBetweenPickupAndPlayer;
 	private bool _isGameOver = false;
 	public override void _Ready()
 	{
+		_distantBetweenPickupAndPlayer = Player.Position - _pickupPath.Position;
+		_pickupTimerDefaultWaitTime = _pickupSpawnTimer.WaitTime;
 		Camera.Position = Player.Position;
 		Menu.Show();
 	}
@@ -43,12 +51,14 @@ public partial class Main : Node2D
 		else
 		{
 			Camera.Position = Player.Position;
+			_pickupPath.Position = Player.Position - _distantBetweenPickupAndPlayer;
 		}
 	}
 	public void GameOver()
 	{
 		_mobSpawnTimer.Stop();
 		_scoreTimer.Stop();
+		_pickupSpawnTimer.Stop();
 		if (Input.IsActionPressed("ui_accept"))
 			OnMenuStartGame();
 	}
@@ -59,6 +69,7 @@ public partial class Main : Node2D
 		Player.Start(PlayerStart.Position);
 		Camera.Position = Player.Position;
 		GetTree().CallGroup("Mobs", Node.MethodName.QueueFree);
+		GetTree().CallGroup("Pickups", Node.MethodName.QueueFree);
 		_score = 0;
 		_startTimer.Start();
 		Ui.NewGame(_startTimer.WaitTime);
@@ -70,17 +81,34 @@ public partial class Main : Node2D
 		float direction = _mobSpawner.Rotation + Mathf.Pi / 2;
 		var velocity = new Vector2((float)GD.RandRange(150.0, 250.0), 0);
 		var mobBaseSpeed = (mob.Speed + (int)(GD.RandRange(-1.0, 0.5) % mob.Speed)) * new Vector2(1, 0).Rotated(direction);
-		mob.Position = _mobSpawner.Position;
+		mob.Position = _mobSpawner.GlobalPosition;
 		mob.LinearVelocity = velocity.Rotated(direction) + mobBaseSpeed;
 		AddChild(mob);
+	}
+	private void OnPickupTimerTimeout()
+	{
+		GD.Print($"Pickup path position: {_pickupPath.Position}");
+		GD.Print($"Pickup spawner name: {_pickupSpawner.Name}");
+		GD.Print($"Pickup spawner position: {_pickupSpawner.Position}");
+
+		Pickup pickup = (Pickup)PickupScenes[GD.Randi() % PickupScenes.Length].Instantiate();
+		_pickupSpawner.ProgressRatio = GD.Randf();
+		pickup.Position = _pickupSpawner.GlobalPosition;
+		AddChild(pickup);
+
+		GD.Print($"Pickup spawned at: {pickup.Position}");
 	}
 	private void OnScoreTimerTimeout()
 	{
 		_score++;
+		if (_score % 10 == 0)
+			_pickupSpawnTimer.WaitTime++;
 	}
 	private void OnStartTimerTimeout()
 	{
 		_mobSpawnTimer.Start();
+		_pickupSpawnTimer.WaitTime = _pickupTimerDefaultWaitTime;
+		_pickupSpawnTimer.Start();
 		_scoreTimer.Start();
 	}
 	private void OnMenuStartGame()

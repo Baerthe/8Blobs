@@ -16,7 +16,7 @@ public partial class Player : CharacterBody2D
 	[Export] private CollisionShape2D _hitBox2D;
 	public PlayerDirection CurrentPlayerDirection { get; private set; }
 	public List<Weapon> Weapons { get; } = new List<Weapon>();
-	public Item[] Items { get; } = new Item[2];
+	//public Item[] Items { get; } = new Item[2];
 	private double _deltaTime = 0.1;
 	private int _health = 0;
 	public void Start(Vector2 position)
@@ -34,6 +34,8 @@ public partial class Player : CharacterBody2D
 	}
 	public override void _Process(double delta)
 	{
+		if (_health <= 0)
+				Death();
 		_deltaTime = delta;
 		// Set animation based on direction
 		switch (CurrentPlayerDirection)
@@ -133,8 +135,6 @@ public partial class Player : CharacterBody2D
 			_health -= 1;
 			_hitBox2D.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
 			ImmunityFrames();
-			if (_health <= 0)
-				Death();
 		}
 		EmitSignal(SignalName.OnHit);
 	}
@@ -143,17 +143,19 @@ public partial class Player : CharacterBody2D
 		GD.Print("Collecting " + pickup.ItemName);
 		if (pickup is Item item)
 		{
-			// Collect item
-			for (int i = 0; i < Items.Length; i++)
-			{
-				if (Items[i] == null)
-				{
-					Items[i] = item;
-					item.Effect(this);
-					pickup.QueueFree();
-					return;
-				}
-			}
+			item.Effect(this);
+			pickup.QueueFree();
+			// // Collect item
+			// for (int i = 0; i < Items.Length; i++)
+			// {
+			// 	if (Items[i] == null)
+			// 	{
+			// 		Items[i] = item;
+			// 		item.Effect(this);
+			// 		pickup.QueueFree();
+			// 		return;
+			// 	}
+			// }
 		}
 		else if (pickup is Weapon weapon)
 		{
@@ -168,8 +170,8 @@ public partial class Player : CharacterBody2D
 	private void Death()
 	{
 		_sprite2D.Animation = "Death";
-		for (int i = 0; i < Items.Length; i++)
-			Items[i] = null;
+		// for (int i = 0; i < Items.Length; i++)
+		// 	Items[i] = null;
 		Weapons.Clear();
 		EmitSignal(SignalName.OnDeath);
 	}

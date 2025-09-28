@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=4 uid="uid://ddn3j7obdlhp4"]
+[gd_scene load_steps=19 format=4 uid="uid://ddn3j7obdlhp4"]
 
 [ext_resource type="Script" uid="uid://mevgk8q6vius" path="res://Scripts/Main.cs" id="1_r150o"]
 [ext_resource type="Texture2D" uid="uid://cwibxw26xjypy" path="res://Resources/TILESET/PixelPackTOPDOWN8BIT.png" id="2_idj7w"]
@@ -28,9 +28,17 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="Curve2D" id="Curve2D_rgh2o"]
+[sub_resource type="Curve2D" id="Curve2D_grg3l"]
+resource_name = "PickupCurve"
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, 0.49999905, 0.5333333, 0, 0, 0, 0, 255.49997, 0.5333333, 0, 0, 0, 0, 255.49997, 239.46664, 0, 0, 0, 0, 254.99997, 238.93332, 0, 0, 0, 0, 0.49999905, 239.46664, 0, 0, 0, 0, 0.49999905, 0.5333333)
+"points": PackedVector2Array(0, 0, 0, 0, 127.499985, -20, 0, 0, 0, 0, 197.49998, 20, 0, 0, 0, 0, 227.49997, 69.999985, 0, 0, 0, 0, 197.49998, 119.99999, 0, 0, 0, 0, 127.499985, 159.99997, 0, 0, 0, 0, 57.499996, 119.99999, 0, 0, 0, 0, 27.499996, 69.999985, 0, 0, 0, 0, 57.499996, 20, 0, 0, 0, 0, 127.499985, -20)
+}
+point_count = 9
+
+[sub_resource type="Curve2D" id="Curve2D_rgh2o"]
+resource_name = "MobCurve"
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0.49999905, 0.5333333, 0, 0, 0, 0, 255.49997, 0.5333333, 0, 0, 0, 0, 255.49997, 239.46664, 0, 0, 0, 0, 254.99997, 238.93332, 0, 0, 0, 0, 0.5000076, 237.98257, 0, 0, 0, 0, 0.49999905, 0.5333333)
 }
 point_count = 6
 
@@ -536,7 +544,7 @@ texture = ExtResource("2_idj7w")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_50glp")
 
-[node name="Main" type="Node2D" node_paths=PackedStringArray("Menu", "Player", "PlayerStart", "Camera", "Ui", "_mobSpawnTimer", "_scoreTimer", "_startTimer", "_mobSpawner")]
+[node name="Main" type="Node2D" node_paths=PackedStringArray("Menu", "Player", "PlayerStart", "Camera", "Ui", "_mobSpawnTimer", "_pickupSpawnTimer", "_scoreTimer", "_startTimer", "_mobSpawner", "_pickupPath", "_pickupSpawner")]
 texture_filter = 1
 script = ExtResource("1_r150o")
 Menu = NodePath("Menu")
@@ -545,10 +553,14 @@ PlayerStart = NodePath("StartingPosition")
 Camera = NodePath("Player/Camera2D")
 Ui = NodePath("Player/Camera2D/Ui")
 _mobSpawnTimer = NodePath("Timers/MobTimer")
+_pickupSpawnTimer = NodePath("Timers/PickUpTimer")
 _scoreTimer = NodePath("Timers/ScoreTimer")
 _startTimer = NodePath("Timers/StartingTimer")
 MobScenes = Array[PackedScene]([ExtResource("2_v1gob")])
 _mobSpawner = NodePath("SpawnPath/Spawner")
+PickupScenes = Array[PackedScene]([ExtResource("4_4kpch"), ExtResource("12_grg3l")])
+_pickupPath = NodePath("PickUpPath")
+_pickupSpawner = NodePath("PickUpPath/PickupSpawner")
 
 [node name="Background" type="TileMapLayer" parent="."]
 show_behind_parent = true
@@ -644,6 +656,8 @@ vertical_alignment = 1
 [node name="MobTimer" type="Timer" parent="Timers"]
 wait_time = 0.5
 
+[node name="PickUpTimer" type="Timer" parent="Timers"]
+
 [node name="ScoreTimer" type="Timer" parent="Timers"]
 
 [node name="StartingTimer" type="Timer" parent="Timers"]
@@ -658,7 +672,7 @@ one_shot = true
 [node name="StartingPosition" type="Marker2D" parent="."]
 editor_description = "Starting point for the player."
 texture_filter = 1
-position = Vector2(128, 120)
+position = Vector2(128, 128)
 metadata/_edit_group_ = true
 
 [node name="EditorOnlyIcon" type="AnimatedSprite2D" parent="StartingPosition"]
@@ -666,6 +680,15 @@ light_mask = 0
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_pbw6q")
 script = ExtResource("3_rgh2o")
+
+[node name="PickUpPath" type="Path2D" parent="."]
+position = Vector2(25.999998, 72)
+scale = Vector2(0.8, 0.8)
+curve = SubResource("Curve2D_grg3l")
+
+[node name="PickupSpawner" type="PathFollow2D" parent="PickUpPath"]
+position = Vector2(127.499985, -20)
+rotation = 0.51914614
 
 [node name="SpawnPath" type="Path2D" parent="."]
 position = Vector2(8, 8)
@@ -676,15 +699,9 @@ curve = SubResource("Curve2D_rgh2o")
 position = Vector2(0.49999905, 0.5333333)
 
 [node name="Pickups" type="Node2D" parent="."]
-
-[node name="Potion" parent="Pickups" instance=ExtResource("4_4kpch")]
-position = Vector2(96, 120)
-
-[node name="Poison" parent="Pickups" instance=ExtResource("12_grg3l")]
-position = Vector2(88, 80)
-
-[node name="Potion2" parent="Pickups" instance=ExtResource("4_4kpch")]
-position = Vector2(80, 144)
+physics_interpolation_mode = 2
+editor_description = "The grouping layer for pickups"
+texture_filter = 1
 
 [node name="Foreground" type="TileMapLayer" parent="."]
 position = Vector2(4.7683716e-07, 4.7683716e-07)
@@ -699,6 +716,7 @@ z_index = 99
 
 [connection signal="OnDeath" from="Player" to="." method="OnPlayerDeath"]
 [connection signal="timeout" from="Timers/MobTimer" to="." method="OnMobTimerTimeout"]
+[connection signal="timeout" from="Timers/PickUpTimer" to="." method="OnPickupTimerTimeout"]
 [connection signal="timeout" from="Timers/ScoreTimer" to="." method="OnScoreTimerTimeout"]
 [connection signal="timeout" from="Timers/StartingTimer" to="." method="OnStartTimerTimeout"]
 [connection signal="StartGame" from="Menu" to="." method="OnMenuStartGame"]
