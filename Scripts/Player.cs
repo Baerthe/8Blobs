@@ -1,5 +1,6 @@
 using Godot;
 using Equipment;
+using Mobs;
 using System.Collections.Generic;
 /// <summary>
 /// The player is the main character that the user controls. This class handles movement, health, and collisions with mobs.
@@ -123,7 +124,7 @@ public partial class Player : CharacterBody2D
 		GD.Print($"Body entered: {body.Name} - Type: {body.GetType().Name}");
 		if (body is Pickup pickup)
 		{
-			GD.Print("Picked up " + pickup.Name);
+			GD.Print("Picked up " + pickup.ItemName);
 			OnPickUp(pickup);
 			return;
 		}
@@ -139,7 +140,7 @@ public partial class Player : CharacterBody2D
 	}
 	private void OnPickUp(Pickup pickup)
 	{
-		GD.Print("Collecting " + pickup.Name);
+		GD.Print("Collecting " + pickup.ItemName);
 		if (pickup is Item item)
 		{
 			// Collect item
@@ -167,6 +168,9 @@ public partial class Player : CharacterBody2D
 	private void Death()
 	{
 		_sprite2D.Animation = "Death";
+		for (int i = 0; i < Items.Length; i++)
+			Items[i] = null;
+		Weapons.Clear();
 		EmitSignal(SignalName.OnDeath);
 	}
 	private async void ImmunityFrames()
@@ -176,6 +180,7 @@ public partial class Player : CharacterBody2D
 		flashTimer.OneShot = false;
 		AddChild(flashTimer);
 		flashTimer.Start();
+		_sprite2D.Modulate = new Color(1, 0.5f, 0.5f); // Tint red on hit
 		for (int i = 0; i < 10; i++)
 		{
 			_sprite2D.Visible = !_sprite2D.Visible;
@@ -183,6 +188,7 @@ public partial class Player : CharacterBody2D
 		}
 		_sprite2D.Visible = true;
 		_hitBox2D.Disabled = false;
+		_sprite2D.Modulate = Colors.White;
 		flashTimer.QueueFree();
 	}
 	public enum PlayerDirection : byte

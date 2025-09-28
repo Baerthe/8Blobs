@@ -1,7 +1,11 @@
 using Godot;
+using Mobs;
 /// <summary>
 /// The main class that handles the game logic, including spawning mobs and managing the game state.
 /// </summary>
+/// <remarks>
+/// This will need to be broken down into a level class eventually and proper game management.
+/// </remarks>
 public partial class Main : Node2D
 {
 	[ExportGroup("Singles")]
@@ -20,6 +24,8 @@ public partial class Main : Node2D
 	[ExportSubgroup("Mobs")]
 	[Export] public PackedScene[] MobScenes { get; private set; }
 	[Export] private PathFollow2D _mobSpawner;
+	[ExportSubgroup("Pickups")]
+	[Export] public PackedScene[] PickupScenes { get; private set; }
 	private int _score = 0;
 	private bool _isGameOver = false;
 	public override void _Ready()

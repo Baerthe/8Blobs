@@ -1,5 +1,5 @@
+namespace Mobs;
 using Godot;
-using System;
 /// <summary>
 /// A mob is a mobile enemy that moves around the screen and can collide with the player. This is a base class for all mobs.
 /// </summary>

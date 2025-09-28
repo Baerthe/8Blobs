@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=4 uid="uid://ddn3j7obdlhp4"]
+[gd_scene load_steps=18 format=4 uid="uid://ddn3j7obdlhp4"]
 
 [ext_resource type="Script" uid="uid://mevgk8q6vius" path="res://Scripts/Main.cs" id="1_r150o"]
 [ext_resource type="Texture2D" uid="uid://cwibxw26xjypy" path="res://Resources/TILESET/PixelPackTOPDOWN8BIT.png" id="2_idj7w"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://c00j7j5oyrhs0" path="res://Scripts/Ui.cs" id="5_bmxlf"]
 [ext_resource type="TileSet" uid="uid://c1okyqiwq2m7e" path="res://Resources/Tileset.tres" id="7_jw32o"]
 [ext_resource type="PackedScene" uid="uid://dbeepstjbey3p" path="res://Scenes/Menu.tscn" id="9_vy5pj"]
+[ext_resource type="PackedScene" uid="uid://o2mrjgg3orjj" path="res://Scenes/Equipment/Items/Poison.tscn" id="12_grg3l"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_rgh2o"]
 atlas = ExtResource("2_kln2b")
@@ -678,6 +679,12 @@ position = Vector2(0.49999905, 0.5333333)
 
 [node name="Potion" parent="Pickups" instance=ExtResource("4_4kpch")]
 position = Vector2(96, 120)
+
+[node name="Poison" parent="Pickups" instance=ExtResource("12_grg3l")]
+position = Vector2(88, 80)
+
+[node name="Potion2" parent="Pickups" instance=ExtResource("4_4kpch")]
+position = Vector2(80, 144)
 
 [node name="Foreground" type="TileMapLayer" parent="."]
 position = Vector2(4.7683716e-07, 4.7683716e-07)

@@ -1,5 +1,6 @@
+namespace Mobs;
 using Godot;
-using System;
+
 /// <summary>
 /// A blob is a simple enemy that moves in a straight line. It is the most basic type of mob. The blob does not really have any special behaviors, so this script is mostly empty.
 /// </summary>
