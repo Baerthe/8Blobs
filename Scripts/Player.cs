@@ -126,7 +126,7 @@ public partial class Player : CharacterBody2D
 		GD.Print($"Body entered: {body.Name} - Type: {body.GetType().Name}");
 		if (body is Pickup pickup)
 		{
-			GD.Print("Picked up " + pickup.ItemName);
+			GD.Print("Picked up " + pickup.PickupName);
 			OnPickUp(pickup);
 			return;
 		}
@@ -140,7 +140,7 @@ public partial class Player : CharacterBody2D
 	}
 	private void OnPickUp(Pickup pickup)
 	{
-		GD.Print("Collecting " + pickup.ItemName);
+		GD.Print("Collecting " + pickup.PickupName);
 		if (pickup is Item item)
 		{
 			item.Effect(this);

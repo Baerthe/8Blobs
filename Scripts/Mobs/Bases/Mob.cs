@@ -35,17 +35,30 @@ public abstract partial class Mob : RigidBody2D
                 break;
         }
     }
+    public void Update(Player player)
+    {
+        if (player == null) return;
+        if (MovementType == MobMovement.PlayerAttracted)
+        {
+            Vector2 directionToPlayer = (player.Position - GlobalPosition).Normalized();
+            LinearVelocity = directionToPlayer * Speed;
+            return;
+        } else if (MovementType == MobMovement.RandomDirection)
+        {
+            LinearVelocity = LinearVelocity.Rotated((float)GD.RandRange(-0.1, 0.1));
+            return;
+        }
+    }
     public void Spawn(Vector2 playerPosition, PathFollow2D spawner)
     {
         Position = spawner.GlobalPosition;
-        float baseSpeed = (float)GD.RandRange(150.0, 250.0);
-    	float mobSpeedModifier = Speed + (int)(GD.RandRange(-1.0, 0.5) % Speed);
+        float mobSpeedModifier = Speed + (int)(GD.RandRange(-1.0, 0.5) % Speed);
         float randomAngle = (float)GD.RandRange(-0.2, 0.2);
         if (MovementType == MobMovement.PlayerAttracted)
         {
             Vector2 directionToPlayer = (playerPosition - spawner.GlobalPosition).Normalized();
             directionToPlayer = directionToPlayer.Rotated(randomAngle);
-            LinearVelocity = directionToPlayer * (baseSpeed + mobSpeedModifier);
+            LinearVelocity = directionToPlayer * mobSpeedModifier;
             return;
         }
         float direction = spawner.Rotation + Mathf.Pi / 2;
@@ -53,9 +66,9 @@ public abstract partial class Mob : RigidBody2D
         {
             direction += randomAngle;
         }
-		var velocity = new Vector2((float)GD.RandRange(150.0, 250.0), 0);
-		var mobBaseSpeed = (Speed + (int)(GD.RandRange(-1.0, 0.5) % Speed)) * new Vector2(1, 0).Rotated(direction);
-		LinearVelocity = velocity.Rotated(direction) + mobBaseSpeed;
+        var velocity = new Vector2((float)GD.RandRange(150.0, 250.0), 0);
+        var mobBaseSpeed = (Speed + (int)(GD.RandRange(-1.0, 0.5) % Speed)) * new Vector2(1, 0).Rotated(direction);
+        LinearVelocity = velocity.Rotated(direction) + mobBaseSpeed;
     }
     public enum MobMovement : byte
     {

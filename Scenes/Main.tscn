@@ -1,9 +1,10 @@
-[gd_scene load_steps=19 format=4 uid="uid://ddn3j7obdlhp4"]
+[gd_scene load_steps=20 format=4 uid="uid://ddn3j7obdlhp4"]
 
 [ext_resource type="Script" uid="uid://mevgk8q6vius" path="res://Scripts/Main.cs" id="1_r150o"]
 [ext_resource type="Texture2D" uid="uid://cwibxw26xjypy" path="res://Resources/TILESET/PixelPackTOPDOWN8BIT.png" id="2_idj7w"]
 [ext_resource type="Texture2D" uid="uid://b431f65grgjv4" path="res://Resources/SPRITES/HEROS/spritesheets/HEROS8bit_Adventurer Idle D.png" id="2_kln2b"]
 [ext_resource type="PackedScene" uid="uid://bykyt1m4a7fdw" path="res://Scenes/Mobs/BlobMob.tscn" id="2_v1gob"]
+[ext_resource type="PackedScene" uid="uid://hnpjt4v7lhd0" path="res://Scenes/Mobs/NegaBlobMob.tscn" id="3_frkhe"]
 [ext_resource type="PackedScene" uid="uid://wnqc80wplhnk" path="res://Scenes/Player.tscn" id="3_jw32o"]
 [ext_resource type="Script" uid="uid://rgb7rqek37ym" path="res://Scripts/EditorOnly.cs" id="3_rgh2o"]
 [ext_resource type="PackedScene" uid="uid://cyfiamvtba675" path="res://Scenes/Equipment/Items/Potion.tscn" id="4_4kpch"]
@@ -556,7 +557,7 @@ _mobSpawnTimer = NodePath("Timers/MobTimer")
 _pickupSpawnTimer = NodePath("Timers/PickUpTimer")
 _scoreTimer = NodePath("Timers/ScoreTimer")
 _startTimer = NodePath("Timers/StartingTimer")
-MobScenes = Array[PackedScene]([ExtResource("2_v1gob")])
+MobScenes = Array[PackedScene]([ExtResource("2_v1gob"), ExtResource("3_frkhe")])
 _mobSpawner = NodePath("SpawnPath/Spawner")
 PickupScenes = Array[PackedScene]([ExtResource("4_4kpch"), ExtResource("12_grg3l")])
 _pickupPath = NodePath("PickUpPath")
@@ -672,7 +673,7 @@ one_shot = true
 [node name="StartingPosition" type="Marker2D" parent="."]
 editor_description = "Starting point for the player."
 texture_filter = 1
-position = Vector2(128, 128)
+position = Vector2(128, 120)
 metadata/_edit_group_ = true
 
 [node name="EditorOnlyIcon" type="AnimatedSprite2D" parent="StartingPosition"]

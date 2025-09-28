@@ -31,6 +31,9 @@ public partial class Main : Node2D
 	[Export] private Path2D _pickupPath;
 	[Export] private PathFollow2D _pickupSpawner;
 	private int _score = 0;
+	private float _timeElapsed = 0.0f;
+	private byte _mobPollRate = 10;
+	private byte _mobFrameCounter = 0;
 	private double _pickupTimerDefaultWaitTime;
 	private Vector2 _distantBetweenPickupAndPlayer;
 	private bool _isGameOver = false;
@@ -52,10 +55,19 @@ public partial class Main : Node2D
 		{
 			Camera.Position = Player.Position;
 			_pickupPath.Position = Player.Position - _distantBetweenPickupAndPlayer;
+			_mobFrameCounter++;
+			if (_mobFrameCounter >= _mobPollRate)
+			{
+				_mobFrameCounter = 0;
+				GetTree().CallGroup("Mobs", "Update", Player);
+			}
 		}
+		if (delta > 0)
+			_timeElapsed += (float)delta;
 	}
 	public void GameOver()
 	{
+		ClearScreen();
 		_mobSpawnTimer.Stop();
 		_scoreTimer.Stop();
 		_pickupSpawnTimer.Stop();
@@ -68,11 +80,16 @@ public partial class Main : Node2D
 		Menu.Hide();
 		Player.Start(PlayerStart.Position);
 		Camera.Position = Player.Position;
-		GetTree().CallGroup("Mobs", Node.MethodName.QueueFree);
-		GetTree().CallGroup("Pickups", Node.MethodName.QueueFree);
+		ClearScreen();
+		_timeElapsed = 0.0f;
 		_score = 0;
 		_startTimer.Start();
 		Ui.NewGame(_startTimer.WaitTime);
+	}
+	private void ClearScreen()
+	{
+		GetTree().CallGroup("Mobs", "Death");
+		GetTree().CallGroup("Pickups", Node.MethodName.QueueFree);
 	}
 	private void OnMobTimerTimeout()
 	{
