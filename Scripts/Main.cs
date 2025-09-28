@@ -78,11 +78,11 @@ public partial class Main : Node2D
 	{
 		Mob mob = (Mob)MobScenes[GD.Randi() % MobScenes.Length].Instantiate();
 		_mobSpawner.ProgressRatio = GD.Randf();
-		float direction = _mobSpawner.Rotation + Mathf.Pi / 2;
-		var velocity = new Vector2((float)GD.RandRange(150.0, 250.0), 0);
-		var mobBaseSpeed = (mob.Speed + (int)(GD.RandRange(-1.0, 0.5) % mob.Speed)) * new Vector2(1, 0).Rotated(direction);
+		Vector2 directionToPlayer = (Player.Position - _mobSpawner.Position).Normalized();
+		float baseSpeed = (float)GD.RandRange(150.0, 250.0);
+    	float mobSpeedModifier = mob.Speed + (int)(GD.RandRange(-1.0, 0.5) % mob.Speed);
 		mob.Position = _mobSpawner.GlobalPosition;
-		mob.LinearVelocity = velocity.Rotated(direction) + mobBaseSpeed;
+		mob.LinearVelocity = directionToPlayer * (baseSpeed + mobSpeedModifier);
 		AddChild(mob);
 	}
 	private void OnPickupTimerTimeout()
@@ -102,7 +102,7 @@ public partial class Main : Node2D
 	{
 		_score++;
 		if (_score % 10 == 0)
-			_pickupSpawnTimer.WaitTime++;
+			_pickupSpawnTimer.WaitTime += 0.25f;
 	}
 	private void OnStartTimerTimeout()
 	{

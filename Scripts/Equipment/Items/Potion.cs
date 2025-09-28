@@ -5,8 +5,8 @@ using Godot;
 /// </summary>
 public partial class Potion : Item
 {
-    [Export] public override string ItemName { get; set; } = "Health Potion";
-    [Export] public override string ItemDescription { get; set; } = "A potion that restores health.";
+    [Export] public override string PickupName { get; set; } = "Health Potion";
+    [Export] public override string PickupDescription { get; set; } = "A potion that restores health.";
     [Export] public override Texture2D Icon { get; set; }
     [Export] public override Sprite2D Sprite { get; set; }
     [Export] public override CollisionShape2D HitBox { get; set; }

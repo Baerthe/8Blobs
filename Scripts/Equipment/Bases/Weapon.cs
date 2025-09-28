@@ -1,5 +1,4 @@
 namespace Equipment;
-
 using System;
 using Godot;
 /// <summary>
