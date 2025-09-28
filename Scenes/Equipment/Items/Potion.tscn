@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://cyfiamvtba675"]
+
+[ext_resource type="Script" uid="uid://cukkdupyb6b48" path="res://Scripts/Equipment/Items/Potion.cs" id="1_jo71i"]
+[ext_resource type="Texture2D" uid="uid://jp4fkvruss8k" path="res://Resources/SPRITES/ITEMS/item8BIT_potion.png" id="2_4w3vy"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_enuh2"]
+radius = 8.0
+
+[node name="Potion" type="RigidBody2D" node_paths=PackedStringArray("Sprite", "HitBox")]
+collision_layer = 8
+collision_mask = 0
+gravity_scale = 0.0
+lock_rotation = true
+freeze = true
+script = ExtResource("1_jo71i")
+Icon = ExtResource("2_4w3vy")
+Sprite = NodePath("Sprite2D")
+HitBox = NodePath("CollisionShape2D")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = 1
+y_sort_enabled = true
+texture_filter = 1
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_4w3vy")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_enuh2")

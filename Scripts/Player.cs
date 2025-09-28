@@ -118,14 +118,51 @@ public partial class Player : CharacterBody2D
 		for (int i = 0; i < Weapons.Count; i++)
 			Weapons[i].Attack(_deltaTime);
 	}
-	private void OnBodyEntered(RigidBody2D body)
+	private void OnBodyEntered(Node2D body)
 	{
-		_health -= 1;
-		_hitBox2D.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
-		ImmunityFrames();
-		if (_health <= 0)
-			Death();
+		GD.Print($"Body entered: {body.Name} - Type: {body.GetType().Name}");
+		if (body is Pickup pickup)
+		{
+			GD.Print("Picked up " + pickup.Name);
+			OnPickUp(pickup);
+			return;
+		}
+		if (body is Mob mob)
+		{
+			_health -= 1;
+			_hitBox2D.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
+			ImmunityFrames();
+			if (_health <= 0)
+				Death();
+		}
 		EmitSignal(SignalName.OnHit);
+	}
+	private void OnPickUp(Pickup pickup)
+	{
+		GD.Print("Collecting " + pickup.Name);
+		if (pickup is Item item)
+		{
+			// Collect item
+			for (int i = 0; i < Items.Length; i++)
+			{
+				if (Items[i] == null)
+				{
+					Items[i] = item;
+					item.Effect(this);
+					pickup.QueueFree();
+					return;
+				}
+			}
+		}
+		else if (pickup is Weapon weapon)
+		{
+			// Collect weapon
+			if (!Weapons.Contains(weapon))
+			{
+				Weapons.Add(weapon);
+				pickup.QueueFree();
+			}
+		}
 	}
 	private void Death()
 	{

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=4 uid="uid://ddn3j7obdlhp4"]
+[gd_scene load_steps=17 format=4 uid="uid://ddn3j7obdlhp4"]
 
 [ext_resource type="Script" uid="uid://mevgk8q6vius" path="res://Scripts/Main.cs" id="1_r150o"]
 [ext_resource type="Texture2D" uid="uid://cwibxw26xjypy" path="res://Resources/TILESET/PixelPackTOPDOWN8BIT.png" id="2_idj7w"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bykyt1m4a7fdw" path="res://Scenes/Mobs/BlobMob.tscn" id="2_v1gob"]
 [ext_resource type="PackedScene" uid="uid://wnqc80wplhnk" path="res://Scenes/Player.tscn" id="3_jw32o"]
 [ext_resource type="Script" uid="uid://rgb7rqek37ym" path="res://Scripts/EditorOnly.cs" id="3_rgh2o"]
+[ext_resource type="PackedScene" uid="uid://cyfiamvtba675" path="res://Scenes/Equipment/Items/Potion.tscn" id="4_4kpch"]
 [ext_resource type="LabelSettings" uid="uid://dae0ujns4cmco" path="res://Main.tres" id="4_jw32o"]
 [ext_resource type="Script" uid="uid://c00j7j5oyrhs0" path="res://Scripts/Ui.cs" id="5_bmxlf"]
 [ext_resource type="TileSet" uid="uid://c1okyqiwq2m7e" path="res://Resources/Tileset.tres" id="7_jw32o"]
@@ -673,6 +674,11 @@ curve = SubResource("Curve2D_rgh2o")
 [node name="Spawner" type="PathFollow2D" parent="SpawnPath"]
 position = Vector2(0.49999905, 0.5333333)
 
+[node name="Pickups" type="Node2D" parent="."]
+
+[node name="Potion" parent="Pickups" instance=ExtResource("4_4kpch")]
+position = Vector2(96, 120)
+
 [node name="Foreground" type="TileMapLayer" parent="."]
 position = Vector2(4.7683716e-07, 4.7683716e-07)
 scale = Vector2(0.99999994, 0.99999994)
@@ -682,6 +688,7 @@ tile_set = SubResource("TileSet_vy5pj")
 [node name="Menu" parent="." instance=ExtResource("9_vy5pj")]
 visible = false
 top_level = true
+z_index = 99
 
 [connection signal="OnDeath" from="Player" to="." method="OnPlayerDeath"]
 [connection signal="timeout" from="Timers/MobTimer" to="." method="OnMobTimerTimeout"]

@@ -60,6 +60,7 @@ move_left={
 2d_physics/layer_1="Collision"
 2d_physics/layer_2="Hitbox"
 2d_physics/layer_3="Weapon"
+2d_physics/layer_4="Pickups"
 
 [rendering]
 
