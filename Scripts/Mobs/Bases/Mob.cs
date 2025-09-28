@@ -35,6 +35,28 @@ public abstract partial class Mob : RigidBody2D
                 break;
         }
     }
+    public void Spawn(Vector2 playerPosition, PathFollow2D spawner)
+    {
+        Position = spawner.GlobalPosition;
+        float baseSpeed = (float)GD.RandRange(150.0, 250.0);
+    	float mobSpeedModifier = Speed + (int)(GD.RandRange(-1.0, 0.5) % Speed);
+        float randomAngle = (float)GD.RandRange(-0.2, 0.2);
+        if (MovementType == MobMovement.PlayerAttracted)
+        {
+            Vector2 directionToPlayer = (playerPosition - spawner.GlobalPosition).Normalized();
+            directionToPlayer = directionToPlayer.Rotated(randomAngle);
+            LinearVelocity = directionToPlayer * (baseSpeed + mobSpeedModifier);
+            return;
+        }
+        float direction = spawner.Rotation + Mathf.Pi / 2;
+        if (MovementType == MobMovement.RandomDirection)
+        {
+            direction += randomAngle;
+        }
+		var velocity = new Vector2((float)GD.RandRange(150.0, 250.0), 0);
+		var mobBaseSpeed = (Speed + (int)(GD.RandRange(-1.0, 0.5) % Speed)) * new Vector2(1, 0).Rotated(direction);
+		LinearVelocity = velocity.Rotated(direction) + mobBaseSpeed;
+    }
     public enum MobMovement : byte
     {
         LinearDirection,
