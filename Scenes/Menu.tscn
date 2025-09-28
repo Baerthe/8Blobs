@@ -8,7 +8,7 @@
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s2c3o"]
 
-[node name="Menu" type="Control" node_paths=PackedStringArray("_startButton")]
+[node name="Menu" type="Control" node_paths=PackedStringArray("_startButton", "_quitButton")]
 texture_filter = 1
 layout_mode = 3
 anchors_preset = 15
@@ -18,6 +18,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_6pedr")
 _startButton = NodePath("StartButton")
+_quitButton = NodePath("QuitButton")
 
 [node name="Panel" type="Panel" parent="."]
 texture_filter = 1

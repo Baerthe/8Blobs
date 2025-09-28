@@ -1,12 +1,13 @@
-[gd_scene load_steps=15 format=4 uid="uid://ddn3j7obdlhp4"]
+[gd_scene load_steps=16 format=4 uid="uid://ddn3j7obdlhp4"]
 
 [ext_resource type="Script" uid="uid://mevgk8q6vius" path="res://Scripts/Main.cs" id="1_r150o"]
 [ext_resource type="Texture2D" uid="uid://cwibxw26xjypy" path="res://Resources/TILESET/PixelPackTOPDOWN8BIT.png" id="2_idj7w"]
-[ext_resource type="Texture2D" uid="uid://dnnly3f0nl6xk" path="res://Resources/SPRITES/HEROS/spritesheets/HEROS8bit_Adventurer Idle D.png" id="2_kln2b"]
+[ext_resource type="Texture2D" uid="uid://b431f65grgjv4" path="res://Resources/SPRITES/HEROS/spritesheets/HEROS8bit_Adventurer Idle D.png" id="2_kln2b"]
 [ext_resource type="PackedScene" uid="uid://bykyt1m4a7fdw" path="res://Scenes/Mobs/BlobMob.tscn" id="2_v1gob"]
 [ext_resource type="PackedScene" uid="uid://wnqc80wplhnk" path="res://Scenes/Player.tscn" id="3_jw32o"]
 [ext_resource type="Script" uid="uid://rgb7rqek37ym" path="res://Scripts/EditorOnly.cs" id="3_rgh2o"]
 [ext_resource type="LabelSettings" uid="uid://dae0ujns4cmco" path="res://Main.tres" id="4_jw32o"]
+[ext_resource type="Script" uid="uid://c00j7j5oyrhs0" path="res://Scripts/Ui.cs" id="5_bmxlf"]
 [ext_resource type="TileSet" uid="uid://c1okyqiwq2m7e" path="res://Resources/Tileset.tres" id="7_jw32o"]
 [ext_resource type="PackedScene" uid="uid://dbeepstjbey3p" path="res://Scenes/Menu.tscn" id="9_vy5pj"]
 
@@ -533,20 +534,17 @@ texture = ExtResource("2_idj7w")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_50glp")
 
-[node name="Main" type="Node2D" node_paths=PackedStringArray("Menu", "Player", "PlayerStart", "Camera", "_scoreLiteral", "_healthLiteral", "_middleScreenLabel", "_mobSpawnTimer", "_scoreTimer", "_startTimer", "_messageTimer", "_mobSpawner")]
+[node name="Main" type="Node2D" node_paths=PackedStringArray("Menu", "Player", "PlayerStart", "Camera", "Ui", "_mobSpawnTimer", "_scoreTimer", "_startTimer", "_mobSpawner")]
 texture_filter = 1
 script = ExtResource("1_r150o")
 Menu = NodePath("Menu")
 Player = NodePath("Player")
 PlayerStart = NodePath("StartingPosition")
 Camera = NodePath("Player/Camera2D")
-_scoreLiteral = NodePath("Player/Camera2D/Score")
-_healthLiteral = NodePath("Player/Camera2D/Health")
-_middleScreenLabel = NodePath("Player/Camera2D/MiddleScreenLabel")
+Ui = NodePath("Player/Camera2D/Ui")
 _mobSpawnTimer = NodePath("Timers/MobTimer")
 _scoreTimer = NodePath("Timers/ScoreTimer")
 _startTimer = NodePath("Timers/StartingTimer")
-_messageTimer = NodePath("Timers/MessageTimer")
 MobScenes = Array[PackedScene]([ExtResource("2_v1gob")])
 _mobSpawner = NodePath("SpawnPath/Spawner")
 
@@ -570,48 +568,57 @@ top_level = true
 texture_filter = 1
 position = Vector2(128, 120)
 
-[node name="ScoreLabel" type="Label" parent="Player/Camera2D"]
+[node name="Ui" type="CanvasLayer" parent="Player/Camera2D" node_paths=PackedStringArray("_scoreLiteral", "_healthLiteral", "_middleScreenLabel", "_messageTimer")]
+layer = 2
+visible = false
+script = ExtResource("5_bmxlf")
+_scoreLiteral = NodePath("Score")
+_healthLiteral = NodePath("Health")
+_middleScreenLabel = NodePath("MiddleScreenLabel")
+_messageTimer = NodePath("../../../Timers/MessageTimer")
+
+[node name="ScoreLabel" type="Label" parent="Player/Camera2D/Ui"]
 texture_filter = 1
-offset_left = -126.0
-offset_top = -112.0
-offset_right = -81.0
-offset_bottom = -89.0
+offset_left = 2.0
+offset_top = 8.0
+offset_right = 47.0
+offset_bottom = 31.0
 text = "SCORE"
 label_settings = ExtResource("4_jw32o")
 
-[node name="Score" type="Label" parent="Player/Camera2D"]
+[node name="Score" type="Label" parent="Player/Camera2D/Ui"]
 visible = false
 texture_filter = 1
-offset_left = -126.0
-offset_top = -103.0
-offset_right = -52.0
-offset_bottom = -80.0
+offset_left = 2.0
+offset_top = 17.0
+offset_right = 76.0
+offset_bottom = 40.0
 text = "00000000"
 label_settings = ExtResource("4_jw32o")
 
-[node name="HealthLabel" type="Label" parent="Player/Camera2D"]
+[node name="HealthLabel" type="Label" parent="Player/Camera2D/Ui"]
 texture_filter = 1
-offset_left = 73.0
-offset_top = -112.0
-offset_right = 126.0
-offset_bottom = -89.0
+offset_left = 201.0
+offset_top = 8.0
+offset_right = 254.0
+offset_bottom = 31.0
 text = "Health"
 label_settings = ExtResource("4_jw32o")
 horizontal_alignment = 2
 
-[node name="Health" type="Label" parent="Player/Camera2D"]
+[node name="Health" type="Label" parent="Player/Camera2D/Ui"]
 visible = false
 texture_filter = 1
-offset_left = 52.0
-offset_top = -103.0
-offset_right = 126.0
-offset_bottom = -80.0
+offset_left = 180.0
+offset_top = 17.0
+offset_right = 254.0
+offset_bottom = 40.0
 text = "00
 "
 label_settings = ExtResource("4_jw32o")
 horizontal_alignment = 2
 
-[node name="MiddleScreenLabel" type="Label" parent="Player/Camera2D"]
+[node name="MiddleScreenLabel" type="Label" parent="Player/Camera2D/Ui"]
 visible = false
 texture_filter = 1
 anchors_preset = 8

@@ -12,9 +12,10 @@ config_version=5
 
 config/name="8Blobs"
 config/description="8Blobs is a simple top-down 2D action game."
-config/version="0.01"
+config/version="0.0.2"
 run/main_scene="uid://ddn3j7obdlhp4"
 config/features=PackedStringArray("4.5", "C#", "GL Compatibility")
+run/max_fps=60
 config/icon="uid://58ds5rh2t15a"
 
 [display]

@@ -1,5 +1,6 @@
 using Godot;
-using System;
+using Equipment;
+using System.Collections.Generic;
 /// <summary>
 /// The player is the main character that the user controls. This class handles movement, health, and collisions with mobs.
 /// </summary>
@@ -13,6 +14,8 @@ public partial class Player : CharacterBody2D
 	[Export] private AnimatedSprite2D _sprite2D;
 	[Export] private CollisionShape2D _hitBox2D;
 	public PlayerDirection CurrentPlayerDirection { get; private set; }
+	public List<Weapon> Weapons { get; } = new List<Weapon>();
+	public Item[] Items { get; } = new Item[2];
 	private double _deltaTime = 0.1;
 	private int _health = 0;
 	public void Start(Vector2 position)
@@ -95,6 +98,25 @@ public partial class Player : CharacterBody2D
 		_sprite2D.FlipV = false; // Make sure we never flip vertically
 		_sprite2D.FlipH = velocity.X < 0;
 		MoveAndSlide();
+		ExecuteWeaponAttacks();
+	}
+	// Public Support Functions for Effects
+	public void Heal(int amount)
+	{
+		_health += amount;
+		if (_health > MaxHealth)
+			_health = MaxHealth;
+	}
+	public void Kill()
+	{
+		_health = 0;
+		Death();
+	}
+	// Private Support Functions
+	private void ExecuteWeaponAttacks()
+	{
+		for (int i = 0; i < Weapons.Count; i++)
+			Weapons[i].Attack(_deltaTime);
 	}
 	private void OnBodyEntered(RigidBody2D body)
 	{
