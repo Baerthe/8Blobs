@@ -23,21 +23,22 @@ public partial class TilingManager : Node
 			_width,
 			_height
 		);
-		for (int x = -1; x < 2; x++)
-		{
-			for (int y = -1; y < 2; y++)
-			{
-				if (x == 0 && y == 0) continue;
-				var backgroundDuplicate = BackgroundLayer.Duplicate() as TileMapLayer;
-				backgroundDuplicate.Position = new Vector2(x * _width, y * _height);
-				AddChild(backgroundDuplicate);
-				_duplicatedLayers.Add(backgroundDuplicate);
-				var foregroundDuplicate = ForegroundLayer.Duplicate() as TileMapLayer;
-				foregroundDuplicate.Position = new Vector2(x * _width, y * _height);
-				AddChild(foregroundDuplicate);
-				_duplicatedLayers.Add(foregroundDuplicate);
-			}
-		}
+		// TODO: its likely better to fake this with just copied tiles or shaders....
+		// for (int x = -1; x < 2; x++)
+		// {
+		// 	for (int y = -1; y < 2; y++)
+		// 	{
+		// 		if (x == 0 && y == 0) continue;
+		// 		var backgroundDuplicate = BackgroundLayer.Duplicate() as TileMapLayer;
+		// 		backgroundDuplicate.Position = new Vector2(x * _width, y * _height);
+		// 		AddChild(backgroundDuplicate);
+		// 		_duplicatedLayers.Add(backgroundDuplicate);
+		// 		var foregroundDuplicate = ForegroundLayer.Duplicate() as TileMapLayer;
+		// 		foregroundDuplicate.Position = new Vector2(x * _width, y * _height);
+		// 		AddChild(foregroundDuplicate);
+		// 		_duplicatedLayers.Add(foregroundDuplicate);
+		// 	}
+		// }
 	}
 	public override void _ExitTree()
 	{
@@ -54,6 +55,7 @@ public partial class TilingManager : Node
 	}
 	public void Update(Player player)
 	{
+		// TODO: Doing this every frame is likely not optimal, consider event-based approach or something.
 		if (player == null) return;
 		if (!_worldRect.HasPoint(player.Position))
 		{
