@@ -1,4 +1,5 @@
 using Godot;
+using System.Collections.Generic;
 /// <summary>
 /// A manager for handling tiling of background elements.
 /// </summary>
@@ -6,20 +7,19 @@ public partial class TilingManager : Node
 {
 	[Export] public TileMapLayer ForegroundLayer { get; private set; }
 	[Export] public TileMapLayer BackgroundLayer { get; private set; }
-	private Rect2I _usedRect;
-	private Rect2 _worldRect; // Add this to store world coordinates
+	private Rect2 _usedRect;
+	private Rect2 _worldRect;
 	private float _width;
 	private float _height;
+	private readonly List<TileMapLayer> _duplicatedLayers = new();
 	public override void _Ready()
 	{
 		_usedRect = BackgroundLayer.GetUsedRect();
 		float tileSize = BackgroundLayer.TileSet.TileSize.X;
 		_width = _usedRect.Size.X * tileSize;
 		_height = _usedRect.Size.Y * tileSize;
-		// Calculate the world rect from tile coordinates
 		_worldRect = new Rect2(
-			_usedRect.Position.X * tileSize,
-			_usedRect.Position.Y * tileSize,
+			0, 0,
 			_width,
 			_height
 		);
@@ -28,20 +28,33 @@ public partial class TilingManager : Node
 			for (int y = -1; y < 2; y++)
 			{
 				if (x == 0 && y == 0) continue;
-				var fakeTileMaps = BackgroundLayer.Duplicate() as TileMapLayer;
-				fakeTileMaps.Position = new Vector2(x * _width, y * _height);
-				AddChild(fakeTileMaps);
-				fakeTileMaps = ForegroundLayer.Duplicate() as TileMapLayer;
-				fakeTileMaps.Position = new Vector2(x * _width, y * _height);
-				AddChild(fakeTileMaps);
+				var backgroundDuplicate = BackgroundLayer.Duplicate() as TileMapLayer;
+				backgroundDuplicate.Position = new Vector2(x * _width, y * _height);
+				AddChild(backgroundDuplicate);
+				_duplicatedLayers.Add(backgroundDuplicate);
+				var foregroundDuplicate = ForegroundLayer.Duplicate() as TileMapLayer;
+				foregroundDuplicate.Position = new Vector2(x * _width, y * _height);
+				AddChild(foregroundDuplicate);
+				_duplicatedLayers.Add(foregroundDuplicate);
 			}
 		}
+	}
+	public override void _ExitTree()
+	{
+		// Properly dispose of duplicated layers to prevent memory leaks
+		foreach (var layer in _duplicatedLayers)
+		{
+			if (IsInstanceValid(layer))
+			{
+				layer.QueueFree();
+			}
+		}
+		_duplicatedLayers.Clear();
+		base._ExitTree();
 	}
 	public void Update(Player player)
 	{
 		if (player == null) return;
-
-		// Now compare with world coordinates
 		if (!_worldRect.HasPoint(player.Position))
 		{
 			if (player.Position.X < _worldRect.Position.X)

@@ -1,20 +1,20 @@
 [gd_scene load_steps=22 format=4 uid="uid://ddn3j7obdlhp4"]
 
 [ext_resource type="Script" uid="uid://mevgk8q6vius" path="res://Scripts/Main.cs" id="1_r150o"]
-[ext_resource type="Texture2D" uid="uid://beyhjho4nqbqd" path="res://Resources/TILESET/PixelPackTOPDOWN8BIT.png" id="2_idj7w"]
+[ext_resource type="Texture2D" uid="uid://cwibxw26xjypy" path="res://Resources/TILESET/PixelPackTOPDOWN8BIT.png" id="2_idj7w"]
 [ext_resource type="Texture2D" uid="uid://dnnly3f0nl6xk" path="res://Resources/SPRITES/HEROS/spritesheets/HEROS8bit_Adventurer Idle D.png" id="2_kln2b"]
 [ext_resource type="PackedScene" uid="uid://bykyt1m4a7fdw" path="res://Scenes/Mobs/BlobMob.tscn" id="2_v1gob"]
 [ext_resource type="PackedScene" uid="uid://hnpjt4v7lhd0" path="res://Scenes/Mobs/NegaBlobMob.tscn" id="3_frkhe"]
 [ext_resource type="PackedScene" uid="uid://wnqc80wplhnk" path="res://Scenes/Player.tscn" id="3_jw32o"]
 [ext_resource type="Script" uid="uid://rgb7rqek37ym" path="res://Scripts/EditorOnly.cs" id="3_rgh2o"]
 [ext_resource type="PackedScene" uid="uid://b4jpqjanerag8" path="res://Scenes/Mobs/SnakeMob.tscn" id="4_1p5hy"]
-[ext_resource type="PackedScene" uid="uid://cyfiamvtba675" path="res://Scenes/Equipment/Items/Potion.tscn" id="4_4kpch"]
 [ext_resource type="LabelSettings" uid="uid://dae0ujns4cmco" path="res://Main.tres" id="4_jw32o"]
 [ext_resource type="Script" uid="uid://c00j7j5oyrhs0" path="res://Scripts/Ui.cs" id="5_bmxlf"]
+[ext_resource type="PackedScene" uid="uid://cyfiamvtba675" path="res://Scenes/Pickups/Items/Potion.tscn" id="5_h1m7h"]
+[ext_resource type="PackedScene" uid="uid://o2mrjgg3orjj" path="res://Scenes/Pickups/Items/Poison.tscn" id="6_erwvk"]
 [ext_resource type="Script" uid="uid://chn716ejtgbig" path="res://Scripts/TilingManager.cs" id="7_h1m7h"]
 [ext_resource type="TileSet" uid="uid://c1okyqiwq2m7e" path="res://Resources/Tileset.tres" id="7_jw32o"]
 [ext_resource type="PackedScene" uid="uid://dbeepstjbey3p" path="res://Scenes/Menu.tscn" id="9_vy5pj"]
-[ext_resource type="PackedScene" uid="uid://o2mrjgg3orjj" path="res://Scenes/Equipment/Items/Poison.tscn" id="12_grg3l"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_rgh2o"]
 atlas = ExtResource("2_kln2b")
@@ -564,7 +564,7 @@ _startTimer = NodePath("Timers/StartingTimer")
 MobScenes = Array[PackedScene]([ExtResource("2_v1gob"), ExtResource("3_frkhe"), ExtResource("4_1p5hy")])
 _mobPath = NodePath("SpawnPath")
 _mobSpawner = NodePath("SpawnPath/Spawner")
-PickupScenes = Array[PackedScene]([ExtResource("4_4kpch"), ExtResource("12_grg3l")])
+PickupScenes = Array[PackedScene]([ExtResource("5_h1m7h"), ExtResource("6_erwvk")])
 _pickupPath = NodePath("PickUpPath")
 _pickupSpawner = NodePath("PickUpPath/PickupSpawner")
 

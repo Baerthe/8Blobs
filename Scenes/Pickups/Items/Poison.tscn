@@ -1,7 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://o2mrjgg3orjj"]
+[gd_scene load_steps=5 format=3 uid="uid://o2mrjgg3orjj"]
 
 [ext_resource type="Script" uid="uid://cukkdupyb6b48" path="res://Scripts/Equipment/Items/Potion.cs" id="1_f0xbb"]
-[ext_resource type="Texture2D" uid="uid://bsy6ousx5paio" path="res://Resources/SPRITES/ITEMS/item8BIT_poison.png" id="2_f0xbb"]
+[ext_resource type="Texture2D" uid="uid://58ds5rh2t15a" path="res://Resources/SPRITES/ITEMS/item8BIT_skull.png" id="2_a27s3"]
+
+[sub_resource type="Resource" id="Resource_ihrcw"]
+metadata/__load_path__ = "res://Resources/SPRITES/ITEMS/item8BIT_poison.png"
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_enuh2"]
 radius = 8.0
@@ -15,10 +18,10 @@ freeze = true
 script = ExtResource("1_f0xbb")
 ItemName = "Toxic Poison"
 ItemDescription = "A poison that damages health."
-Icon = ExtResource("2_f0xbb")
+Icon = SubResource("Resource_ihrcw")
+HealAmount = -2
 Sprite = NodePath("Sprite2D")
 HitBox = NodePath("CollisionShape2D")
-HealAmount = -2
 metadata/_edit_group_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
@@ -26,7 +29,7 @@ z_index = 1
 y_sort_enabled = true
 texture_filter = 1
 scale = Vector2(0.5, 0.5)
-texture = ExtResource("2_f0xbb")
+texture = ExtResource("2_a27s3")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_enuh2")
