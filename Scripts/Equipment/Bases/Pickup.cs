@@ -15,4 +15,5 @@ public abstract partial class Pickup : RigidBody2D
     {
         PickUpSound.Play();
     }
+    public void MoveContent(Vector2 offset) =>Position += offset;
 }

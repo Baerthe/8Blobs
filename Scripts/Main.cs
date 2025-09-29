@@ -16,6 +16,7 @@ public partial class Main : Node2D
 	[Export] public Marker2D PlayerStart { get; private set; }
 	[Export] public Camera2D Camera { get; private set; }
 	[Export] public Ui Ui { get; private set; }
+	[Export] public TilingManager TilingManager { get; private set; }
 
 	[ExportSubgroup("Timers")]
 	[Export] private Timer _mobSpawnTimer;
@@ -25,6 +26,7 @@ public partial class Main : Node2D
 	[ExportGroup("Spawnables")]
 	[ExportSubgroup("Mobs")]
 	[Export] public PackedScene[] MobScenes { get; private set; }
+	[Export] private Path2D _mobPath;
 	[Export] private PathFollow2D _mobSpawner;
 	[ExportSubgroup("Pickups")]
 	[Export] public PackedScene[] PickupScenes { get; private set; }
@@ -32,21 +34,24 @@ public partial class Main : Node2D
 	[Export] private PathFollow2D _pickupSpawner;
 	private int _score = 0;
 	private float _timeElapsed = 0.0f;
-	private byte _mobPollRate = 10;
-	private byte _mobFrameCounter = 0;
+	private byte _skipPollRate = 10;
+	private byte _skipFrameCounter = 0;
 	private double _pickupTimerDefaultWaitTime;
 	private Vector2 _distantBetweenPickupAndPlayer;
+	private Vector2 _distantBetweenMobAndPlayer;
 	private bool _isGameOver = false;
+	private bool _isGameStarted = false;
 	public override void _Ready()
 	{
 		_distantBetweenPickupAndPlayer = Player.Position - _pickupPath.Position;
+		_distantBetweenMobAndPlayer = Player.Position - _mobPath.Position;
 		_pickupTimerDefaultWaitTime = _pickupSpawnTimer.WaitTime;
-		Camera.Position = Player.Position;
 		Menu.Show();
 	}
 	public override void _Process(double delta)
 	{
 		Ui.Update(delta, Player.Health, _score, _isGameOver);
+		if (!_isGameStarted) return;
 		if (_isGameOver)
 		{
 			GameOver();
@@ -54,12 +59,15 @@ public partial class Main : Node2D
 		else
 		{
 			Camera.Position = Player.Position;
-			_pickupPath.Position = Player.Position - _distantBetweenPickupAndPlayer;
-			_mobFrameCounter++;
-			if (_mobFrameCounter >= _mobPollRate)
+			// Only update some things every few frames to save on performance
+			_skipFrameCounter++;
+			if (_skipFrameCounter >= _skipPollRate)
 			{
-				_mobFrameCounter = 0;
+				_skipFrameCounter = 0;
+				_pickupPath.Position = Player.Position - _distantBetweenPickupAndPlayer;
+				_mobPath.Position = Player.Position - _distantBetweenMobAndPlayer;
 				GetTree().CallGroup("Mobs", "Update", Player);
+				TilingManager.Update(Player);
 			}
 		}
 		if (delta > 0)
@@ -76,6 +84,7 @@ public partial class Main : Node2D
 	}
 	public void NewGame()
 	{
+		_isGameStarted = true;
 		_isGameOver = false;
 		Menu.Hide();
 		Player.Start(PlayerStart.Position);

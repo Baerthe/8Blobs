@@ -42,6 +42,7 @@ public abstract partial class Mob : RigidBody2D
             LinearVelocity = LinearVelocity * 0.95f + directionToPlayer * Speed * 0.5f;
         }
     }
+    public void MoveContent(Vector2 offset) =>Position += offset;
     public void Spawn(Vector2 playerPosition, PathFollow2D spawner)
     {
         Position = spawner.GlobalPosition;
