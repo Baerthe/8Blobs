@@ -130,9 +130,12 @@ public partial class Player : CharacterBody2D
 			OnPickUp(pickup);
 			return;
 		}
-		if (body is Mob mob)
+		if (body is Mob mob || body is Trap trap)
 		{
-			_health -= 1;
+			if (body is Mob)
+				_health -= 1;
+			else if (body is Trap)
+				_health -= ((Trap)body).Damage;
 			_hitBox2D.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
 			ImmunityFrames();
 		}

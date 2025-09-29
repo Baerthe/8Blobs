@@ -1,9 +1,9 @@
 [gd_scene load_steps=16 format=3 uid="uid://hnpjt4v7lhd0"]
 
 [ext_resource type="Script" uid="uid://cequpayj1ldbg" path="res://Scripts/Mobs/Blob.cs" id="1_7omjo"]
-[ext_resource type="Texture2D" uid="uid://c2ouv83fp1rgn" path="res://Resources/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_NegaBlob Death.png" id="2_7omjo"]
-[ext_resource type="Texture2D" uid="uid://ctqxvq5eh4fae" path="res://Resources/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_NegaBlob Hurt.png" id="3_18yxe"]
-[ext_resource type="Texture2D" uid="uid://r3buyx52oar8" path="res://Resources/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_NegaBlob Walk.png" id="4_ks6cm"]
+[ext_resource type="Texture2D" uid="uid://b3vws7ttw5xdl" path="res://Resources/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_NegaBlob Death.png" id="2_7omjo"]
+[ext_resource type="Texture2D" uid="uid://dkgi704fts3lk" path="res://Resources/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_NegaBlob Hurt.png" id="3_18yxe"]
+[ext_resource type="Texture2D" uid="uid://dohqb7ai20r6k" path="res://Resources/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_NegaBlob Walk.png" id="4_ks6cm"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_bn3dx"]
 atlas = ExtResource("2_7omjo")
@@ -89,7 +89,7 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_76m6r"]
 radius = 6.0
 
-[node name="BlobMob" type="RigidBody2D" node_paths=PackedStringArray("_sprite2D", "_collision2D", "_notifier2D") groups=["Mobs"]]
+[node name="NegaBlobMob" type="RigidBody2D" node_paths=PackedStringArray("_sprite2D", "_collision2D", "_notifier2D") groups=["Mobs"]]
 editor_description = "The Blob Mob, weakest type."
 collision_layer = 2
 collision_mask = 5
@@ -97,7 +97,7 @@ gravity_scale = 0.0
 lock_rotation = true
 script = ExtResource("1_7omjo")
 MovementType = 1
-Speed = 8
+Speed = 14
 _sprite2D = NodePath("AnimatedSprite2D")
 _collision2D = NodePath("CollisionShape2D")
 _notifier2D = NodePath("VisibleOnScreenNotifier2D")

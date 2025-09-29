@@ -6,12 +6,14 @@ using Godot;
 public abstract partial class Mob : RigidBody2D
 {
     [ExportCategory("Statistics")]
-    [Export] public MobMovement MovementType { get; private set; } = MobMovement.LinearDirection;
+    [Export] public MobMovement MovementType { get; private set; } = MobMovement.CurvedDirection;
     [Export] public int Speed { get; set; } = 100;
     [ExportCategory("Parts")]
     [Export] private AnimatedSprite2D _sprite2D;
     [Export] private CollisionShape2D _collision2D;
     [Export] private VisibleOnScreenNotifier2D _notifier2D;
+    private const float _OutOfScreenTimeToDie = 10.0f;
+    private bool _ifOffScreen = false;
     public override void _Ready()
     {
         _sprite2D.Animation = "Walk";
@@ -19,34 +21,25 @@ public abstract partial class Mob : RigidBody2D
     public override void _Process(double delta)
     {
         _sprite2D.Play();
-        // Handle movement based on type
-        switch (MovementType)
-        {
-            case MobMovement.LinearDirection:
-                // Already handled by physics engine
-                break;
-            case MobMovement.PlayerAttracted:
-                // Move towards player (not implemented)
-                break;
-            case MobMovement.RandomDirection:
-                // Change direction randomly (not implemented)
-                break;
-            default:
-                break;
-        }
     }
     public void Update(Player player)
     {
         if (player == null) return;
+        Vector2 directionToPlayer = (player.Position - GlobalPosition).Normalized();
         if (MovementType == MobMovement.PlayerAttracted)
         {
-            Vector2 directionToPlayer = (player.Position - GlobalPosition).Normalized();
             LinearVelocity = directionToPlayer * Speed;
             return;
-        } else if (MovementType == MobMovement.RandomDirection)
+        }
+        else if (MovementType == MobMovement.RandomDirection)
         {
             LinearVelocity = LinearVelocity.Rotated((float)GD.RandRange(-0.1, 0.1));
             return;
+        }
+        else
+        {
+            directionToPlayer = directionToPlayer.Rotated((float)GD.RandRange(-0.05, 0.05));
+            LinearVelocity = LinearVelocity * 0.95f + directionToPlayer * Speed * 0.5f;
         }
     }
     public void Spawn(Vector2 playerPosition, PathFollow2D spawner)
@@ -72,14 +65,24 @@ public abstract partial class Mob : RigidBody2D
     }
     public enum MobMovement : byte
     {
-        LinearDirection,
+        CurvedDirection,
         PlayerAttracted,
         RandomDirection
     }
     private void OnSceneExit()
     {
-        if (LinearVelocity.Length() < 10)
-            Death();
+        _ifOffScreen = true;
+        var timer = new Timer();
+        timer.Autostart = true;
+        timer.WaitTime = _OutOfScreenTimeToDie;
+        timer.OneShot = true;
+        AddChild(timer);
+        timer.Timeout += () =>
+        {
+            if (_ifOffScreen)
+                Death();
+        };
+        timer.Dispose();
     }
     private void Death()
     {
