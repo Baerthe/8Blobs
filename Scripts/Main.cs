@@ -6,6 +6,7 @@ using Mobs;
 /// </summary>
 /// <remarks>
 /// This will need to be broken down into a level class eventually and proper game management.
+/// Should move to godot's variation on Singletons using AutoLoad, etc.
 /// </remarks>
 public partial class Main : Node2D
 {
