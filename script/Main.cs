@@ -2,7 +2,7 @@ using Equipment;
 using Godot;
 using Mobs;
 /// <summary>
-/// The main class that handles the game logic, including spawning mobs and managing the game state.
+/// The main class that handles the game logic, including spawning mobs and managing the game state. Primarily used as a orchestration point for dependency injection.
 /// </summary>
 /// <remarks>
 /// This will need to be broken down into a level class eventually and proper game management.
@@ -17,8 +17,6 @@ public partial class Main : Node2D
 	[Export] public Marker2D PlayerStart { get; private set; }
 	[Export] public Camera2D Camera { get; private set; }
 	[Export] public Ui Ui { get; private set; }
-	[Export] public TilingManager TilingManager { get; private set; }
-
 	[ExportSubgroup("Timers")]
 	[Export] private Timer _mobSpawnTimer;
 	[Export] private Timer _pickupSpawnTimer;
@@ -33,6 +31,11 @@ public partial class Main : Node2D
 	[Export] public PackedScene[] PickupScenes { get; private set; }
 	[Export] private Path2D _pickupPath;
 	[Export] private PathFollow2D _pickupSpawner;
+	// Singletons, but not AutoLoad, so we can control initialization order
+	private static TilingManager _tilingManager { get; set; }
+	private static GameManager _gameManager { get; set; }
+	// Game state
+	// TODO: Move to a GameState class singleton
 	private int _score = 0;
 	private float _timeElapsed = 0.0f;
 	private byte _skipPollRate = 10;
@@ -40,10 +43,16 @@ public partial class Main : Node2D
 	private double _pickupTimerDefaultWaitTime;
 	private Vector2 _distantBetweenPickupAndPlayer;
 	private Vector2 _distantBetweenMobAndPlayer;
+	// Flags
 	private bool _isGameOver = false;
 	private bool _isGameStarted = false;
 	public override void _Ready()
 	{
+		NullCheck();
+		_tilingManager = new TilingManager();
+		AddChild(_tilingManager);
+		_gameManager = new GameManager();
+		_tilingManager.LoadTiles();
 		_distantBetweenPickupAndPlayer = Player.Position - _pickupPath.Position;
 		_distantBetweenMobAndPlayer = Player.Position - _mobPath.Position;
 		_pickupTimerDefaultWaitTime = _pickupSpawnTimer.WaitTime;
@@ -68,7 +77,6 @@ public partial class Main : Node2D
 				_pickupPath.Position = Player.Position - _distantBetweenPickupAndPlayer;
 				_mobPath.Position = Player.Position - _distantBetweenMobAndPlayer;
 				GetTree().CallGroup("Mobs", "Update", Player);
-				TilingManager.Update(Player);
 			}
 		}
 		if (delta > 0)
@@ -100,6 +108,24 @@ public partial class Main : Node2D
 	{
 		GetTree().CallGroup("Mobs", "Death");
 		GetTree().CallGroup("Pickups", Node.MethodName.QueueFree);
+	}
+	private void NullCheck()
+	{
+		if (Player == null) GD.PrintErr("Player not set in Main");
+		if (PlayerStart == null) GD.PrintErr("PlayerStart not set in Main");
+		if (Camera == null) GD.PrintErr("Camera not set in Main");
+		if (Ui == null) GD.PrintErr("Ui not set in Main");
+		if (_mobSpawnTimer == null) GD.PrintErr("MobSpawnTimer not set in Main");
+		if (_pickupSpawnTimer == null) GD.PrintErr("PickupSpawnTimer not set in Main");
+		if (_scoreTimer == null) GD.PrintErr("ScoreTimer not set in Main");
+		if (_startTimer == null) GD.PrintErr("StartTimer not set in Main");
+		if (MobScenes == null || MobScenes.Length == 0) GD.PrintErr("MobScenes not set in Main");
+		if (_mobPath == null) GD.PrintErr("MobPath not set in Main");
+		if (_mobSpawner == null) GD.PrintErr("MobSpawner not set in Main");
+		if (PickupScenes == null || PickupScenes.Length == 0) GD.PrintErr("PickupScenes not set in Main");
+		if (_pickupPath == null) GD.PrintErr("PickupPath not set in Main");
+		if (_pickupSpawner == null) GD.PrintErr("PickupSpawner not set in Main");
+		if (Menu == null) GD.PrintErr("Menu not set in Main");
 	}
 	private void OnMobTimerTimeout()
 	{
