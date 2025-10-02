@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://o2mrjgg3orjj"]
 
-[ext_resource type="Script" uid="uid://cukkdupyb6b48" path="res://Scripts/Equipment/Items/Potion.cs" id="1_f0xbb"]
-[ext_resource type="Texture2D" uid="uid://58ds5rh2t15a" path="res://Resources/SPRITES/ITEMS/item8BIT_skull.png" id="2_a27s3"]
+[ext_resource type="Script" uid="uid://cukkdupyb6b48" path="res://script/pickups/items/Potion.cs" id="1_f0xbb"]
+[ext_resource type="Texture2D" uid="uid://0g8vu2vheqgn" path="res://res/SPRITES/ITEMS/item8BIT_skull.png" id="2_a27s3"]
 
 [sub_resource type="Resource" id="Resource_ihrcw"]
 metadata/__load_path__ = "res://Resources/SPRITES/ITEMS/item8BIT_poison.png"

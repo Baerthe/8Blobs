@@ -49,7 +49,7 @@ public partial class Main : Node2D
 	public override void _Ready()
 	{
 		NullCheck();
-		_tilingManager = new TilingManager();
+		_tilingManager = new TilingManager(GetNode<TileMapLayer>("ForegroundLayer"), GetNode<TileMapLayer>("BackgroundLayer"));
 		AddChild(_tilingManager);
 		_gameManager = new GameManager();
 		_tilingManager.LoadTiles();
@@ -60,6 +60,7 @@ public partial class Main : Node2D
 	}
 	public override void _Process(double delta)
 	{
+		_tilingManager.PlayerCrossedBorder(Player);
 		Ui.Update(delta, Player.Health, _score, _isGameOver);
 		if (!_isGameStarted) return;
 		if (_isGameOver)

@@ -1,6 +1,6 @@
 [gd_resource type="LabelSettings" load_steps=2 format=3 uid="uid://dae0ujns4cmco"]
 
-[ext_resource type="FontFile" uid="uid://itov3w6t5nle" path="res://Resources/FONTS/MINI 7 Bold.ttf" id="1_c8bph"]
+[ext_resource type="FontFile" uid="uid://dwdk3r1h7ap2h" path="res://res/FONTS/MINI 7 Bold.ttf" id="1_c8bph"]
 
 [resource]
 line_spacing = 4.0

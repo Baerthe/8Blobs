@@ -23,6 +23,8 @@ res://.import/
 res://.mono/
 res://.godot/
 Resources/
+Res/
+res/
 
 # .NET
 bin/

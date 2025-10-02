@@ -1,9 +1,9 @@
 [gd_scene load_steps=16 format=3 uid="uid://hnpjt4v7lhd0"]
 
-[ext_resource type="Script" uid="uid://cequpayj1ldbg" path="res://Scripts/Mobs/Blob.cs" id="1_7omjo"]
-[ext_resource type="Texture2D" uid="uid://b3vws7ttw5xdl" path="res://Resources/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_NegaBlob Death.png" id="2_7omjo"]
-[ext_resource type="Texture2D" uid="uid://dkgi704fts3lk" path="res://Resources/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_NegaBlob Hurt.png" id="3_18yxe"]
-[ext_resource type="Texture2D" uid="uid://dohqb7ai20r6k" path="res://Resources/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_NegaBlob Walk.png" id="4_ks6cm"]
+[ext_resource type="Script" uid="uid://cequpayj1ldbg" path="res://script/mobs/Blob.cs" id="1_7omjo"]
+[ext_resource type="Texture2D" uid="uid://bwddkv8svps51" path="res://res/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_Blob Death.png" id="2_7omjo"]
+[ext_resource type="Texture2D" uid="uid://8ia3vcsbbov2" path="res://res/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_Blob Hurt.png" id="3_18yxe"]
+[ext_resource type="Texture2D" uid="uid://c2kbdkw4v7l0u" path="res://res/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_Blob Walk.png" id="4_ks6cm"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_bn3dx"]
 atlas = ExtResource("2_7omjo")

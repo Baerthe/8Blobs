@@ -1,10 +1,10 @@
 [gd_scene load_steps=7 format=3 uid="uid://dbeepstjbey3p"]
 
-[ext_resource type="Script" uid="uid://0l280xdpklsp" path="res://Scripts/Menu.cs" id="1_6pedr"]
+[ext_resource type="Script" uid="uid://0l280xdpklsp" path="res://script/Menu.cs" id="1_6pedr"]
 [ext_resource type="LabelSettings" uid="uid://dae0ujns4cmco" path="res://Main.tres" id="2_syfuq"]
 [ext_resource type="Theme" uid="uid://cih5xv4c26sce" path="res://MainTheme.tres" id="3_s2c3o"]
-[ext_resource type="Texture2D" uid="uid://ccyg8flwjy4xi" path="res://Resources/SPRITES/ITEMS/item8BIT_gem.png" id="4_ma218"]
-[ext_resource type="Texture2D" uid="uid://58ds5rh2t15a" path="res://Resources/SPRITES/ITEMS/item8BIT_skull.png" id="5_ma218"]
+[ext_resource type="Texture2D" uid="uid://xs14vhmcqc3m" path="res://res/SPRITES/ITEMS/item8BIT_gem.png" id="4_ma218"]
+[ext_resource type="Texture2D" uid="uid://0g8vu2vheqgn" path="res://res/SPRITES/ITEMS/item8BIT_skull.png" id="5_ma218"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s2c3o"]
 
@@ -16,6 +16,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("3_s2c3o")
 script = ExtResource("1_6pedr")
 _startButton = NodePath("StartButton")
 _quitButton = NodePath("QuitButton")

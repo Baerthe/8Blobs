@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://cyfiamvtba675"]
 
-[ext_resource type="Script" uid="uid://cukkdupyb6b48" path="res://Scripts/Equipment/Items/Potion.cs" id="1_jo71i"]
-[ext_resource type="Texture2D" uid="uid://jp4fkvruss8k" path="res://Resources/SPRITES/ITEMS/item8BIT_potion.png" id="2_4w3vy"]
+[ext_resource type="Script" uid="uid://cukkdupyb6b48" path="res://script/pickups/items/Potion.cs" id="1_jo71i"]
+[ext_resource type="Texture2D" uid="uid://c75nvduymsf3e" path="res://res/SPRITES/ITEMS/item8BIT_potion.png" id="2_4w3vy"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_enuh2"]
 radius = 8.0

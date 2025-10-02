@@ -1,9 +1,9 @@
 [gd_scene load_steps=16 format=3 uid="uid://b4jpqjanerag8"]
 
-[ext_resource type="Script" uid="uid://cequpayj1ldbg" path="res://Scripts/Mobs/Blob.cs" id="1_0k4n2"]
-[ext_resource type="Texture2D" uid="uid://b8fk8kmoy2jtx" path="res://Resources/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_Snake Death.png" id="2_0k4n2"]
-[ext_resource type="Texture2D" uid="uid://bdkhh17s8hrg" path="res://Resources/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_Snake Idle U.png" id="3_u7jyt"]
-[ext_resource type="Texture2D" uid="uid://bkpyau26hvut3" path="res://Resources/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_Snake Walk D.png" id="4_32hku"]
+[ext_resource type="Script" uid="uid://cequpayj1ldbg" path="res://script/mobs/Blob.cs" id="1_0k4n2"]
+[ext_resource type="Texture2D" uid="uid://df10gsd8hxqss" path="res://res/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_Snake Death.png" id="2_0k4n2"]
+[ext_resource type="Texture2D" uid="uid://ddjdc33yvguci" path="res://res/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_Snake Idle U.png" id="3_u7jyt"]
+[ext_resource type="Texture2D" uid="uid://cnw8lje4vyw80" path="res://res/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_Snake Walk D.png" id="4_32hku"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3x6lg"]
 atlas = ExtResource("2_0k4n2")
