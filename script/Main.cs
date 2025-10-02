@@ -49,10 +49,9 @@ public partial class Main : Node2D
 	public override void _Ready()
 	{
 		NullCheck();
+		_gameManager = new GameManager(Player, Ui);
 		_tilingManager = new TilingManager(GetNode<TileMapLayer>("ForegroundLayer"), GetNode<TileMapLayer>("BackgroundLayer"));
 		AddChild(_tilingManager);
-		_gameManager = new GameManager();
-		_tilingManager.LoadTiles();
 		_distantBetweenPickupAndPlayer = Player.Position - _pickupPath.Position;
 		_distantBetweenMobAndPlayer = Player.Position - _mobPath.Position;
 		_pickupTimerDefaultWaitTime = _pickupSpawnTimer.WaitTime;
@@ -60,7 +59,6 @@ public partial class Main : Node2D
 	}
 	public override void _Process(double delta)
 	{
-		_tilingManager.PlayerCrossedBorder(Player);
 		Ui.Update(delta, Player.Health, _score, _isGameOver);
 		if (!_isGameStarted) return;
 		if (_isGameOver)
@@ -78,6 +76,7 @@ public partial class Main : Node2D
 				_pickupPath.Position = Player.Position - _distantBetweenPickupAndPlayer;
 				_mobPath.Position = Player.Position - _distantBetweenMobAndPlayer;
 				GetTree().CallGroup("Mobs", "Update", Player);
+				_tilingManager.PlayerCrossedBorder(Player);
 			}
 		}
 		if (delta > 0)
@@ -164,6 +163,7 @@ public partial class Main : Node2D
 	private void OnMenuStartGame()
 	{
 		NewGame();
+		_tilingManager.LoadTiles();
 	}
 	private void OnPlayerDeath()
 	{

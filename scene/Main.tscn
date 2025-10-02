@@ -569,7 +569,6 @@ position = Vector2(328, 328)
 top_level = true
 texture_filter = 1
 position = Vector2(128, 120)
-zoom = Vector2(0.5, 0.5)
 
 [node name="Ui" type="CanvasLayer" parent="Player/Camera2D" node_paths=PackedStringArray("_scoreLiteral", "_healthLiteral", "_middleScreenLabel", "_messageTimer")]
 layer = 2
