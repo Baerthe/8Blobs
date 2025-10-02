@@ -12,7 +12,6 @@ public abstract partial class Mob : RigidBody2D
     [Export] private AnimatedSprite2D _sprite2D;
     [Export] private CollisionShape2D _collision2D;
     [Export] private VisibleOnScreenNotifier2D _notifier2D;
-    private const float _OutOfScreenTimeToDie = 10.0f;
     private bool _ifOffScreen = false;
     public override void _Ready()
     {
@@ -39,10 +38,9 @@ public abstract partial class Mob : RigidBody2D
         else
         {
             directionToPlayer = directionToPlayer.Rotated((float)GD.RandRange(-0.05, 0.05));
-            LinearVelocity = LinearVelocity * 0.95f + directionToPlayer * Speed * 0.5f;
+            LinearVelocity = LinearVelocity * 0.95f + directionToPlayer * Speed;
         }
     }
-    public void MoveContent(Vector2 offset) =>Position += offset;
     public void Spawn(Vector2 playerPosition, PathFollow2D spawner)
     {
         Position = spawner.GlobalPosition;
@@ -70,29 +68,10 @@ public abstract partial class Mob : RigidBody2D
         PlayerAttracted,
         RandomDirection
     }
-    private void OnSceneExit()
-    {
-        _ifOffScreen = true;
-        var timer = new Timer();
-        timer.Autostart = true;
-        timer.WaitTime = _OutOfScreenTimeToDie;
-        timer.OneShot = true;
-        AddChild(timer);
-        timer.Timeout += () =>
-        {
-            if (_ifOffScreen)
-                Death();
-        };
-        timer.Dispose();
-    }
-    private void Death()
+    private async void Death()
     {
         _sprite2D.Animation = "Death";
         _collision2D.Disabled = true;
-        RemoveAfterAnimation();
-    }
-    private async void RemoveAfterAnimation()
-    {
         await ToSignal(_sprite2D, "animation_finished");
         QueueFree();
     }

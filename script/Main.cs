@@ -33,8 +33,7 @@ public partial class Main : Node2D
 	[Export] public PackedScene[] PickupScenes { get; private set; }
 	[Export] private Path2D _pickupPath;
 	[Export] private PathFollow2D _pickupSpawner;
-	// Managers
-	// Singletons, but not AutoLoad, so we can control initialization order
+	// Managers Singletons
 	private static ITilingManager _tilingManager { get; set; }
 	private static IGameManager _gameManager { get; set; }
 	// Game state
@@ -51,13 +50,14 @@ public partial class Main : Node2D
 	public override void _Ready()
 	{
 		NullCheck();
-		_gameManager = new GameManager(Player, Ui);
-		_tilingManager = new TilingManager(GetNode<TileMapLayer>("ForegroundLayer"), GetNode<TileMapLayer>("BackgroundLayer"));
-		AddChild(_tilingManager);
 		_distantBetweenPickupAndPlayer = Player.Position - _pickupPath.Position;
 		_distantBetweenMobAndPlayer = Player.Position - _mobPath.Position;
 		_pickupTimerDefaultWaitTime = _pickupSpawnTimer.WaitTime;
-		Menu.Show();
+		_gameManager = new GameManager(Ui, _distantBetweenPickupAndPlayer, _distantBetweenMobAndPlayer);
+		_tilingManager = new TilingManager(GetNode<TileMapLayer>("ForegroundLayer"), GetNode<TileMapLayer>("BackgroundLayer"));
+		AddChild(_gameManager as Node);
+		AddChild(_tilingManager as Node);
+		_gameManager.MenuShow();
 	}
 	public override void _Process(double delta)
 	{

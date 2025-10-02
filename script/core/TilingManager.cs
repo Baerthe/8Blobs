@@ -19,6 +19,7 @@ public sealed partial class TilingManager : Node, ITilingManager
 		_foregroundLayer = foreground;
 		_backgroundLayer = background;
 	}
+	public Rect2 GetWorldRect() => _worldRect;
 	public void LoadTiles()
 	{
 		if (_foregroundLayer == null || _backgroundLayer == null)

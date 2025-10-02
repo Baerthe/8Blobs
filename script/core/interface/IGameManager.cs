@@ -6,8 +6,10 @@ using Godot;
 /// </summary>
 public interface IGameManager
 {
-    void StartGame();
-    void EndGame();
+    void InitGame();
     void ResetGame();
-    float GetTimeElapsed();
+    void MenuShow();
+    void MenuHide();
+    void StartPulseTimer();
+    void StopPulseTimer();
 }
