@@ -1,5 +1,5 @@
+namespace Core;
 using Godot;
-using System.Collections.Generic;
 
 /// <summary>
 /// A manager for handling game state and logic.

@@ -1,10 +1,11 @@
+namespace Core;
+using Core.Interface;
 using Godot;
-using System;
 using System.Collections.Generic;
 /// <summary>
 /// A manager for handling tiling of scene map elements. Has to be a Node to be able to affect other Nodes in the scene tree.
 /// </summary>
-public sealed partial class TilingManager : Node
+public sealed partial class TilingManager : Node, ITilingManager
 {
 	private TileMapLayer _foregroundLayer;
 	private TileMapLayer _backgroundLayer;

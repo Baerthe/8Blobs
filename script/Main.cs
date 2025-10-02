@@ -1,8 +1,10 @@
 using Equipment;
 using Godot;
 using Mobs;
+using Core;
+using Core.Interface;
 /// <summary>
-/// The main class that handles the game logic, including spawning mobs and managing the game state. Primarily used as a orchestration point for dependency injection.
+/// The main class that handles orchestratesion and dependency management of the game.
 /// </summary>
 /// <remarks>
 /// This will need to be broken down into a level class eventually and proper game management.
@@ -31,11 +33,11 @@ public partial class Main : Node2D
 	[Export] public PackedScene[] PickupScenes { get; private set; }
 	[Export] private Path2D _pickupPath;
 	[Export] private PathFollow2D _pickupSpawner;
+	// Managers
 	// Singletons, but not AutoLoad, so we can control initialization order
-	private static TilingManager _tilingManager { get; set; }
-	private static GameManager _gameManager { get; set; }
+	private static ITilingManager _tilingManager { get; set; }
+	private static IGameManager _gameManager { get; set; }
 	// Game state
-	// TODO: Move to a GameState class singleton
 	private int _score = 0;
 	private float _timeElapsed = 0.0f;
 	private byte _skipPollRate = 10;
