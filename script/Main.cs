@@ -36,32 +36,32 @@ public partial class Main : Node2D
 	// Managers Singletons
 	private static ITilingManager _tilingManager { get; set; }
 	private static IGameManager _gameManager { get; set; }
-	// Game state
-	private int _score = 0;
-	private float _timeElapsed = 0.0f;
-	private byte _skipPollRate = 10;
-	private byte _skipFrameCounter = 0;
-	private double _pickupTimerDefaultWaitTime;
-	private Vector2 _distantBetweenPickupAndPlayer;
-	private Vector2 _distantBetweenMobAndPlayer;
 	// Flags
 	private bool _isGameOver = false;
 	private bool _isGameStarted = false;
+	private double _delta;
 	public override void _Ready()
 	{
+		// Do we have everything?
 		NullCheck();
-		_distantBetweenPickupAndPlayer = Player.Position - _pickupPath.Position;
-		_distantBetweenMobAndPlayer = Player.Position - _mobPath.Position;
-		_pickupTimerDefaultWaitTime = _pickupSpawnTimer.WaitTime;
+		// Setup variables
+		var _distantBetweenPickupAndPlayer = Player.Position - _pickupPath.Position;
+		var _distantBetweenMobAndPlayer = Player.Position - _mobPath.Position;
+		var _pickupTimerDefaultWaitTime = _pickupSpawnTimer.WaitTime;
+		// Setup managers
 		_gameManager = new GameManager(Ui, _distantBetweenPickupAndPlayer, _distantBetweenMobAndPlayer);
 		_tilingManager = new TilingManager(GetNode<TileMapLayer>("ForegroundLayer"), GetNode<TileMapLayer>("BackgroundLayer"));
+		// Register to signals
+		_gameManager.PulseTimeout += onPulse;
+		// Time for some kids.
 		AddChild(_gameManager as Node);
 		AddChild(_tilingManager as Node);
+		// Main menu is ready to go.
 		_gameManager.MenuShow();
 	}
 	public override void _Process(double delta)
 	{
-		Ui.Update(delta, Player.Health, _score, _isGameOver);
+		_delta = delta;
 		if (!_isGameStarted) return;
 		if (_isGameOver)
 		{
@@ -128,6 +128,11 @@ public partial class Main : Node2D
 		if (_pickupPath == null) GD.PrintErr("PickupPath not set in Main");
 		if (_pickupSpawner == null) GD.PrintErr("PickupSpawner not set in Main");
 		if (Menu == null) GD.PrintErr("Menu not set in Main");
+	}
+	private void onPulse()
+	{
+		GD.Print("Pulse received in Main");
+		Ui.Update(_delta, Player.Health, _score, _isGameOver);
 	}
 	private void OnMobTimerTimeout()
 	{

@@ -1,11 +1,13 @@
 namespace Core;
 using Core.Interface;
+using System;
 using Godot;
 /// <summary>
 /// A manager for handling game state and logic.
 /// </summary>
-public sealed partial class GameManager : Node, IGameManager
+public sealed partial class GameManager : IGameManager
 {
+    public event Action PulseTimeout;
     public Vector2 OffsetBetweenPickupAndPlayer { get; private set; }
     public Vector2 OffsetBetweenMobAndPlayer { get; private set; }
     private Timer _pulseTimer;
@@ -40,10 +42,5 @@ public sealed partial class GameManager : Node, IGameManager
     public void SetPickupTimerDefaultWaitTime(double time) => _pickupTimerDefaultWaitTime = time;
     public void StartPulseTimer() => _pulseTimer.Start();
     public void StopPulseTimer() => _pulseTimer.Stop();
-    private void OnPulseTimeout()
-    {
-        // sends back to main that its time to update nodes that have an Update() method. Called every second.
-        
-        return;
-    }
+    private void OnPulseTimeout() => PulseTimeout?.Invoke();
 }
