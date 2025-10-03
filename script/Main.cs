@@ -3,12 +3,12 @@ using Godot;
 using Mobs;
 using Core;
 using Core.Interface;
+using System.Collections.Generic;
 /// <summary>
-/// The main class that handles orchestratesion and dependency management of the game.
+/// The main class that handles main orchestration and dependency management of the game.
 /// </summary>
 /// <remarks>
-/// This will need to be broken down into a level class eventually and proper game management.
-/// Should move to godot's variation on Singletons using AutoLoad, etc.
+/// This class is responsible for initializing and managing the core components of the game, including the player, UI, game state, and spawning of mobs and pickups. It also handles game state transitions such as starting a new game and game over scenarios.
 /// </remarks>
 public partial class Main : Node2D
 {
@@ -34,30 +34,24 @@ public partial class Main : Node2D
 	[Export] private Path2D _pickupPath;
 	[Export] private PathFollow2D _pickupSpawner;
 	// Managers Singletons
-	private static ITilingManager _tilingManager { get; set; }
-	private static IGameManager _gameManager { get; set; }
+	private static ITilingManager TilingManager { get; set; }
+	private static IGameManager GameManager { get; set; }
 	// Flags
 	private bool _isGameOver = false;
 	private bool _isGameStarted = false;
 	private double _delta;
+	// Engine Callbacks
 	public override void _Ready()
 	{
 		// Do we have everything?
 		NullCheck();
-		// Setup variables
-		var _distantBetweenPickupAndPlayer = Player.Position - _pickupPath.Position;
-		var _distantBetweenMobAndPlayer = Player.Position - _mobPath.Position;
-		var _pickupTimerDefaultWaitTime = _pickupSpawnTimer.WaitTime;
 		// Setup managers
-		_gameManager = new GameManager(Ui, _distantBetweenPickupAndPlayer, _distantBetweenMobAndPlayer);
-		_tilingManager = new TilingManager(GetNode<TileMapLayer>("ForegroundLayer"), GetNode<TileMapLayer>("BackgroundLayer"));
-		// Register to signals
-		_gameManager.PulseTimeout += onPulse;
+		GameManager = new GameManager();
+		TilingManager = new TilingManager(GetNode<TileMapLayer>("ForegroundLayer"), GetNode<TileMapLayer>("BackgroundLayer"));
+		// Register to the heartbeat pulse.
+		GameManager.PulseTimeout += onPulse;
 		// Time for some kids.
-		AddChild(_gameManager as Node);
-		AddChild(_tilingManager as Node);
-		// Main menu is ready to go.
-		_gameManager.MenuShow();
+		AddChild(TilingManager as Node);
 	}
 	public override void _Process(double delta)
 	{
@@ -67,23 +61,8 @@ public partial class Main : Node2D
 		{
 			GameOver();
 		}
-		else
-		{
-			Camera.Position = Player.Position;
-			// Only update some things every few frames to save on performance
-			_skipFrameCounter++;
-			if (_skipFrameCounter >= _skipPollRate)
-			{
-				_skipFrameCounter = 0;
-				_pickupPath.Position = Player.Position - _distantBetweenPickupAndPlayer;
-				_mobPath.Position = Player.Position - _distantBetweenMobAndPlayer;
-				GetTree().CallGroup("Mobs", "Update", Player);
-				_tilingManager.PlayerCrossedBorder(Player);
-			}
-		}
-		if (delta > 0)
-			_timeElapsed += (float)delta;
 	}
+	// Game state management
 	public void GameOver()
 	{
 		ClearScreen();
@@ -95,14 +74,22 @@ public partial class Main : Node2D
 	}
 	public void NewGame()
 	{
+		// Setup temporary variables
+		var distantBetweenPickupAndPlayer = Player.Position - _pickupPath.Position;
+		var distantBetweenMobAndPlayer = Player.Position - _mobPath.Position;
+		var pickupTimerDefaultWaitTime = _pickupSpawnTimer.WaitTime;
+		// Initialize game state
+		GameManager.InitGame(distantBetweenPickupAndPlayer, distantBetweenMobAndPlayer);
+		TilingManager.LoadTiles();
+		// Set flags
 		_isGameStarted = true;
 		_isGameOver = false;
+		// Reset player and menu
 		Menu.Hide();
 		Player.Start(PlayerStart.Position);
 		Camera.Position = Player.Position;
 		ClearScreen();
-		_timeElapsed = 0.0f;
-		_score = 0;
+		// Start level
 		_startTimer.Start();
 		Ui.NewGame(_startTimer.WaitTime);
 	}
@@ -111,6 +98,7 @@ public partial class Main : Node2D
 		GetTree().CallGroup("Mobs", "Death");
 		GetTree().CallGroup("Pickups", Node.MethodName.QueueFree);
 	}
+	// Utility methods
 	private void NullCheck()
 	{
 		if (Player == null) GD.PrintErr("Player not set in Main");
@@ -129,10 +117,15 @@ public partial class Main : Node2D
 		if (_pickupSpawner == null) GD.PrintErr("PickupSpawner not set in Main");
 		if (Menu == null) GD.PrintErr("Menu not set in Main");
 	}
+	// Event handlers
 	private void onPulse()
 	{
 		GD.Print("Pulse received in Main");
-		Ui.Update(_delta, Player.Health, _score, _isGameOver);
+		Ui.Update(_delta, Player.Health, _score);
+		_pickupPath.Position = Player.Position - GameManager.OffsetBetweenPickupAndPlayer;
+		_mobPath.Position = Player.Position - GameManager.OffsetBetweenMobAndPlayer;
+		GetTree().CallGroup("Mobs", "Update", Player);
+		TilingManager.PlayerCrossedBorder(Player);
 	}
 	private void OnMobTimerTimeout()
 	{
@@ -170,7 +163,6 @@ public partial class Main : Node2D
 	private void OnMenuStartGame()
 	{
 		NewGame();
-		_tilingManager.LoadTiles();
 	}
 	private void OnPlayerDeath()
 	{

@@ -9,7 +9,9 @@ public partial class Ui : CanvasLayer
     [Export] private Label _healthLiteral;
     [Export] private Label _middleScreenLabel;
     [Export] private Timer _messageTimer;
-    public void Update(double delta, int playerHeath, int playerScore, bool isGameOver)
+    public bool isIngame { get; set; } = false;
+    public bool isGameOver { get; set; } = false;
+    public void Update(double delta, int playerHeath, int playerScore)
     {
         if (isGameOver)
         {
