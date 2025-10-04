@@ -1,10 +1,9 @@
-using Equipment;
 using Godot;
-using Mobs;
 using Core;
 using Core.Interface;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System;
 /// <summary>
 /// The main class that handles main orchestration and dependency management of the game.
 /// </summary>
@@ -44,8 +43,11 @@ public partial class Main : Node2D
 	//////// These need to be moved ^^^^^^^^^^
 	// Non-node Core Orchestration Variables
 	// Managers Singletons
-	private static ITilingManager TilingManager { get; set; }
-	private static IClockManager ClockManager { get; set; }
+	private Dictionary<string, Object> CoreContainer { get; } = new();
+	private Dictionary<string, Variant> ToolContainer { get; } = new();
+	// We need to handle tiling manager different from other services; node based services are NOT global singletons, they are scene specific!!
+	private ITilingManager TilingManager { get; set; }
+	private IClockManager ClockManager { get; set; }
 	// Flags and States
 	private State CurrentState { get; set; } = State.Menu;
 	private bool _isGameOver = false;
@@ -61,6 +63,8 @@ public partial class Main : Node2D
 		TilingManager = new TilingManager(GetNode<TileMapLayer>("ForegroundLayer"), GetNode<TileMapLayer>("BackgroundLayer"));
 		// Register to the heartbeat pulse.
 		ClockManager.PulseTimeout += onPulse;
+		CoreContainer.Add("ClockManager", ClockManager as Node);
+		CoreContainer.Add("TilingManager", TilingManager as Node);
 		// Time for some kids.
 		AddChild(TilingManager as Node);
 	}
@@ -95,7 +99,7 @@ public partial class Main : Node2D
 		var distantBetweenPickupAndPlayer = Player.Position - _pickupPath.Position;
 		var distantBetweenMobAndPlayer = Player.Position - _mobPath.Position;
 		// Initialize game state
-		ClockManager.InitGame(distantBetweenPickupAndPlayer, distantBetweenMobAndPlayer);
+		ClockManager.InitGame();
 		TilingManager.LoadTiles();
 		// Set flags
 		_isGameStarted = true;
@@ -164,13 +168,6 @@ public partial class Main : Node2D
 		_score++;
 		if (_score % 10 == 0)
 			_pickupSpawnTimer.WaitTime += 0.25f;
-	}
-	private void OnStartTimerTimeout()
-	{
-		_mobSpawnTimer.Start();
-		_pickupSpawnTimer.WaitTime = _pickupTimerDefaultWaitTime;
-		_pickupSpawnTimer.Start();
-		_scoreTimer.Start();
 	}
 	private void OnMenuStartGame()
 	{

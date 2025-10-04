@@ -5,20 +5,24 @@ using Godot;
 /// <summary>
 /// Interface for the ClockManager; this manager that contains the heartbeat pulse of the game, allowing decoupled update calls; also stores game data not directly related to the player. A box of clocks!
 /// </summary>
+/// <remarks>
+/// Classes can (like and) subscribe to the PulseTimeout and SlowPulseTimeout events to get regular update calls, avoiding the need for a monolithic update loop. By default the pulse is set to 20hrz (0.05s) and the slow pulse to 5hrz (0.2s). These can be adjusted in the ClockManager, directly, if needed.
+/// Things like Mob spawn rate and pickup spawn rate can be managed seprate from score and game time, etc. This allows for differences in levels, increase or decrease in difficulty, etc. without needing to change the core game loop.
+/// </remarks>
 public interface IClockManager
 {
     /// <summary>
     /// Event triggered on each heartbeat pulse timeout.
     /// </summary>
     event Action PulseTimeout;
-    Vector2 OffsetBetweenPickupAndPlayer { get; }
-    Vector2 OffsetBetweenMobAndPlayer { get; }
     /// <summary>
-    /// Initializes the game state with offsets for pickup and mob spawning relative to the player. Starts heartbeat pulse timer.
+    /// Event triggered on each slow heartbeat pulse timeout.
     /// </summary>
-    /// <param name="PickupOffset"></param>
-    /// <param name="MobOffset"></param>
-    void InitGame(Vector2 PickupOffset, Vector2 MobOffset);
+    event Action SlowPulseTimeout;
+    /// <summary>
+    /// Initializes the game state and starts all relevant timers including the heartbeat pulse timer.
+    /// </summary>
+    void InitGame();
     /// <summary>
     /// Pauses all active timers in the game manager.
     /// </summary>

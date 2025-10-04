@@ -1,11 +1,11 @@
 namespace Core;
-using Core.Interface;
+using Tool.Interface;
 using Godot;
 using System.Collections.Generic;
 /// <summary>
-/// A manager for handling tiling of scene map elements. Has to be a Node to be able to affect other Nodes in the scene tree.
+/// A tool for handling tiling of scene map elements. Has to be a Node to be able to affect other Nodes in the scene tree.
 /// </summary>
-public sealed partial class TilingManager : Node, ITilingManager
+public sealed partial class TilingTool : Node, ITilingTool
 {
 	private TileMapLayer _foregroundLayer;
 	private TileMapLayer _backgroundLayer;
@@ -14,7 +14,7 @@ public sealed partial class TilingManager : Node, ITilingManager
 	private float _width;
 	private float _height;
 	private readonly Dictionary<string, (TileMapLayer background, TileMapLayer foreground)> _chunks = new();
-	public TilingManager(TileMapLayer foreground, TileMapLayer background)
+	public TilingTool(TileMapLayer foreground, TileMapLayer background)
 	{
 		_foregroundLayer = foreground;
 		_backgroundLayer = background;

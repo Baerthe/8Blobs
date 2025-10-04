@@ -19,10 +19,8 @@ public sealed partial class ClockManager : IClockManager
     {
 
     }
-    public void InitGame(Vector2 PickupOffset, Vector2 MobOffset)
+    public void InitGame()
     {
-        OffsetBetweenPickupAndPlayer = PickupOffset;
-        OffsetBetweenMobAndPlayer = MobOffset;
         CreatePulseTimer();
         CreateSlowPulseTimer();
         CreateMobSpawnTimer();
@@ -33,8 +31,6 @@ public sealed partial class ClockManager : IClockManager
     }
     public void ResetGame()
     {
-        OffsetBetweenPickupAndPlayer = Vector2.Zero;
-        OffsetBetweenMobAndPlayer = Vector2.Zero;
         StopTimers();
     }
     public void PauseTimers()
@@ -96,18 +92,18 @@ public sealed partial class ClockManager : IClockManager
         _gameTimer?.Stop();
         _startingTimer?.Stop();
     }
-    private void OnPulseTimeout() => PulseTimeout?.Invoke();
-    private void OnSlowPulseTimeout() => SlowPulseTimeout?.Invoke();
     private void CreatePulseTimer()
     {
         if (_pulseTimer != null) return;
         _pulseTimer = new Timer { WaitTime = 0.05f, OneShot = false, Autostart = false };
-        _pulseTimer.Timeout += OnPulseTimeout;
+        GD.Print("Pulse Timer created with WaitTime 0.05f (20hrz)");
+        _pulseTimer.Timeout += () => PulseTimeout?.Invoke();
     }
     private void CreateSlowPulseTimer()
     {
         if (_slowPulseTimer != null) return;
-        _slowPulseTimer = new Timer { WaitTime = 1f, OneShot = false, Autostart = false };
+        _slowPulseTimer = new Timer { WaitTime = 0.2f, OneShot = false, Autostart = false };
+        GD.Print("Slow Pulse Timer created with WaitTime 0.2f (5hrz)");
         _slowPulseTimer.Timeout += () => SlowPulseTimeout?.Invoke();
     }
     private void CreateMobSpawnTimer()
@@ -118,9 +114,20 @@ public sealed partial class ClockManager : IClockManager
     }
     private void CreatePickupSpawnTimer()
     {
+        if (_pickupSpawnTimer != null) return;
         _pickupSpawnTimer = new Timer { WaitTime = 10f, OneShot = false, Autostart = false };
         _pickupSpawnTimer.Timeout += () => GD.Print("Pickup Spawn Timer Timeout");
     }
-    private void CreateGameTimer() => _gameTimer = new Timer { WaitTime = 60f, OneShot = true };
-    private void CreateStartingTimer() => _startingTimer = new Timer { WaitTime = 3f, OneShot = true };
+    private void CreateGameTimer()
+    {
+        if (_gameTimer != null) return;
+        _gameTimer = new Timer { WaitTime = 60f, OneShot = true };
+        _gameTimer.Timeout += () => GD.Print("Game Timer Timeout");
+    }
+    private void CreateStartingTimer()
+    {
+        if (_startingTimer != null) return;
+        _startingTimer = new Timer { WaitTime = 3f, OneShot = true };
+        _startingTimer.Timeout += () => GD.Print("Starting Timer Timeout");
+    }
 }
