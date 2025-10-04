@@ -4,28 +4,34 @@ using Mobs;
 using Core;
 using Core.Interface;
 using System.Collections.Generic;
+using System.ComponentModel;
 /// <summary>
 /// The main class that handles main orchestration and dependency management of the game.
 /// </summary>
-/// <remarks>
-/// This class is responsible for initializing and managing the core components of the game, including the player, UI, game state, and spawning of mobs and pickups. It also handles game state transitions such as starting a new game and game over scenarios.
-/// </remarks>
 public partial class Main : Node2D
 {
 	[ExportGroup("Singles")]
 	[ExportSubgroup("Core")]
+	[Description("Core nodes for handling game logic and tiling.")]
 	[Export] public Menu Menu { get; private set; }
 	[Export] public Player Player { get; private set; }
 	[Export] public Marker2D PlayerStart { get; private set; }
 	[Export] public Camera2D Camera { get; private set; }
 	[Export] public Ui Ui { get; private set; }
+	//////// These need to be moved vvvvvvvvvv
+	/// We need to move these level specific variables out of Main and into level specific managers or data files.
+	/// They are here for now to avoid hardcoding values in the managers; for testing.
+	/// They are level specific and should be set in the level scene or a level data file
+	//////// These need to be moved vvvvvvvvvv
 	[ExportSubgroup("Timers")]
+	[Description("The amount of time, in seconds, for spawning of mobs, pickups, score increment, and game start countdown.")]
 	[Export] public float MobSpawnTime { get; private set; } = 1.5f;
 	[Export] public float PickupSpawnTime { get; private set; } = 5f;
 	[Export] public float ScoreTime { get; private set; } = 1f;
 	[Export] public float StartingTime { get; private set; } = 3f;
 	// Spawners
 	[ExportGroup("Spawnables")]
+	[Description("Scenes and paths for spawning mobs and pickups.")]
 	[ExportSubgroup("Mobs")]
 	[Export] public PackedScene[] MobScenes { get; private set; }
 	[Export] private Path2D _mobPath;
@@ -34,10 +40,14 @@ public partial class Main : Node2D
 	[Export] public PackedScene[] PickupScenes { get; private set; }
 	[Export] private Path2D _pickupPath;
 	[Export] private PathFollow2D _pickupSpawner;
+	//////// These need to be moved ^^^^^^^^^^
+	//////// These need to be moved ^^^^^^^^^^
+	// Non-node Core Orchestration Variables
 	// Managers Singletons
 	private static ITilingManager TilingManager { get; set; }
-	private static IGameManager GameManager { get; set; }
-	// Flags
+	private static IClockManager ClockManager { get; set; }
+	// Flags and States
+	private State CurrentState { get; set; } = State.Menu;
 	private bool _isGameOver = false;
 	private bool _isGameStarted = false;
 	private double _delta;
@@ -47,10 +57,10 @@ public partial class Main : Node2D
 		// Do we have everything?
 		NullCheck();
 		// Setup managers
-		GameManager = new GameManager();
+		ClockManager = new ClockManager();
 		TilingManager = new TilingManager(GetNode<TileMapLayer>("ForegroundLayer"), GetNode<TileMapLayer>("BackgroundLayer"));
 		// Register to the heartbeat pulse.
-		GameManager.PulseTimeout += onPulse;
+		ClockManager.PulseTimeout += onPulse;
 		// Time for some kids.
 		AddChild(TilingManager as Node);
 	}
@@ -72,12 +82,20 @@ public partial class Main : Node2D
 	}
 	public void NewGame()
 	{
+		// Send over default timer sets to game manager
+		List<float> timerWaitTimes = new List<float>
+        {
+            MobSpawnTime,
+            PickupSpawnTime,
+            ScoreTime,
+            StartingTime,
+        };
+		ClockManager.SetTimers(timerWaitTimes);
 		// Setup temporary variables
 		var distantBetweenPickupAndPlayer = Player.Position - _pickupPath.Position;
 		var distantBetweenMobAndPlayer = Player.Position - _mobPath.Position;
-		var pickupTimerDefaultWaitTime = _pickupSpawnTimer.WaitTime;
 		// Initialize game state
-		GameManager.InitGame(distantBetweenPickupAndPlayer, distantBetweenMobAndPlayer);
+		ClockManager.InitGame(distantBetweenPickupAndPlayer, distantBetweenMobAndPlayer);
 		TilingManager.LoadTiles();
 		// Set flags
 		_isGameStarted = true;
@@ -103,10 +121,6 @@ public partial class Main : Node2D
 		if (PlayerStart == null) GD.PrintErr("PlayerStart not set in Main");
 		if (Camera == null) GD.PrintErr("Camera not set in Main");
 		if (Ui == null) GD.PrintErr("Ui not set in Main");
-		if (_mobSpawnTimer == null) GD.PrintErr("MobSpawnTimer not set in Main");
-		if (_pickupSpawnTimer == null) GD.PrintErr("PickupSpawnTimer not set in Main");
-		if (_scoreTimer == null) GD.PrintErr("ScoreTimer not set in Main");
-		if (_startTimer == null) GD.PrintErr("StartTimer not set in Main");
 		if (MobScenes == null || MobScenes.Length == 0) GD.PrintErr("MobScenes not set in Main");
 		if (_mobPath == null) GD.PrintErr("MobPath not set in Main");
 		if (_mobSpawner == null) GD.PrintErr("MobSpawner not set in Main");
@@ -120,8 +134,8 @@ public partial class Main : Node2D
 	{
 		GD.Print("Pulse received in Main");
 		Ui.Update(_delta, Player.Health, _score);
-		_pickupPath.Position = Player.Position - GameManager.OffsetBetweenPickupAndPlayer;
-		_mobPath.Position = Player.Position - GameManager.OffsetBetweenMobAndPlayer;
+		_pickupPath.Position = Player.Position - ClockManager.OffsetBetweenPickupAndPlayer;
+		_mobPath.Position = Player.Position - ClockManager.OffsetBetweenMobAndPlayer;
 		GetTree().CallGroup("Mobs", "Update", Player);
 		TilingManager.PlayerCrossedBorder(Player);
 	}
