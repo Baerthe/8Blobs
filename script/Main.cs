@@ -20,10 +20,11 @@ public partial class Main : Node2D
 	[Export] public Camera2D Camera { get; private set; }
 	[Export] public Ui Ui { get; private set; }
 	[ExportSubgroup("Timers")]
-	[Export] private Timer _mobSpawnTimer;
-	[Export] private Timer _pickupSpawnTimer;
-	[Export] private Timer _scoreTimer;
-	[Export] private Timer _startTimer;
+	[Export] public float MobSpawnTime { get; private set; } = 1.5f;
+	[Export] public float PickupSpawnTime { get; private set; } = 5f;
+	[Export] public float ScoreTime { get; private set; } = 1f;
+	[Export] public float StartingTime { get; private set; } = 3f;
+	// Spawners
 	[ExportGroup("Spawnables")]
 	[ExportSubgroup("Mobs")]
 	[Export] public PackedScene[] MobScenes { get; private set; }
@@ -66,9 +67,6 @@ public partial class Main : Node2D
 	public void GameOver()
 	{
 		ClearScreen();
-		_mobSpawnTimer.Stop();
-		_scoreTimer.Stop();
-		_pickupSpawnTimer.Stop();
 		if (Input.IsActionPressed("ui_accept"))
 			OnMenuStartGame();
 	}
@@ -168,5 +166,13 @@ public partial class Main : Node2D
 	{
 		Player.SetPhysicsProcess(false);
 		_isGameOver = true;
+	}
+	private enum State
+	{
+		Menu,
+		LevelSelect,
+		Paused,
+		Playing,
+		GameOver
 	}
 }

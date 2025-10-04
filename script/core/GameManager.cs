@@ -12,6 +12,10 @@ public sealed partial class GameManager : IGameManager
     public Vector2 OffsetBetweenPickupAndPlayer { get; private set; }
     public Vector2 OffsetBetweenMobAndPlayer { get; private set; }
     private Timer _pulseTimer;
+    private Timer _gameTimer;
+    private Timer _startingTimer;
+    private Timer _mobSpawnTimer;
+    private Timer _pickupSpawnTimer;
     public GameManager()
     {
         _pulseTimer = new Timer();
