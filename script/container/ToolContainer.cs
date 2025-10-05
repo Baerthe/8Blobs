@@ -36,7 +36,7 @@ public partial class ToolContainer : Node
         GD.Print($"Delivery Time! Resolving tool: {typeof(T).Name} as {tool?.GetType().Name ?? "null"}");
         if (tool != null && tool.GetParent() == null)
         {
-            GD.PrintRich($"[color=#0066ff]Tool Delievered to Scene: {typeof(T).Name} as {tool?.GetType().Name ?? "null"}. Copied to Scene Tree[/color]");
+            GD.PrintRich($"[color=#0066ff]Tool copied in to Scene: {typeof(T).Name} as {tool?.GetType().Name ?? "null"}.[/color]");
             var child = tool.Duplicate();
             if (child == null)
             {

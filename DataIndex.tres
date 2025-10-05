@@ -1,0 +1,12 @@
+[gd_resource type="JSON" format=3 uid="uid://c1coymgoifvmw"]
+
+[resource]
+resource_name = "Index of Player Game Data"
+data = {
+"achievements": {
+"first_blood": false,
+"monster_hunter": false,
+"treasure_hunter": false,
+"speed_runner": false,
+}
+}
