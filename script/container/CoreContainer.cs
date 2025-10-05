@@ -33,7 +33,7 @@ public partial class CoreContainer
         if (core == null)
         {
             GD.PrintErr($"Service of type {typeof(T).Name} is not registered.");
-            throw new InvalidOperationException($"Service of type {typeof(T).Name} is not registered.");
+            throw new InvalidOperationException($"ERROR 098: Service of type {typeof(T).Name} is not registered in Cores. Game cannot load.");
         }
         GD.Print($"Delivery Time! Resolving core: {typeof(T).Name} as {core?.GetType().Name ?? "null"}");
         return core as T;

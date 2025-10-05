@@ -31,13 +31,13 @@ public partial class ToolContainer : Node
         if (tool == null)
         {
             GD.PrintErr($"Tool not found: {typeof(T).Name}");
-            throw new InvalidOperationException($"Tool not found: {typeof(T).Name}");
+            throw new InvalidOperationException($"ERROR 099: Tool node not found: {typeof(T).Name} in Tools. Level cannot load.");
         }
         GD.Print($"Delivery Time! Resolving tool: {typeof(T).Name} as {tool?.GetType().Name ?? "null"}");
         if (tool != null && tool.GetParent() == null)
         {
             GD.Print($"Tool Delievered to Scene: {typeof(T).Name} as {tool?.GetType().Name ?? "null"}. Copying to Scene Tree");
-            var child = tool.Duplicate() as Node;
+            var child = tool.Duplicate();
             if (child == null)
             {
                 GD.PrintErr($"Failed to duplicate tool: {typeof(T).Name} as {tool?.GetType().Name ?? "null"}");
