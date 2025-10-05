@@ -13,9 +13,9 @@ public partial class ToolContainer : Node
     /// </summary>
     /// <typeparam name="Tinterface">The interface type of the tool.</typeparam>
     /// <typeparam name="TImplementation">The implementation type of the tool.</typeparam>
-    public void Register<Tinterface, TImplementation>() where TImplementation : Tinterface, new()
+    public void Register<Tinterface, TImplementation>() where TImplementation : Node, Tinterface, new()
     {
-        _tools[typeof(Tinterface)] = new TImplementation() as Node;
+        _tools[typeof(Tinterface)] = new TImplementation();
         GD.Print($"Registered tool: {typeof(Tinterface).Name} as {typeof(TImplementation).Name}");
     }
     /// <summary>

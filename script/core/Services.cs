@@ -2,6 +2,7 @@ namespace Core;
 using Core.Interface;
 using Tool.Interface;
 using Container;
+using Godot;
 
 /// <summary>
 /// Where the magic happens; builds our dependency injection containers for core and tool singletons.
@@ -32,6 +33,7 @@ public sealed class Services : IServices
     /// </remarks>
     private void BuildCoreContainer()
     {
+        GD.Print("Building Core Container...");
         CoreContainer.Register<IClockManager, ClockManager>();
         CoreContainer.Register<ILevelManager, LevelManager>();
     }
@@ -44,6 +46,7 @@ public sealed class Services : IServices
     /// </remarks>
     private void BuildToolContainer()
     {
+        GD.Print("Building Tool Container...");
         ToolContainer.Register<ITilingTool, TilingTool>();
     }
 }

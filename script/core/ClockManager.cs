@@ -19,6 +19,7 @@ public sealed partial class ClockManager : IClockManager
     private static Timer _startingTimer;
     private static Timer _mobSpawnTimer;
     private static Timer _pickupSpawnTimer;
+    private static Dictionary<byte, Timer> _timers = new();
     public ClockManager()
     {
         CreatePulseTimer();
@@ -28,9 +29,9 @@ public sealed partial class ClockManager : IClockManager
         CreateGameTimer();
         CreateStartingTimer();
     }
-    public void InitGame()
+    public void InitGame(Node parent)
     {
-        StartTimers();
+        StartTimers(parent);
     }
     public void ResetGame()
     {
@@ -38,21 +39,17 @@ public sealed partial class ClockManager : IClockManager
     }
     public void PauseTimers()
     {
-        _pulseTimer.Paused = true;
-        _slowPulseTimer.Paused = true;
-        _gameTimer.Paused = true;
-        _startingTimer.Paused = true;
-        _mobSpawnTimer.Paused = true;
-        _pickupSpawnTimer.Paused = true;
+        foreach (var timer in _timers.Values)
+        {
+            timer.Paused = true;
+        }
     }
     public void ResumeTimers()
     {
-        _pulseTimer.Paused = false;
-        _slowPulseTimer.Paused = false;
-        _gameTimer.Paused = false;
-        _startingTimer.Paused = false;
-        _mobSpawnTimer.Paused = false;
-        _pickupSpawnTimer.Paused = false;
+        foreach (var timer in _timers.Values)
+        {
+            timer.Paused = false;
+        }
     }
     public void SetTimers(List<float> Timers)
     {
@@ -61,10 +58,6 @@ public sealed partial class ClockManager : IClockManager
             GD.PrintErr($"There are four timers to set; but we received {Timers.Count} timers. Did we forget one?");
             return;
         }
-        if (_mobSpawnTimer == null) CreateMobSpawnTimer();
-        if (_pickupSpawnTimer == null) CreatePickupSpawnTimer();
-        if (_gameTimer == null) CreateGameTimer();
-        if (_startingTimer == null) CreateStartingTimer();
         try
         {
             _mobSpawnTimer.WaitTime = Timers[0];
@@ -80,17 +73,24 @@ public sealed partial class ClockManager : IClockManager
     /// <summary>
     /// Starts all timers. Used when initializing the game.
     /// </summary>
-    private void StartTimers()
+    private void StartTimers(Node parent)
     {
-        _pulseTimer?.Start();
-        _slowPulseTimer?.Start();
-        _mobSpawnTimer?.Start();
-        _pickupSpawnTimer?.Start();
-        _gameTimer?.Start();
-        _startingTimer?.Start();
+        if (parent == null)
+        {
+            GD.PrintErr("Parent node is null. Cannot start timers.");
+            throw new InvalidOperationException("ERROR 002: Parent node is null in ClockManager. Timers cannot start.");
+        }
+        foreach (var timer in _timers.Values)
+        {
+            if (timer.GetParent() == null)
+            {
+                parent.AddChild(timer);
+            }
+            timer.Start();
+        }
         if (_pulseTimer.IsStopped() || _slowPulseTimer.IsStopped() || _mobSpawnTimer.IsStopped() || _pickupSpawnTimer.IsStopped() || _gameTimer.IsStopped() || _startingTimer.IsStopped())
         {
-            GD.PrintErr("One or more timers failed to start! Something going on here.");
+            GD.PrintErr($"One or more timers failed to start! Pulse: {_pulseTimer.IsStopped()}, SlowPulse: {_slowPulseTimer.IsStopped()}, MobSpawn: {_mobSpawnTimer.IsStopped()}, PickupSpawn: {_pickupSpawnTimer.IsStopped()}, Game: {_gameTimer.IsStopped()}, Starting: {_startingTimer.IsStopped()}");
         }
     }
     /// <summary>
@@ -98,15 +98,13 @@ public sealed partial class ClockManager : IClockManager
     /// </summary>
     private void StopTimers()
     {
-        _pulseTimer?.Stop();
-        _slowPulseTimer?.Stop();
-        _mobSpawnTimer?.Stop();
-        _pickupSpawnTimer?.Stop();
-        _gameTimer?.Stop();
-        _startingTimer?.Stop();
+        foreach (var timer in _timers.Values)
+        {
+            timer.Stop();
+        }
         if (_pulseTimer.IsStopped() == false || _slowPulseTimer.IsStopped() == false || _mobSpawnTimer.IsStopped() == false || _pickupSpawnTimer.IsStopped() == false || _gameTimer.IsStopped() == false || _startingTimer.IsStopped() == false)
         {
-            GD.PrintErr("One or more timers failed to stop! Something going on here.");
+            GD.PrintErr($"One or more timers failed to stop! Pulse: {_pulseTimer.IsStopped()}, SlowPulse: {_slowPulseTimer.IsStopped()}, MobSpawn: {_mobSpawnTimer.IsStopped()}, PickupSpawn: {_pickupSpawnTimer.IsStopped()}, Game: {_gameTimer.IsStopped()}, Starting: {_startingTimer.IsStopped()}");
         }
     }
     /// <summary>
@@ -133,6 +131,7 @@ public sealed partial class ClockManager : IClockManager
             GD.PrintErr("Timer is null after creation!");
             throw new InvalidOperationException($"ERROR 001: Timer failed to initialize in ClockManager. Sender: {sender}");
         }
+        _timers.Add((byte)timer.GetHashCode(), timer);
         return timer;
     }
     private void CreatePulseTimer()

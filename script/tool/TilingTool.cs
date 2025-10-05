@@ -16,13 +16,16 @@ public sealed partial class TilingTool : Node, ITilingTool
 	private readonly Dictionary<string, (TileMapLayer background, TileMapLayer foreground)> _chunks = new();
 	public TilingTool()
 	{
-		_foregroundLayer = GetNode<TileMapLayer>("ForegroundLayer");
-		_backgroundLayer = GetNode<TileMapLayer>("BackgroundLayer");
-		if (_foregroundLayer == null || _backgroundLayer == null)
-		{
-			GD.PrintErr("ForegroundLayer or BackgroundLayer not able to be set. Did you name them correctly in the tree?");
-			throw new System.InvalidOperationException("ERROR 100: ForegroundLayer or BackgroundLayer not able to be set. Level cannot load.");
-		}
+		_foregroundLayer = null;
+		_backgroundLayer = null;
+		_usedRect = new Rect2();
+		_worldRect = new Rect2();
+		_width = 0;
+		_height = 0;
+	}
+	public override void _Ready()
+	{
+		LoadTiles();
 	}
 	public Rect2 GetWorldRect() => _worldRect;
 	public void LoadTiles()

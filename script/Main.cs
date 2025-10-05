@@ -1,6 +1,7 @@
 using Godot;
 using Core;
 using Core.Interface;
+using Tool.Interface;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System;
@@ -59,6 +60,7 @@ public partial class Main : Node2D
 		_clockManager.SlowPulseTimeout += OnSlowPulseTimeout;
 		GD.Print("Main node ready.");
 		_clockManager.InitGame();
+		ITilingTool tilingTool = ServiceProvider.ToolContainer.Resolve<TilingTool>();
 	}
 	public override void _Process(double delta)
 	{

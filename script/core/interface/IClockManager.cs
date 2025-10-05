@@ -46,7 +46,8 @@ public interface IClockManager
     /// <summary>
     /// Initializes the game timers.
     /// </summary>
-    void InitGame();
+    /// <param name="parent">The parent node to which timers will be added.</param>
+    void InitGame(Node parent);
     /// <summary>
     /// Resets the game state, clearing offsets and stopping the heartbeat pulse timer.
     /// </summary>
