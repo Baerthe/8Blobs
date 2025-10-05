@@ -20,9 +20,21 @@ public interface IClockManager
     /// </summary>
     event Action SlowPulseTimeout;
     /// <summary>
-    /// Initializes the game state and starts all relevant timers including the heartbeat pulse timer.
+    /// Event triggered when it's time to spawn a new mob.
     /// </summary>
-    void InitGame();
+    event Action MobSpawnTimeout;
+    /// <summary>
+    /// Event triggered when it's time to spawn a new pickup item.
+    /// </summary>
+    event Action PickupSpawnTimeout;
+    /// <summary>
+    /// Event triggered when the game timer runs out.
+    /// </summary>
+    event Action GameTimeout;
+    /// <summary>
+    /// Event triggered when the starting timer runs out.
+    /// </summary>
+    event Action StartingTimeout;
     /// <summary>
     /// Pauses all active timers in the game manager.
     /// </summary>

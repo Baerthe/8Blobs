@@ -7,6 +7,10 @@ public sealed partial class ClockManager : IClockManager
 {
     public event Action PulseTimeout;
     public event Action SlowPulseTimeout;
+    public event Action MobSpawnTimeout;
+    public event Action PickupSpawnTimeout;
+    public event Action GameTimeout;
+    public event Action StartingTimeout;
     public Vector2 OffsetBetweenPickupAndPlayer { get; private set; }
     public Vector2 OffsetBetweenMobAndPlayer { get; private set; }
     private static Timer _pulseTimer;
@@ -16,10 +20,6 @@ public sealed partial class ClockManager : IClockManager
     private static Timer _mobSpawnTimer;
     private static Timer _pickupSpawnTimer;
     public ClockManager()
-    {
-
-    }
-    public void InitGame()
     {
         CreatePulseTimer();
         CreateSlowPulseTimer();
@@ -74,6 +74,9 @@ public sealed partial class ClockManager : IClockManager
             GD.PrintErr($"Failed to set timers: {ex.Message}");
         }
     }
+    /// <summary>
+    /// Starts all timers. Used when initializing the game.
+    /// </summary>
     private void StartTimers()
     {
         _pulseTimer?.Start();
@@ -87,6 +90,9 @@ public sealed partial class ClockManager : IClockManager
             GD.PrintErr("One or more timers failed to start! Something going on here.");
         }
     }
+    /// <summary>
+    /// Stops all timers. Used when resetting the game.
+    /// </summary>
     private void StopTimers()
     {
         _pulseTimer?.Stop();
@@ -100,72 +106,66 @@ public sealed partial class ClockManager : IClockManager
             GD.PrintErr("One or more timers failed to stop! Something going on here.");
         }
     }
+    /// <summary>
+    /// Builds a Timer with the specified parameters and attaches the onTimeout action to its Timeout signal.
+    /// </summary>
+    /// <param name="waitTime"></param>
+    /// <param name="oneShot"></param>
+    /// <param name="autostart"></param>
+    /// <param name="onTimeout"></param>
+    /// <param name="sender"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException">Thrown if the Timer fails to initialize. Lists which createTimer method was called.</exception>
+    private Timer BuildTimer(float waitTime, bool oneShot, bool autostart, Action onTimeout, Object sender)
+    {
+        Timer timer = new Timer
+        {
+            WaitTime = waitTime,
+            OneShot = oneShot,
+            Autostart = autostart
+        };
+        timer.Timeout += () => onTimeout?.Invoke();
+        if (timer == null)
+        {
+            GD.PrintErr("Timer is null after creation!");
+            throw new InvalidOperationException($"ERROR 001: Timer failed to initialize in ClockManager. Sender: {sender}");
+        }
+        return timer;
+    }
     private void CreatePulseTimer()
     {
         if (_pulseTimer != null) return;
-        _pulseTimer = new Timer { WaitTime = 0.05f, OneShot = false, Autostart = false };
+        _pulseTimer = BuildTimer(0.05f, false, false, () => PulseTimeout?.Invoke(), this);
         GD.Print("Pulse Timer created with WaitTime 0.05f (20hrz)");
-        _pulseTimer.Timeout += () => PulseTimeout?.Invoke();
-        if (_pulseTimer == null)
-        {
-            GD.PrintErr("Pulse Timer is null after creation!");
-            throw new InvalidOperationException("ERROR 001:Pulse Timer failed to initialize in ClockManager.");
-        }
     }
     private void CreateSlowPulseTimer()
     {
         if (_slowPulseTimer != null) return;
-        _slowPulseTimer = new Timer { WaitTime = 0.2f, OneShot = false, Autostart = false };
+        _slowPulseTimer = BuildTimer(0.2f, false, false, () => SlowPulseTimeout?.Invoke(), this);
         GD.Print("Slow Pulse Timer created with WaitTime 0.2f (5hrz)");
-        _slowPulseTimer.Timeout += () => SlowPulseTimeout?.Invoke();
-        if (_slowPulseTimer == null)
-        {
-            GD.PrintErr("Slow Pulse Timer is null after creation!");
-            throw new InvalidOperationException("ERROR 002: Slow Pulse Timer failed to initialize in ClockManager.");
-        }
     }
     private void CreateMobSpawnTimer()
     {
         if (_mobSpawnTimer != null) return;
-        _mobSpawnTimer = new Timer { WaitTime = 5f, OneShot = false, Autostart = false };
-        _mobSpawnTimer.Timeout += () => GD.Print("Mob Spawn Timer Timeout");
-        if (_mobSpawnTimer == null)
-        {
-            GD.PrintErr("Mob Spawn Timer is null after creation!");
-            throw new InvalidOperationException("ERROR 003: Mob Spawn Timer failed to initialize in ClockManager.");
-        }
+        _mobSpawnTimer = BuildTimer(5f, false, false, () => MobSpawnTimeout?.Invoke(), this);
+        GD.Print("Mob Spawn Timer created with WaitTime 5f");
     }
     private void CreatePickupSpawnTimer()
     {
         if (_pickupSpawnTimer != null) return;
-        _pickupSpawnTimer = new Timer { WaitTime = 10f, OneShot = false, Autostart = false };
-        _pickupSpawnTimer.Timeout += () => GD.Print("Pickup Spawn Timer Timeout");
-        if (_pickupSpawnTimer == null)
-        {
-            GD.PrintErr("Pickup Spawn Timer is null after creation!");
-            throw new InvalidOperationException("ERROR 004: Pickup Spawn Timer failed to initialize in ClockManager.");
-        }
+        _pickupSpawnTimer = BuildTimer(10f, false, false, () => PickupSpawnTimeout?.Invoke(), this);
+        GD.Print("Pickup Spawn Timer created with WaitTime 10f");
     }
     private void CreateGameTimer()
     {
         if (_gameTimer != null) return;
-        _gameTimer = new Timer { WaitTime = 60f, OneShot = true };
-        _gameTimer.Timeout += () => GD.Print("Game Timer Timeout");
-        if (_gameTimer == null)
-        {
-            GD.PrintErr("Game Timer is null after creation!");
-            throw new InvalidOperationException("ERROR 005: Game Timer failed to initialize in ClockManager.");
-        }
+        _gameTimer = BuildTimer(60f, true, false, () => GameTimeout?.Invoke(), this);
+        GD.Print("Game Timer created with WaitTime 60f (OneShot)");
     }
     private void CreateStartingTimer()
     {
         if (_startingTimer != null) return;
-        _startingTimer = new Timer { WaitTime = 3f, OneShot = true };
-        _startingTimer.Timeout += () => GD.Print("Starting Timer Timeout");
-        if (_startingTimer == null)
-        {
-            GD.PrintErr("Starting Timer is null after creation!");
-            throw new InvalidOperationException("ERROR 006: Starting Timer failed to initialize in ClockManager.");
-        }
+        _startingTimer = BuildTimer(3f, true, false, () => StartingTimeout?.Invoke(), this);
+        GD.Print("Starting Timer created with WaitTime 3f (OneShot)");
     }
 }
