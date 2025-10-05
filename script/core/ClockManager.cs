@@ -138,19 +138,19 @@ public sealed partial class ClockManager : IClockManager
     {
         if (_pulseTimer != null) return;
         _pulseTimer = BuildTimer(0.05f, false, false, () => PulseTimeout?.Invoke(), this);
-        GD.Print("Pulse Timer created with WaitTime 0.05f (20hrz)");
+        GD.Print("Pulse Timer created with WaitTime 0.05f (20hrz), ~1200 per minute");
     }
     private void CreateSlowPulseTimer()
     {
         if (_slowPulseTimer != null) return;
         _slowPulseTimer = BuildTimer(0.2f, false, false, () => SlowPulseTimeout?.Invoke(), this);
-        GD.Print("Slow Pulse Timer created with WaitTime 0.2f (5hrz)");
+        GD.Print("Slow Pulse Timer created with WaitTime 0.2f (5hrz), ~300 per minute");
     }
     private void CreateMobSpawnTimer()
     {
         if (_mobSpawnTimer != null) return;
         _mobSpawnTimer = BuildTimer(5f, false, false, () => MobSpawnTimeout?.Invoke(), this);
-        GD.Print("Mob Spawn Timer created with WaitTime 5f");
+        GD.Print("Mob Spawn Timer created with WaitTime 5f (0.2hrz), ~12 per minute");
     }
     private void CreatePickupSpawnTimer()
     {
