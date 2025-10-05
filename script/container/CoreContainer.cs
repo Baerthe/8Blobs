@@ -20,7 +20,7 @@ public partial class CoreContainer
     public void Register<Tinterface, TImplementation>() where TImplementation : Tinterface, new()
     {
         _cores[typeof(Tinterface)] = new TImplementation();
-        GD.Print($"Registered core: {typeof(Tinterface).Name} as {typeof(TImplementation).Name}");
+        GD.PrintRich($"[color=#00ff00]Registered core: {typeof(Tinterface).Name} as {typeof(TImplementation).Name}[/color]");
     }
     /// <summary>
     /// Resolves a core service by its interface type.
@@ -35,7 +35,7 @@ public partial class CoreContainer
             GD.PrintErr($"Service of type {typeof(T).Name} is not registered.");
             throw new InvalidOperationException($"ERROR 098: Service of type {typeof(T).Name} is not registered in Cores. Game cannot load.");
         }
-        GD.Print($"Delivery Time! Resolving core: {typeof(T).Name} as {core?.GetType().Name ?? "null"}");
+        GD.PrintRich($"[color=#00ff8A]Delivery Time! Resolving core: {typeof(T).Name} as {core?.GetType().Name ?? "null"}[/color]");
         return core as T;
     }
 }

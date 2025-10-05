@@ -22,6 +22,7 @@ public sealed partial class ClockManager : IClockManager
     private static Dictionary<byte, Timer> _timers = new();
     public ClockManager()
     {
+        GD.PrintRich("[color=#0fff00]ClockManager initializing...[/color]");
         CreatePulseTimer();
         CreateSlowPulseTimer();
         CreateMobSpawnTimer();

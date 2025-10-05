@@ -33,9 +33,10 @@ public sealed class Services : IServices
     /// </remarks>
     private void BuildCoreContainer()
     {
-        GD.Print("Building Core Container...");
+        GD.PrintRich("[color=#00ff00]Building Core Container...[/color]");
         CoreContainer.Register<IClockManager, ClockManager>();
         CoreContainer.Register<ILevelManager, LevelManager>();
+        GD.PrintRich("[color=#00ff00]Core Container Built.[/color]");
     }
     /// <summary>
     /// Builds the tool container with all tool singletons.
@@ -46,7 +47,8 @@ public sealed class Services : IServices
     /// </remarks>
     private void BuildToolContainer()
     {
-        GD.Print("Building Tool Container...");
+        GD.PrintRich("[color=#0088ff]Building Tool Container...[/color]");
         ToolContainer.Register<ITilingTool, TilingTool>();
+        GD.PrintRich("[color=#0088ff]Tool Container Built.[/color]");
     }
 }

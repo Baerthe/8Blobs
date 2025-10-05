@@ -59,9 +59,14 @@ public partial class Main : Node2D
 		_clockManager = ServiceProvider.CoreContainer.Resolve<IClockManager>();
 		_clockManager.PulseTimeout += OnPulseTimeout;
 		_clockManager.SlowPulseTimeout += OnSlowPulseTimeout;
-		GD.Print("Main node ready.");
+		_clockManager.MobSpawnTimeout += OnMobSpawnTimeout;
+		_clockManager.PickupSpawnTimeout += OnPickupSpawnTimeout;
+		_clockManager.GameTimeout += OnGameTimeout;
+		_clockManager.StartingTimeout += OnStartingTimeout;
+		GD.PrintRich("[color=#000][bgcolor=#00ff00]Main node ready. Initializing game...[/bgcolor][/color]");
 		_clockManager.InitGame(this);
-		ITilingTool tilingTool = ServiceProvider.ToolContainer.Resolve<TilingTool>();
+		ITilingTool tilingTool = ServiceProvider.ToolContainer.Resolve<ITilingTool>();
+
 	}
 	public override void _Process(double delta)
 	{
@@ -69,12 +74,27 @@ public partial class Main : Node2D
 	}
 	private void OnPulseTimeout()
 	{
-		GD.Print("Pulse Tick processing...");
+		GD.PrintRich("[color=#afdd00]Pulse Tick processing...");
 	}
 	private void OnSlowPulseTimeout()
 	{
-		GD.Print("Slow Pulse Tick processing...");
+		GD.PrintRich("[color=#ffaa00]Slow Pulse Tick processing...");
 		ProcessGameState();
+	}
+	private void OnMobSpawnTimeout()
+	{
+		GD.PrintRich("[color=#00aaff]Mob Spawn Tick processing...");
+	}
+	private void OnPickupSpawnTimeout(){
+		GD.PrintRich("[color=#D0a0f2]Pickup Spawn Tick processing...");
+	}
+	private void OnGameTimeout()
+	{
+		GD.PrintRich("[color=#1f9fA0]Game Timer processing...");
+	}
+	private void OnStartingTimeout()
+	{
+		GD.PrintRich("[color=#ffffff]Starting Timer processing...");
 	}
 	private void ProcessGameState()
 	{
