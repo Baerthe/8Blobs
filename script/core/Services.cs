@@ -1,9 +1,9 @@
 namespace Core;
-using Container;
 using Core.Interface;
-using Godot;
-using System;
-using System.Collections.Generic;
+using Tool;
+using Tool.Interface;
+using Container;
+
 /// <summary>
 /// Where the magic happens; builds our dependency injection containers for core and tool singletons.
 /// </summary>
@@ -45,5 +45,6 @@ public sealed class Services : IServices
     /// </remarks>
     private void BuildToolContainer()
     {
+        ToolContainer.Register<ITilingTool, TilingTool>();
     }
 }
