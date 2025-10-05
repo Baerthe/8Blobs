@@ -44,6 +44,10 @@ public interface IClockManager
     /// </summary>
     void ResumeTimers();
     /// <summary>
+    /// Initializes the game timers.
+    /// </summary>
+    void InitGame();
+    /// <summary>
     /// Resets the game state, clearing offsets and stopping the heartbeat pulse timer.
     /// </summary>
     void ResetGame();

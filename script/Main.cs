@@ -58,6 +58,7 @@ public partial class Main : Node2D
 		_clockManager.PulseTimeout += OnPulseTimeout;
 		_clockManager.SlowPulseTimeout += OnSlowPulseTimeout;
 		GD.Print("Main node ready.");
+		_clockManager.InitGame();
 	}
 	public override void _Process(double delta)
 	{

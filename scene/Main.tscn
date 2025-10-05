@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://wnqc80wplhnk" path="res://scene/Player.tscn" id="3_jw32o"]
 [ext_resource type="PackedScene" uid="uid://b4jpqjanerag8" path="res://scene/mobs/SnakeMob.tscn" id="4_1p5hy"]
 [ext_resource type="LabelSettings" uid="uid://dae0ujns4cmco" path="res://Main.tres" id="4_jw32o"]
-[ext_resource type="Script" uid="uid://c00j7j5oyrhs0" path="res://script/Ui.cs" id="5_bmxlf"]
+[ext_resource type="Script" uid="uid://c00j7j5oyrhs0" path="res://script/tool/Ui.cs" id="5_bmxlf"]
 [ext_resource type="PackedScene" uid="uid://cyfiamvtba675" path="res://scene/pickups/items/Potion.tscn" id="5_h1m7h"]
 [ext_resource type="TileSet" uid="uid://c1okyqiwq2m7e" path="res://res/TILESET/Tileset.tres" id="7_jw32o"]
 [ext_resource type="PackedScene" uid="uid://dbeepstjbey3p" path="res://scene/Menu.tscn" id="9_vy5pj"]
@@ -529,7 +529,7 @@ texture = ExtResource("2_idj7w")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_50glp")
 
-[node name="Main" type="Node2D" node_paths=PackedStringArray("Menu", "Player", "PlayerStart", "Camera", "Ui", "_mobSpawnTimer", "_pickupSpawnTimer", "_scoreTimer", "_startTimer", "_mobPath", "_mobSpawner", "_pickupPath", "_pickupSpawner")]
+[node name="Main" type="Node2D" node_paths=PackedStringArray("Menu", "Player", "PlayerStart", "Camera", "Ui", "_mobPath", "_mobSpawner", "_pickupPath", "_pickupSpawner")]
 texture_filter = 1
 script = ExtResource("1_r150o")
 Menu = NodePath("Menu")
@@ -537,10 +537,6 @@ Player = NodePath("Player")
 PlayerStart = NodePath("StartingPosition")
 Camera = NodePath("Player/Camera2D")
 Ui = NodePath("Player/Camera2D/Ui")
-_mobSpawnTimer = NodePath("Timers/MobTimer")
-_pickupSpawnTimer = NodePath("Timers/PickUpTimer")
-_scoreTimer = NodePath("Timers/ScoreTimer")
-_startTimer = NodePath("Timers/StartingTimer")
 MobScenes = Array[PackedScene]([ExtResource("2_v1gob"), ExtResource("3_frkhe"), ExtResource("4_1p5hy")])
 _mobPath = NodePath("SpawnPath")
 _mobSpawner = NodePath("SpawnPath/Spawner")

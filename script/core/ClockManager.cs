@@ -27,6 +27,9 @@ public sealed partial class ClockManager : IClockManager
         CreatePickupSpawnTimer();
         CreateGameTimer();
         CreateStartingTimer();
+    }
+    public void InitGame()
+    {
         StartTimers();
     }
     public void ResetGame()
