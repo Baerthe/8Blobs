@@ -7,8 +7,8 @@ public sealed partial class LevelManager : ILevelManager
     private Node2D _levelInstance;
     private readonly Node _parentNode;
 
-    public LevelManager(Node parentNode)
+    public LevelManager()
     {
-        _parentNode = parentNode;
+
     }
 }

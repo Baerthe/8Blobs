@@ -5,12 +5,5 @@ using Godot;
 /// </summary>
 public interface ILevelManager
 {
-    /// <summary>
-    /// The current level's PackedScene.
-    /// </summary>
-    public PackedScene CurrentLevel { get; }
-    /// <summary>
-    /// The current level's instance as a Node2D.
-    /// </summary>
-    public Node2D LevelInstance { get; }
+
 }

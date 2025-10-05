@@ -42,12 +42,7 @@ public partial class Main : Node2D
 	//////// These need to be moved ^^^^^^^^^^
 	//////// These need to be moved ^^^^^^^^^^
 	// Non-node Core Orchestration Variables
-	// Managers Singletons
-	private Dictionary<string, Object> CoreContainer { get; } = new();
-	private Dictionary<string, Variant> ToolContainer { get; } = new();
-	// We need to handle tiling manager different from other services; node based services are NOT global singletons, they are scene specific!!
-	private ITilingManager TilingManager { get; set; }
-	private IClockManager ClockManager { get; set; }
+	public static IServices ServiceProvider { get; private set; } = new Services();
 	// Flags and States
 	private State CurrentState { get; set; } = State.Menu;
 	private bool _isGameOver = false;
@@ -58,125 +53,27 @@ public partial class Main : Node2D
 	{
 		// Do we have everything?
 		NullCheck();
-		// Setup managers
-		ClockManager = new ClockManager();
-		TilingManager = new TilingManager(GetNode<TileMapLayer>("ForegroundLayer"), GetNode<TileMapLayer>("BackgroundLayer"));
-		// Register to the heartbeat pulse.
-		ClockManager.PulseTimeout += onPulse;
-		CoreContainer.Add("ClockManager", ClockManager as Node);
-		CoreContainer.Add("TilingManager", TilingManager as Node);
-		// Time for some kids.
-		AddChild(TilingManager as Node);
+		GD.Print("Main node ready.");
 	}
 	public override void _Process(double delta)
 	{
 		_delta = delta;
-		if (!_isGameStarted) return;
-		if (_isGameOver)
-		{
-			GameOver();
-		}
-	}
-	// Game state management
-	public void GameOver()
-	{
-		ClearScreen();
-		if (Input.IsActionPressed("ui_accept"))
-			OnMenuStartGame();
-	}
-	public void NewGame()
-	{
-		// Send over default timer sets to game manager
-		List<float> timerWaitTimes = new List<float>
-        {
-            MobSpawnTime,
-            PickupSpawnTime,
-            ScoreTime,
-            StartingTime,
-        };
-		ClockManager.SetTimers(timerWaitTimes);
-		// Setup temporary variables
-		var distantBetweenPickupAndPlayer = Player.Position - _pickupPath.Position;
-		var distantBetweenMobAndPlayer = Player.Position - _mobPath.Position;
-		// Initialize game state
-		ClockManager.InitGame();
-		TilingManager.LoadTiles();
-		// Set flags
-		_isGameStarted = true;
-		_isGameOver = false;
-		// Reset player and menu
-		Menu.Hide();
-		Player.Start(PlayerStart.Position);
-		Camera.Position = Player.Position;
-		ClearScreen();
-		// Start level
-		_startTimer.Start();
-		Ui.NewGame(_startTimer.WaitTime);
-	}
-	private void ClearScreen()
-	{
-		GetTree().CallGroup("Mobs", "Death");
-		GetTree().CallGroup("Pickups", Node.MethodName.QueueFree);
 	}
 	// Utility methods
 	private void NullCheck()
 	{
-		if (Player == null) GD.PrintErr("Player not set in Main");
-		if (PlayerStart == null) GD.PrintErr("PlayerStart not set in Main");
-		if (Camera == null) GD.PrintErr("Camera not set in Main");
-		if (Ui == null) GD.PrintErr("Ui not set in Main");
+		if (Player == null) GD.PrintErr("Player node not set in Main");
+		if (PlayerStart == null) GD.PrintErr("PlayerStart node not set in Main");
+		if (Camera == null) GD.PrintErr("Camera node not set in Main");
+		if (Ui == null) GD.PrintErr("Ui node not set in Main");
 		if (MobScenes == null || MobScenes.Length == 0) GD.PrintErr("MobScenes not set in Main");
-		if (_mobPath == null) GD.PrintErr("MobPath not set in Main");
-		if (_mobSpawner == null) GD.PrintErr("MobSpawner not set in Main");
+		if (_mobPath == null) GD.PrintErr("MobPath node not set in Main");
+		if (_mobSpawner == null) GD.PrintErr("MobSpawner node not set in Main");
 		if (PickupScenes == null || PickupScenes.Length == 0) GD.PrintErr("PickupScenes not set in Main");
-		if (_pickupPath == null) GD.PrintErr("PickupPath not set in Main");
-		if (_pickupSpawner == null) GD.PrintErr("PickupSpawner not set in Main");
-		if (Menu == null) GD.PrintErr("Menu not set in Main");
-	}
-	// Event handlers
-	private void onPulse()
-	{
-		GD.Print("Pulse received in Main");
-		Ui.Update(_delta, Player.Health, _score);
-		_pickupPath.Position = Player.Position - ClockManager.OffsetBetweenPickupAndPlayer;
-		_mobPath.Position = Player.Position - ClockManager.OffsetBetweenMobAndPlayer;
-		GetTree().CallGroup("Mobs", "Update", Player);
-		TilingManager.PlayerCrossedBorder(Player);
-	}
-	private void OnMobTimerTimeout()
-	{
-		Mob mob = (Mob)MobScenes[GD.Randi() % MobScenes.Length].Instantiate();
-		_mobSpawner.ProgressRatio = GD.Randf();
-		mob.Spawn(Player.Position, _mobSpawner);
-		AddChild(mob);
-	}
-	private void OnPickupTimerTimeout()
-	{
-		GD.Print($"Pickup path position: {_pickupPath.Position}");
-		GD.Print($"Pickup spawner name: {_pickupSpawner.Name}");
-		GD.Print($"Pickup spawner position: {_pickupSpawner.Position}");
-
-		Pickup pickup = (Pickup)PickupScenes[GD.Randi() % PickupScenes.Length].Instantiate();
-		_pickupSpawner.ProgressRatio = GD.Randf();
-		pickup.Position = _pickupSpawner.GlobalPosition;
-		AddChild(pickup);
-
-		GD.Print($"Pickup spawned at: {pickup.Position}");
-	}
-	private void OnScoreTimerTimeout()
-	{
-		_score++;
-		if (_score % 10 == 0)
-			_pickupSpawnTimer.WaitTime += 0.25f;
-	}
-	private void OnMenuStartGame()
-	{
-		NewGame();
-	}
-	private void OnPlayerDeath()
-	{
-		Player.SetPhysicsProcess(false);
-		_isGameOver = true;
+		if (_pickupPath == null) GD.PrintErr("PickupPath node not set in Main");
+		if (_pickupSpawner == null) GD.PrintErr("PickupSpawner node not set in Main");
+		if (Menu == null) GD.PrintErr("Menu node not set in Main");
+		GD.Print("We got all of our nodes! NullCheck Complete");
 	}
 	private enum State
 	{
