@@ -43,6 +43,7 @@ public partial class Main : Node2D
 	//////// These need to be moved ^^^^^^^^^^
 	// Non-node Core Orchestration Variables
 	public static IServices ServiceProvider { get; private set; } = new Services();
+	private IClockManager _clockManager;
 	// Flags and States
 	private State CurrentState { get; set; } = State.Menu;
 	private bool _isGameOver = false;
@@ -53,26 +54,71 @@ public partial class Main : Node2D
 	{
 		// Do we have everything?
 		NullCheck();
+		_clockManager = ServiceProvider.CoreContainer.Resolve<IClockManager>();
+		_clockManager.PulseTimeout += OnPulseTimeout;
+		_clockManager.SlowPulseTimeout += OnSlowPulseTimeout;
 		GD.Print("Main node ready.");
 	}
 	public override void _Process(double delta)
 	{
 		_delta = delta;
 	}
+	private void OnPulseTimeout()
+	{
+		GD.Print("Pulse Tick processing...");
+
+	}
+	private void OnSlowPulseTimeout()
+	{
+		GD.Print("Slow Pulse Tick processing...");
+	}
+	private void ProcessGameState()
+	{
+		switch (CurrentState)
+		{
+			case State.Menu:
+				// Waiting for player to start game
+				break;
+			case State.LevelSelect:
+				// Waiting for player to select level
+				break;
+			case State.Paused:
+				// Game is paused; waiting for player to unpause
+				break;
+			case State.Playing:
+				if (!_isGameStarted)
+				{
+				}
+				if (_isGameOver)
+				{
+				}
+				break;
+			case State.GameOver:
+				// Game over; waiting for player to return to menu or restart
+				break;
+			default:
+				GD.PrintErr("Unknown game state!");
+				throw new InvalidOperationException("ERROR 200: Unknown game state in Main. Game cannot load.");
+		}
+	}
 	// Utility methods
 	private void NullCheck()
 	{
-		if (Player == null) GD.PrintErr("Player node not set in Main");
-		if (PlayerStart == null) GD.PrintErr("PlayerStart node not set in Main");
-		if (Camera == null) GD.PrintErr("Camera node not set in Main");
-		if (Ui == null) GD.PrintErr("Ui node not set in Main");
-		if (MobScenes == null || MobScenes.Length == 0) GD.PrintErr("MobScenes not set in Main");
-		if (_mobPath == null) GD.PrintErr("MobPath node not set in Main");
-		if (_mobSpawner == null) GD.PrintErr("MobSpawner node not set in Main");
-		if (PickupScenes == null || PickupScenes.Length == 0) GD.PrintErr("PickupScenes not set in Main");
-		if (_pickupPath == null) GD.PrintErr("PickupPath node not set in Main");
-		if (_pickupSpawner == null) GD.PrintErr("PickupSpawner node not set in Main");
-		if (Menu == null) GD.PrintErr("Menu node not set in Main");
+		if (Player == null)
+		{
+			GD.PrintErr("Player node not set in Main");
+			throw new InvalidOperationException("ERROR 201: Player node not set in Main. Game cannot load.");
+		}
+		if (Camera == null)
+		{
+			GD.PrintErr("Camera node not set in Main");
+			throw new InvalidOperationException("ERROR 202: Camera node not set in Main. Game cannot load.");
+		}
+		if (Menu == null)
+		{
+			GD.PrintErr("Menu node not set in Main");
+			throw new InvalidOperationException("ERROR 203: Menu node not set in Main. Game cannot load.");
+		}
 		GD.Print("We got all of our nodes! NullCheck Complete");
 	}
 	private enum State

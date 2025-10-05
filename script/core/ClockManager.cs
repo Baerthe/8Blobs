@@ -82,6 +82,10 @@ public sealed partial class ClockManager : IClockManager
         _pickupSpawnTimer?.Start();
         _gameTimer?.Start();
         _startingTimer?.Start();
+        if (_pulseTimer.IsStopped() || _slowPulseTimer.IsStopped() || _mobSpawnTimer.IsStopped() || _pickupSpawnTimer.IsStopped() || _gameTimer.IsStopped() || _startingTimer.IsStopped())
+        {
+            GD.PrintErr("One or more timers failed to start! Something going on here.");
+        }
     }
     private void StopTimers()
     {
@@ -91,6 +95,10 @@ public sealed partial class ClockManager : IClockManager
         _pickupSpawnTimer?.Stop();
         _gameTimer?.Stop();
         _startingTimer?.Stop();
+        if (_pulseTimer.IsStopped() == false || _slowPulseTimer.IsStopped() == false || _mobSpawnTimer.IsStopped() == false || _pickupSpawnTimer.IsStopped() == false || _gameTimer.IsStopped() == false || _startingTimer.IsStopped() == false)
+        {
+            GD.PrintErr("One or more timers failed to stop! Something going on here.");
+        }
     }
     private void CreatePulseTimer()
     {
@@ -98,6 +106,11 @@ public sealed partial class ClockManager : IClockManager
         _pulseTimer = new Timer { WaitTime = 0.05f, OneShot = false, Autostart = false };
         GD.Print("Pulse Timer created with WaitTime 0.05f (20hrz)");
         _pulseTimer.Timeout += () => PulseTimeout?.Invoke();
+        if (_pulseTimer == null)
+        {
+            GD.PrintErr("Pulse Timer is null after creation!");
+            throw new InvalidOperationException("ERROR 001:Pulse Timer failed to initialize in ClockManager.");
+        }
     }
     private void CreateSlowPulseTimer()
     {
@@ -105,29 +118,54 @@ public sealed partial class ClockManager : IClockManager
         _slowPulseTimer = new Timer { WaitTime = 0.2f, OneShot = false, Autostart = false };
         GD.Print("Slow Pulse Timer created with WaitTime 0.2f (5hrz)");
         _slowPulseTimer.Timeout += () => SlowPulseTimeout?.Invoke();
+        if (_slowPulseTimer == null)
+        {
+            GD.PrintErr("Slow Pulse Timer is null after creation!");
+            throw new InvalidOperationException("ERROR 002: Slow Pulse Timer failed to initialize in ClockManager.");
+        }
     }
     private void CreateMobSpawnTimer()
     {
         if (_mobSpawnTimer != null) return;
         _mobSpawnTimer = new Timer { WaitTime = 5f, OneShot = false, Autostart = false };
         _mobSpawnTimer.Timeout += () => GD.Print("Mob Spawn Timer Timeout");
+        if (_mobSpawnTimer == null)
+        {
+            GD.PrintErr("Mob Spawn Timer is null after creation!");
+            throw new InvalidOperationException("ERROR 003: Mob Spawn Timer failed to initialize in ClockManager.");
+        }
     }
     private void CreatePickupSpawnTimer()
     {
         if (_pickupSpawnTimer != null) return;
         _pickupSpawnTimer = new Timer { WaitTime = 10f, OneShot = false, Autostart = false };
         _pickupSpawnTimer.Timeout += () => GD.Print("Pickup Spawn Timer Timeout");
+        if (_pickupSpawnTimer == null)
+        {
+            GD.PrintErr("Pickup Spawn Timer is null after creation!");
+            throw new InvalidOperationException("ERROR 004: Pickup Spawn Timer failed to initialize in ClockManager.");
+        }
     }
     private void CreateGameTimer()
     {
         if (_gameTimer != null) return;
         _gameTimer = new Timer { WaitTime = 60f, OneShot = true };
         _gameTimer.Timeout += () => GD.Print("Game Timer Timeout");
+        if (_gameTimer == null)
+        {
+            GD.PrintErr("Game Timer is null after creation!");
+            throw new InvalidOperationException("ERROR 005: Game Timer failed to initialize in ClockManager.");
+        }
     }
     private void CreateStartingTimer()
     {
         if (_startingTimer != null) return;
         _startingTimer = new Timer { WaitTime = 3f, OneShot = true };
         _startingTimer.Timeout += () => GD.Print("Starting Timer Timeout");
+        if (_startingTimer == null)
+        {
+            GD.PrintErr("Starting Timer is null after creation!");
+            throw new InvalidOperationException("ERROR 006: Starting Timer failed to initialize in ClockManager.");
+        }
     }
 }
