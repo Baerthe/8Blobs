@@ -5,6 +5,7 @@ using Tool.Interface;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System;
+using System.Diagnostics;
 /// <summary>
 /// The main class that handles main orchestration and dependency management of the game.
 /// </summary>
@@ -69,11 +70,11 @@ public partial class Main : Node2D
 	private void OnPulseTimeout()
 	{
 		GD.Print("Pulse Tick processing...");
-
 	}
 	private void OnSlowPulseTimeout()
 	{
 		GD.Print("Slow Pulse Tick processing...");
+		ProcessGameState();
 	}
 	private void ProcessGameState()
 	{

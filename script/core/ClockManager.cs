@@ -61,9 +61,13 @@ public sealed partial class ClockManager : IClockManager
         try
         {
             _mobSpawnTimer.WaitTime = Timers[0];
+            GD.Print($"Mob Spawn Timer set to {Timers[0]} seconds.");
             _pickupSpawnTimer.WaitTime = Timers[1];
+            GD.Print($"Pickup Spawn Timer set to {Timers[1]} seconds.");
             _gameTimer.WaitTime = Timers[2];
+            GD.Print($"Game Timer set to {Timers[2]} seconds.");
             _startingTimer.WaitTime = Timers[3];
+            GD.Print($"Starting Timer set to {Timers[3]} seconds.");
         }
         catch (Exception ex)
         {
@@ -156,18 +160,18 @@ public sealed partial class ClockManager : IClockManager
     {
         if (_pickupSpawnTimer != null) return;
         _pickupSpawnTimer = BuildTimer(10f, false, false, () => PickupSpawnTimeout?.Invoke(), this);
-        GD.Print("Pickup Spawn Timer created with WaitTime 10f");
+        GD.Print("Pickup Spawn Timer created with WaitTime 10f (0.1hrz), ~6 per minute");
     }
     private void CreateGameTimer()
     {
         if (_gameTimer != null) return;
-        _gameTimer = BuildTimer(60f, true, false, () => GameTimeout?.Invoke(), this);
-        GD.Print("Game Timer created with WaitTime 60f (OneShot)");
+        _gameTimer = BuildTimer(60f, false, false, () => GameTimeout?.Invoke(), this);
+        GD.Print("Game Timer created with WaitTime 60f (0.016hrz), ~1 per minute");
     }
     private void CreateStartingTimer()
     {
         if (_startingTimer != null) return;
         _startingTimer = BuildTimer(3f, true, false, () => StartingTimeout?.Invoke(), this);
-        GD.Print("Starting Timer created with WaitTime 3f (OneShot)");
+        GD.Print("Starting Timer created with WaitTime 3f (OneShot), ~3 seconds");
     }
 }
