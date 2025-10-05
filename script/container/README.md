@@ -1,0 +1,1 @@
+The [[Container]] folder contains the service containers for the game, including the CoreContainer and ToolContainer. These containers manage the registration and resolution of core services and tool nodes, facilitating dependency injection and ensuring proper lifecycle management of game services.
