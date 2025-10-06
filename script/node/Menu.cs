@@ -2,7 +2,7 @@ using Godot;
 /// <summary>
 /// The menu class handles the main menu UI and interactions.
 /// </summary>
-public partial class MenuTool : Control, IMenuTool
+public partial class Menu : Control
 {
 	[Signal] public delegate void StartGameEventHandler();
 	[Export] private Button _startButton;
@@ -12,10 +12,5 @@ public partial class MenuTool : Control, IMenuTool
 	{
 		_startButton.Pressed += () => EmitSignal(SignalName.StartGame);
 		_quitButton.Pressed += () => GetTree().Quit();
-	}
-
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
 	}
 }

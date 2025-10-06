@@ -1,5 +1,6 @@
 using Godot;
 using Core;
+using Tool;
 using Core.Interface;
 using Tool.Interface;
 using System;
@@ -10,7 +11,7 @@ public partial class Main : Node2D
 {
 	[ExportGroup("Singles")]
 	[ExportSubgroup("Core")]
-	[Export] public Menu Menu { get; private set; }
+	[Export] public MenuTool Menu { get; private set; }
 	[Export] public Player Player { get; private set; }
 	[Export] public Marker2D PlayerStart { get; private set; }
 	[Export] public Camera2D Camera { get; private set; }
