@@ -36,6 +36,7 @@ public abstract partial class Mob : RigidBody2D
     [Export] private AudioStreamOggVorbis _audioCall;
     private bool _ifOffScreen = false;
     private Player _player = Main.GlobalPlayer;
+    private bool _lock = false;
     public override void _Ready()
     {
         if (_sprite2D == null) GD.PrintErr("Mob: Sprite2D is null.");
@@ -51,6 +52,8 @@ public abstract partial class Mob : RigidBody2D
     /// </summary>
     public async void OnSlowPulseTimeout()
     {
+        if (_lock) return;
+        _lock = true;
         // if(!_levelRect.HasPoint(GlobalPosition)) return;
         // Need to add level bounds checking here once we have the service setup. Only process if within level bounds.
         var randomWait = (float)GD.RandRange(0.0, 0.125);
@@ -71,6 +74,7 @@ public abstract partial class Mob : RigidBody2D
             directionToPlayer = directionToPlayer.Rotated((float)GD.RandRange(-0.05, 0.05));
             LinearVelocity = LinearVelocity * 0.95f + directionToPlayer * Speed;
         }
+        _lock = false;
     }
     /// <summary>
     /// Handles taking damage and death of the mob.
