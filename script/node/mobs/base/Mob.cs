@@ -85,6 +85,8 @@ public abstract partial class Mob : RigidBody2D
                 break;
             case MobMovement.DashDirection:
                 LinearVelocity = directionToPlayer * Speed * 1.5f;
+                await ToSignal(GetTree().CreateTimer(randomWait), "timeout");
+                LinearVelocity = directionToPlayer * Speed * 0.5f;
                 break;
             default:
                 GD.PrintErr($"Mob: Unknown movement type {MovementType}");

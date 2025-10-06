@@ -2,7 +2,7 @@ using Godot;
 /// <summary>
 /// The menu class handles the main menu UI and interactions.
 /// </summary>
-public partial class Menu : Control
+public partial class MenuTool : Control, IMenuTool
 {
 	[Signal] public delegate void StartGameEventHandler();
 	[Export] private Button _startButton;
