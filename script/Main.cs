@@ -40,7 +40,7 @@ public partial class Main : Node2D
 	// Core Orchestration Variables
 	public static IServices ServiceProvider { get; private set; } = new Services();
 	public static Player GlobalPlayer { get; private set; }
-	private IClockManager _clockManager;
+	private IClockManager _clockManager = ServiceProvider.CoreContainer.Resolve<IClockManager>();
 	// Flags and States
 	private State CurrentState { get; set; } = State.Menu;
 	private bool _isGameOver = false;
@@ -51,14 +51,7 @@ public partial class Main : Node2D
 	{
 		// Do we have everything?
 		NullCheck();
-		GlobalPlayer = Player;
-		_clockManager = ServiceProvider.CoreContainer.Resolve<IClockManager>();
-		_clockManager.PulseTimeout += OnPulseTimeout;
-		_clockManager.SlowPulseTimeout += OnSlowPulseTimeout;
-		_clockManager.MobSpawnTimeout += OnMobSpawnTimeout;
-		_clockManager.PickupSpawnTimeout += OnPickupSpawnTimeout;
-		_clockManager.GameTimeout += OnGameTimeout;
-		_clockManager.StartingTimeout += OnStartingTimeout;
+		Subscribe();
 		GD.PrintRich("[color=#000][bgcolor=#00ff00]Main node ready. Initializing game...[/bgcolor][/color]");
 		_clockManager.InitGame(this);
 		ITilingTool tilingTool = ServiceProvider.ToolContainer.Resolve<ITilingTool>();
@@ -68,29 +61,74 @@ public partial class Main : Node2D
 	{
 		_delta = delta;
 	}
+	// Initialization Helpers
+	private void NullCheck()
+	{
+		if (Player == null)
+		{
+			GD.PrintErr("Player node not set in Main");
+			throw new InvalidOperationException("ERROR 201: Player node not set in Main. Game cannot load.");
+		}
+		if (Camera == null)
+		{
+			GD.PrintErr("Camera node not set in Main");
+			throw new InvalidOperationException("ERROR 202: Camera node not set in Main. Game cannot load.");
+		}
+		if (Menu == null)
+		{
+			GD.PrintErr("Menu node not set in Main");
+			throw new InvalidOperationException("ERROR 203: Menu node not set in Main. Game cannot load.");
+		}
+		GD.Print("We got all of our nodes! NullCheck Complete");
+	}
+	private void Subscribe()
+	{
+		GD.Print("Subscribing to ClockManager events...");
+		_clockManager.PulseTimeout += OnPulseTimeout;
+		_clockManager.SlowPulseTimeout += OnSlowPulseTimeout;
+		_clockManager.MobSpawnTimeout += OnMobSpawnTimeout;
+		_clockManager.PickupSpawnTimeout += OnPickupSpawnTimeout;
+		_clockManager.GameTimeout += OnGameTimeout;
+		_clockManager.StartingTimeout += OnStartingTimeout;
+		GD.PrintRich("[color=green]ClockManager subscription complete.");
+		GD.Print("Setting Global Player reference...");
+		GlobalPlayer = Player;
+		GD.PrintRich("[color=green]Global Player reference set.");
+	}
+
+	// Event Handlers
+	// Main is subscribed to all clock events, for batching, and this way we can print debug info, but also this let's us optimize some of the logic by having select onEvents
+	// get called by main instead of each individual class listeners. We can also solve race conditions this way, if needed.
 	private void OnPulseTimeout()
 	{
 		GD.PrintRich("[color=#afdd00]Pulse Tick processing...");
+		ProcessGameState();
 	}
 	private void OnSlowPulseTimeout()
 	{
 		GD.PrintRich("[color=#ffaa00]Slow Pulse Tick processing...");
-		ProcessGameState();
+		if (CurrentState != State.Playing) return;
+		ProcessMobLogic();
 	}
 	private void OnMobSpawnTimeout()
 	{
 		GD.PrintRich("[color=#00aaff]Mob Spawn Tick processing...");
+		if (CurrentState != State.Playing) return;
 	}
-	private void OnPickupSpawnTimeout(){
+	private void OnPickupSpawnTimeout()
+	{
 		GD.PrintRich("[color=#D0a0f2]Pickup Spawn Tick processing...");
+		if (CurrentState != State.Playing) return;
 	}
 	private void OnGameTimeout()
 	{
 		GD.PrintRich("[color=#1f9fA0]Game Timer processing...");
+		if (CurrentState != State.Playing) return;
 	}
 	private void OnStartingTimeout()
 	{
 		GD.PrintRich("[color=#ffffff]Starting Timer processing...");
+		if (CurrentState != State.Playing) return;
 	}
 	private void ProcessGameState()
 	{
@@ -121,25 +159,20 @@ public partial class Main : Node2D
 				throw new InvalidOperationException("ERROR 200: Unknown game state in Main. Game cannot load.");
 		}
 	}
-	// Utility methods
-	private void NullCheck()
+	private void ProcessMobLogic()
 	{
-		if (Player == null)
+		GD.Print("Processing mob logic...");
+		// Get all mobs in the scene and call their process logic.
+		// This assumes mobs are in a group called "Mobs". When called, each mob will handle its own logic and only act if within the current chunk.
+		// Mobs offscreen for long enough will get teleported into the current chunk.
+		var mobs = GetTree().GetNodesInGroup("Mobs");
+		foreach (var mob in mobs)
 		{
-			GD.PrintErr("Player node not set in Main");
-			throw new InvalidOperationException("ERROR 201: Player node not set in Main. Game cannot load.");
+			if (mob is Mobs.Mob m)
+			{
+				m.OnSlowPulseTimeout();
+			}
 		}
-		if (Camera == null)
-		{
-			GD.PrintErr("Camera node not set in Main");
-			throw new InvalidOperationException("ERROR 202: Camera node not set in Main. Game cannot load.");
-		}
-		if (Menu == null)
-		{
-			GD.PrintErr("Menu node not set in Main");
-			throw new InvalidOperationException("ERROR 203: Menu node not set in Main. Game cannot load.");
-		}
-		GD.Print("We got all of our nodes! NullCheck Complete");
 	}
 	private enum State
 	{
