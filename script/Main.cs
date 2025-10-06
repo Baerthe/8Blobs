@@ -24,12 +24,6 @@ public partial class Main : Node2D
 	/// They are here for now to avoid hardcoding values in the managers; for testing.
 	/// They are level specific and should be set in the level scene or a level data file
 	//////// These need to be moved vvvvvvvvvv
-	[ExportSubgroup("Timers")]
-	[Description("The amount of time, in seconds, for spawning of mobs, pickups, score increment, and game start countdown.")]
-	[Export] public float MobSpawnTime { get; private set; } = 1.5f;
-	[Export] public float PickupSpawnTime { get; private set; } = 5f;
-	[Export] public float ScoreTime { get; private set; } = 1f;
-	[Export] public float StartingTime { get; private set; } = 3f;
 	// Spawners
 	[ExportGroup("Spawnables")]
 	[Description("Scenes and paths for spawning mobs and pickups.")]
@@ -43,8 +37,9 @@ public partial class Main : Node2D
 	[Export] private PathFollow2D _pickupSpawner;
 	//////// These need to be moved ^^^^^^^^^^
 	//////// These need to be moved ^^^^^^^^^^
-	// Non-node Core Orchestration Variables
+	// Core Orchestration Variables
 	public static IServices ServiceProvider { get; private set; } = new Services();
+	public static Player GlobalPlayer { get; private set; }
 	private IClockManager _clockManager;
 	// Flags and States
 	private State CurrentState { get; set; } = State.Menu;
@@ -56,6 +51,7 @@ public partial class Main : Node2D
 	{
 		// Do we have everything?
 		NullCheck();
+		GlobalPlayer = Player;
 		_clockManager = ServiceProvider.CoreContainer.Resolve<IClockManager>();
 		_clockManager.PulseTimeout += OnPulseTimeout;
 		_clockManager.SlowPulseTimeout += OnSlowPulseTimeout;

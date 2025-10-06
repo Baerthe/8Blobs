@@ -1,4 +1,7 @@
 namespace Mobs;
+
+using Core.Interface;
+using Core;
 using Godot;
 /// <summary>
 /// A mob is a mobile enemy that moves around the screen and can collide with the player. This is a base class for all mobs.
@@ -7,24 +10,32 @@ public abstract partial class Mob : RigidBody2D
 {
     [ExportCategory("Statistics")]
     [Export] public MobMovement MovementType { get; private set; } = MobMovement.CurvedDirection;
-    [Export] public int Speed { get; set; } = 100;
+    [Export] public byte Health { get; set; } = 1;
+    [Export] public byte ExpWorth { get; set; } = 1;
+    [Export] public byte Speed { get; set; } = 100;
     [ExportCategory("Parts")]
     [Export] private AnimatedSprite2D _sprite2D;
     [Export] private CollisionShape2D _collision2D;
     [Export] private VisibleOnScreenNotifier2D _notifier2D;
     private bool _ifOffScreen = false;
+    private Player _player = Main.GlobalPlayer;
+    private readonly IClockManager _clockManager = Main.ServiceProvider.CoreContainer.Resolve<IClockManager>();
     public override void _Ready()
     {
+        if (_sprite2D == null) GD.PrintErr("Mob: Sprite2D is null.");
+        if (_collision2D == null) GD.PrintErr("Mob: Collision2D is null.");
+        if (_notifier2D == null) GD.PrintErr("Mob: Notifier2D is null.");
+        _clockManager.SlowPulseTimeout += OnSlowPulseTimeout;
         _sprite2D.Animation = "Walk";
     }
     public override void _Process(double delta)
     {
         _sprite2D.Play();
     }
-    public void Update(Player player)
+    public void OnSlowPulseTimeout()
     {
-        if (player == null) return;
-        Vector2 directionToPlayer = (player.Position - GlobalPosition).Normalized();
+        if (_player == null) return;
+        Vector2 directionToPlayer = (_player.Position - GlobalPosition).Normalized();
         if (MovementType == MobMovement.PlayerAttracted)
         {
             LinearVelocity = directionToPlayer * Speed;
