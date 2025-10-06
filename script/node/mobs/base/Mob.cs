@@ -1,6 +1,4 @@
 namespace Mobs;
-
-using System;
 using Core;
 using Godot;
 /// <summary>
@@ -17,15 +15,16 @@ public abstract partial class Mob : RigidBody2D
     [ExportSubgroup("General")]
     [Export] public MobLevel Level { get; set; } = MobLevel.Basic;
     [Export] public ElementType Element { get; set; } = ElementType.None;
+    [Export] public TribeGroup Tribe { get; set; } = TribeGroup.None;
     [Export] public RarityType Rarity { get; set; } = RarityType.Common;
     [Export] public MobMovement MovementType { get; private set; } = MobMovement.CurvedDirection;
     [Export] public MobAbility Ability { get; set; } = MobAbility.Runner;
     [Export] public byte AbilityStrength { get; set; } = 1;
     [ExportSubgroup("Values")]
-    [Export] public byte Health { get; set; } = 1;
-    [Export] public byte ExpWorth { get; set; } = 1;
+    [Export] public uint Health { get; set; } = 1;
+    [Export] public uint ExpWorth { get; set; } = 1;
     [Export] public byte Speed { get; set; } = 100;
-    [Export] public byte Damage { get; set; } = 1;
+    [Export] public uint Damage { get; set; } = 1;
     [ExportSubgroup("Info")]
     [Export] public string MobName { get; set; } = "Mob";
     [Export] public string Description { get; set; } = "A generic mob.";
@@ -80,10 +79,6 @@ public abstract partial class Mob : RigidBody2D
             LinearVelocity = LinearVelocity * 0.95f + directionToPlayer * Speed;
         }
         _lock = false;
-    }
-    public void OnPlayerCollision()
-    {
-        //
     }
     /// <summary>
     /// Handles taking damage and death of the mob.
