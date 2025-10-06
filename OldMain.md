@@ -13,8 +13,7 @@
 	{
 		Mob mob = (Mob)MobScenes[GD.Randi() % MobScenes.Length].Instantiate();
 		_mobSpawner.ProgressRatio = GD.Randf();
-		mob.Spawn(Player.Position, _mobSpawner);
-		AddChild(mob);
+		mob.Spawn(_mobSpawner);
 	}
 	private void OnPickupTimerTimeout()
 	{
