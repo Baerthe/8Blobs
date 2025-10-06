@@ -1,4 +1,6 @@
 namespace Mobs;
+
+using System.Formats.Asn1;
 using Core;
 using Godot;
 /// <summary>
@@ -80,8 +82,9 @@ public abstract partial class Mob : RigidBody2D
     /// Handles taking damage and death of the mob.
     /// </summary>
     /// <param name="damage">The amount of damage to inflict on the mob.</param>
-    public void TakeDamage(byte damage)
+    public void Harm(byte damage)
     {
+        if (damage <= 0) return;
         if (Health <= damage)
         {
             Death();
@@ -95,10 +98,11 @@ public abstract partial class Mob : RigidBody2D
     /// Heals the mob by a specified amount, capping at 255.
     /// </summary>
     /// <param name="amount">The amount of health to restore.</param>
-    public void Heal(byte amount)
+    public void Heal(uint amount)
     {
+        if (amount <= 0) return;
         Health += amount;
-        if (Health > 255) Health = 255;
+        if (Health > uint.MaxValue) Health = uint.MaxValue;
     }
     /// <summary>
     /// Spawns the mob at the spawner's position and sets its initial velocity based on its movement type.
