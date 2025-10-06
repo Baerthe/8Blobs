@@ -1,4 +1,5 @@
-namspace Core;
+namespace Core;
+
 public enum LevelType : byte
 {
     plains = 0,
