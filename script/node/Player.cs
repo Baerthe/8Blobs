@@ -7,7 +7,6 @@ using System.Collections.Generic;
 /// </summary>
 public partial class Player : CharacterBody2D
 {
-	[Signal] public delegate void OnHitEventHandler();
 	[Signal] public delegate void OnDeathEventHandler();
 	[Export] public int MaxHealth { get; set; } = 4;
 	public int Health { get { return _health; } }
@@ -123,6 +122,8 @@ public partial class Player : CharacterBody2D
 	}
 	private void OnBodyEntered(Node2D body)
 	{
+		//TODO: Take damage will need to be handled differently. We should tally numbers from each collider (mob) and the type of damage (for elements), then apply it every pulse.
+		// This will prevent multiple collisions in a single frame from causing massive damage; but still allow multiple hits to add up.
 		GD.Print($"Body entered: {body.Name} - Type: {body.GetType().Name}");
 		if (body is Pickup pickup)
 		{
@@ -133,13 +134,12 @@ public partial class Player : CharacterBody2D
 		if (body is Mob mob || body is Trap trap)
 		{
 			if (body is Mob)
-				_health -= 1;
+				body.CallDeferred("TakeDamage", 1);
 			else if (body is Trap)
 				_health -= ((Trap)body).Damage;
 			_hitBox2D.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
 			ImmunityFrames();
 		}
-		EmitSignal(SignalName.OnHit);
 	}
 	private void OnPickUp(Pickup pickup)
 	{

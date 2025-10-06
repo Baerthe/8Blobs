@@ -7,9 +7,9 @@ using Godot;
 /// A mob is a mobile enemy that moves around the screen and can collide with the player. This is a base class for all mobs.
 /// </summary>
 /// <remarks>
-/// Mobs can have different movement types: CurvedDirection, PlayerAttracted, RandomDirection.
-/// Mobs can be spawned by a spawner and will move according to their movement type.
-/// Mobs can interact with the player and the environment, taking damage and providing experience points when defeated.
+/// Mobs have different movement types, abilities, and stats. They can take damage and die.
+/// Mobs are spawned by spawners and interact with the player.
+/// Mobs could be extended to have more complex behaviors and interactions; and even done completely in script, but you should use the editor for better results; making each mob into a scene.
 /// </remarks>
 public abstract partial class Mob : RigidBody2D
 {
@@ -34,6 +34,7 @@ public abstract partial class Mob : RigidBody2D
     [Export] private AnimatedSprite2D _sprite2D;
     [Export] private CollisionShape2D _collision2D;
     [Export] private AudioStreamOggVorbis _audioCall;
+    // Private Variables
     private bool _ifOffScreen = false;
     private Player _player = Main.GlobalPlayer;
     private bool _lock = false;
@@ -46,6 +47,10 @@ public abstract partial class Mob : RigidBody2D
     public override void _Process(double delta)
     {
         _sprite2D.Play();
+    }
+    public override void _ExitTree()
+    {
+       Death();
     }
     /// <summary>
     /// Handles the mob's response to the game. Uses slow pulse called by group in main.
@@ -75,6 +80,10 @@ public abstract partial class Mob : RigidBody2D
             LinearVelocity = LinearVelocity * 0.95f + directionToPlayer * Speed;
         }
         _lock = false;
+    }
+    public void OnPlayerCollision()
+    {
+        //
     }
     /// <summary>
     /// Handles taking damage and death of the mob.
