@@ -1,5 +1,6 @@
 namespace Mobs;
 
+using System;
 using Core;
 using Godot;
 /// <summary>
@@ -13,15 +14,26 @@ using Godot;
 public abstract partial class Mob : RigidBody2D
 {
     [ExportCategory("Statistics")]
+    [ExportSubgroup("General")]
     [Export] public MobLevel Level { get; set; } = MobLevel.Basic;
-    [Export] public MobMovement MovementType { get; private set; } = MobMovement.CurvedDirection;
     [Export] public ElementType Element { get; set; } = ElementType.None;
+    [Export] public RarityType Rarity { get; set; } = RarityType.Common;
+    [Export] public MobMovement MovementType { get; private set; } = MobMovement.CurvedDirection;
+    [Export] public MobAbility Ability { get; set; } = MobAbility.Runner;
+    [Export] public byte AbilityStrength { get; set; } = 1;
+    [ExportSubgroup("Values")]
     [Export] public byte Health { get; set; } = 1;
     [Export] public byte ExpWorth { get; set; } = 1;
     [Export] public byte Speed { get; set; } = 100;
+    [Export] public byte Damage { get; set; } = 1;
+    [ExportSubgroup("Info")]
+    [Export] public string MobName { get; set; } = "Mob";
+    [Export] public string Description { get; set; } = "A generic mob.";
+    [Export] public string Lore { get; set; } = "No lore available.";
     [ExportCategory("Parts")]
     [Export] private AnimatedSprite2D _sprite2D;
     [Export] private CollisionShape2D _collision2D;
+    [Export] private AudioStreamOggVorbis _audioCall;
     private bool _ifOffScreen = false;
     private Player _player = Main.GlobalPlayer;
     public override void _Ready()
@@ -125,6 +137,14 @@ public abstract partial class Mob : RigidBody2D
         Advanced = 2,
         Elite = 3,
         Boss = 4
+    }
+    public enum MobAbility : byte
+    {
+        Runner = 0,
+        Poison = 1,
+        Healer = 2,
+        Explodes = 3,
+        Aura = 4
     }
     private async void Death()
     {

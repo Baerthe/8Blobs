@@ -1,6 +1,6 @@
 [gd_scene load_steps=16 format=3 uid="uid://bykyt1m4a7fdw"]
 
-[ext_resource type="Script" uid="uid://cequpayj1ldbg" path="res://script/mobs/Blob.cs" id="1_lu2i0"]
+[ext_resource type="Script" uid="uid://cequpayj1ldbg" path="res://script/node/mobs/Blob.cs" id="1_lu2i0"]
 [ext_resource type="Texture2D" uid="uid://bh48euqfpyh0k" path="res://res/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_NegaBlob Death.png" id="2_7ypx7"]
 [ext_resource type="Texture2D" uid="uid://c1pxufmejm6vn" path="res://res/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_NegaBlob Hurt.png" id="3_2f3j2"]
 [ext_resource type="Texture2D" uid="uid://dsev4snyjy5qw" path="res://res/SPRITES/ENEMIES/spritesheets/ENEMIES8bit_NegaBlob Walk.png" id="4_uf4pq"]
@@ -89,7 +89,7 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_76m6r"]
 radius = 6.0
 
-[node name="BlobMob" type="RigidBody2D" node_paths=PackedStringArray("_sprite2D", "_collision2D", "_notifier2D") groups=["Mobs"]]
+[node name="BlobMob" type="RigidBody2D" node_paths=PackedStringArray("_sprite2D", "_collision2D") groups=["Mobs"]]
 editor_description = "The Blob Mob, weakest type."
 collision_layer = 2
 collision_mask = 5
@@ -99,7 +99,6 @@ script = ExtResource("1_lu2i0")
 Speed = 10
 _sprite2D = NodePath("AnimatedSprite2D")
 _collision2D = NodePath("CollisionShape2D")
-_notifier2D = NodePath("VisibleOnScreenNotifier2D")
 metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]

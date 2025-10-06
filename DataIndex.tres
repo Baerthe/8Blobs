@@ -6,7 +6,7 @@ data = {
 "achievements": {
 "first_blood": false,
 "monster_hunter": false,
-"treasure_hunter": false,
 "speed_runner": false,
+"treasure_hunter": false
 }
 }
