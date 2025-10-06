@@ -18,7 +18,7 @@ public abstract partial class Mob : RigidBody2D
     [Export] public TribeGroup Tribe { get; set; } = TribeGroup.None;
     [Export] public RarityType Rarity { get; set; } = RarityType.Common;
     [Export] public MobMovement MovementType { get; private set; } = MobMovement.CurvedDirection;
-    [Export] public MobAbility Ability { get; set; } = MobAbility.Runner;
+    [Export] public MobAbility Ability { get; set; } = MobAbility.None;
     [Export] public byte AbilityStrength { get; set; } = 1;
     [ExportSubgroup("Values")]
     [Export] public uint Health { get; set; } = 1;
@@ -46,10 +46,6 @@ public abstract partial class Mob : RigidBody2D
     public override void _Process(double delta)
     {
         _sprite2D.Play();
-    }
-    public override void _ExitTree()
-    {
-       Death();
     }
     /// <summary>
     /// Handles the mob's response to the game. Uses slow pulse called by group in main.
@@ -102,7 +98,7 @@ public abstract partial class Mob : RigidBody2D
     public void Heal(byte amount)
     {
         Health += amount;
-        if(Health > 255) Health = 255;
+        if (Health > 255) Health = 255;
     }
     /// <summary>
     /// Spawns the mob at the spawner's position and sets its initial velocity based on its movement type.
@@ -132,27 +128,6 @@ public abstract partial class Mob : RigidBody2D
         var velocity = new Vector2((float)GD.RandRange(150.0, 250.0), 0);
         var mobBaseSpeed = (Speed + (int)(GD.RandRange(-1.0, 0.5) % Speed)) * new Vector2(1, 0).Rotated(direction);
         LinearVelocity = velocity.Rotated(direction) + mobBaseSpeed;
-    }
-    public enum MobMovement : byte
-    {
-        CurvedDirection,
-        PlayerAttracted,
-        RandomDirection
-    }
-    public enum MobLevel : byte
-    {
-        Basic = 1,
-        Advanced = 2,
-        Elite = 3,
-        Boss = 4
-    }
-    public enum MobAbility : byte
-    {
-        Runner = 0,
-        Poison = 1,
-        Healer = 2,
-        Explodes = 3,
-        Aura = 4
     }
     private async void Death()
     {

@@ -1,5 +1,7 @@
-namespace Core;
-
+namespace Tool;
+/// <summary>
+/// The theme type of a level.
+/// </summary>
 public enum LevelType : byte
 {
     plains = 0,
