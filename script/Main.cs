@@ -2,10 +2,7 @@ using Godot;
 using Core;
 using Core.Interface;
 using Tool.Interface;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System;
-using System.Diagnostics;
 /// <summary>
 /// The main class that handles main orchestration and dependency management of the game.
 /// </summary>
@@ -13,7 +10,6 @@ public partial class Main : Node2D
 {
 	[ExportGroup("Singles")]
 	[ExportSubgroup("Core")]
-	[Description("Core nodes for handling game logic and tiling.")]
 	[Export] public Menu Menu { get; private set; }
 	[Export] public Player Player { get; private set; }
 	[Export] public Marker2D PlayerStart { get; private set; }
@@ -26,7 +22,6 @@ public partial class Main : Node2D
 	//////// These need to be moved vvvvvvvvvv
 	// Spawners
 	[ExportGroup("Spawnables")]
-	[Description("Scenes and paths for spawning mobs and pickups.")]
 	[ExportSubgroup("Mobs")]
 	[Export] public PackedScene[] MobScenes { get; private set; }
 	[Export] private Path2D _mobPath;
@@ -97,7 +92,7 @@ public partial class Main : Node2D
 	}
 
 	// Event Handlers
-	// Main is subscribed to all clock events, for batching, and this way we can print debug info, but also this let's us optimize some of the logic by having select onEvents
+	// Main is subscribed to both pulse clock events, for batching, and this way we can print debug info, but also this let's us optimize some of the logic by having select onEvents
 	// get called by main instead of each individual class listeners. We can also solve race conditions this way, if needed.
 	private void OnPulseTimeout()
 	{
@@ -110,6 +105,8 @@ public partial class Main : Node2D
 		if (CurrentState != State.Playing) return;
 		ProcessMobLogic();
 	}
+	///TODO: These should be moved to the level tools. They are level specific after all.
+	/// We can have the level tool subscribe to these events when the level loads, and unsubscribe when the level unloads (by deleting the level tool node along side the level loaded).
 	private void OnMobSpawnTimeout()
 	{
 		GD.PrintRich("[color=#00aaff]Mob Spawn Tick processing...");
@@ -164,7 +161,7 @@ public partial class Main : Node2D
 		GD.Print("Processing mob logic...");
 		// Get all mobs in the scene and call their process logic.
 		// This assumes mobs are in a group called "Mobs". When called, each mob will handle its own logic and only act if within the current chunk.
-		// Mobs offscreen for long enough will get teleported into the current chunk.
+		// Mobs out of all loaded chunks for long enough will get teleported into the current chunk by the level tool.
 		var mobs = GetTree().GetNodesInGroup("Mobs");
 		foreach (var mob in mobs)
 		{

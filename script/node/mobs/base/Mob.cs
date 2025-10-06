@@ -1,6 +1,6 @@
 namespace Mobs;
 
-using Core.Interface;
+using Core;
 using Godot;
 /// <summary>
 /// A mob is a mobile enemy that moves around the screen and can collide with the player. This is a base class for all mobs.
@@ -13,21 +13,21 @@ using Godot;
 public abstract partial class Mob : RigidBody2D
 {
     [ExportCategory("Statistics")]
+    [Export] public MobLevel Level { get; set; } = MobLevel.Basic;
     [Export] public MobMovement MovementType { get; private set; } = MobMovement.CurvedDirection;
+    [Export] public ElementType Element { get; set; } = ElementType.None;
     [Export] public byte Health { get; set; } = 1;
     [Export] public byte ExpWorth { get; set; } = 1;
     [Export] public byte Speed { get; set; } = 100;
     [ExportCategory("Parts")]
     [Export] private AnimatedSprite2D _sprite2D;
     [Export] private CollisionShape2D _collision2D;
-    [Export] private VisibleOnScreenNotifier2D _notifier2D;
     private bool _ifOffScreen = false;
     private Player _player = Main.GlobalPlayer;
     public override void _Ready()
     {
         if (_sprite2D == null) GD.PrintErr("Mob: Sprite2D is null.");
         if (_collision2D == null) GD.PrintErr("Mob: Collision2D is null.");
-        if (_notifier2D == null) GD.PrintErr("Mob: Notifier2D is null.");
         _sprite2D.Animation = "Walk";
     }
     public override void _Process(double delta)
@@ -41,9 +41,8 @@ public abstract partial class Mob : RigidBody2D
     {
         // if(!_levelRect.HasPoint(GlobalPosition)) return;
         // Need to add level bounds checking here once we have the service setup. Only process if within level bounds.
-        var randomWait = (float)GD.RandRange(0.0, 1.0);
+        var randomWait = (float)GD.RandRange(0.0, 0.125);
         await ToSignal(GetTree().CreateTimer(randomWait), "timeout");
-        if (_player == null) return;
         Vector2 directionToPlayer = (_player.Position - GlobalPosition).Normalized();
         if (MovementType == MobMovement.PlayerAttracted)
         {
@@ -119,6 +118,13 @@ public abstract partial class Mob : RigidBody2D
         CurvedDirection,
         PlayerAttracted,
         RandomDirection
+    }
+    public enum MobLevel : byte
+    {
+        Basic = 1,
+        Advanced = 2,
+        Elite = 3,
+        Boss = 4
     }
     private async void Death()
     {
