@@ -9,20 +9,15 @@ using Godot;
 /// </summary>
 public sealed class Services : IServices
 {
-    /// <summary>
-    /// The core container for managing core singletons. Cores are not nodes; but global helpers.
-    /// </summary>
     public CoreContainer CoreContainer { get; } = new();
-    /// <summary>
-    /// The tool container for managing tool nodes. Tools get copied into the scene.
-    /// </summary>
     public ToolContainer ToolContainer { get; } = new();
-    /// <summary>
-    /// Constructor for the Services class. Initializes the core and tool containers.
-    /// </summary>
     public Services()
     {
         BuildCoreContainer();
+    }
+    public void DelayedToolBuilder()
+    {
+        if (ToolContainer != null) return;
         BuildToolContainer();
     }
     /// <summary>
@@ -35,6 +30,7 @@ public sealed class Services : IServices
     {
         GD.PrintRich("[color=#00ff00]Building Core Container...[/color]");
         CoreContainer.Register<IClockManager, ClockManager>();
+        CoreContainer.Register<IPlayerDataManager, PlayerDataManager>();
         CoreContainer.Register<ILevelManager, LevelManager>();
         GD.PrintRich("[color=#00ff00]Core Container Built.[/color]");
     }

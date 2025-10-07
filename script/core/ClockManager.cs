@@ -3,7 +3,7 @@ using Core.Interface;
 using System;
 using System.Collections.Generic;
 using Godot;
-public sealed partial class ClockManager : IClockManager
+public sealed class ClockManager : IClockManager
 {
     public event Action PulseTimeout;
     public event Action SlowPulseTimeout;

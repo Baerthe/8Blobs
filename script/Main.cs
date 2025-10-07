@@ -11,16 +11,11 @@ public partial class Main : Node2D
 {
 	[ExportGroup("Singles")]
 	[ExportSubgroup("Core")]
-	[Export] public MenuTool Menu { get; private set; }
+	[Export] public Menu Menu { get; private set; }
 	[Export] public Player Player { get; private set; }
 	[Export] public Marker2D PlayerStart { get; private set; }
 	[Export] public Camera2D Camera { get; private set; }
 	[Export] public Ui Ui { get; private set; }
-	//////// These need to be moved vvvvvvvvvv
-	/// We need to move these level specific variables out of Main and into level specific managers or data files.
-	/// They are here for now to avoid hardcoding values in the managers; for testing.
-	/// They are level specific and should be set in the level scene or a level data file
-	//////// These need to be moved vvvvvvvvvv
 	// Spawners
 	[ExportGroup("Spawnables")]
 	[ExportSubgroup("Mobs")]
@@ -31,12 +26,10 @@ public partial class Main : Node2D
 	[Export] public PackedScene[] PickupScenes { get; private set; }
 	[Export] private Path2D _pickupPath;
 	[Export] private PathFollow2D _pickupSpawner;
-	//////// These need to be moved ^^^^^^^^^^
-	//////// These need to be moved ^^^^^^^^^^
 	// Core Orchestration Variables
 	public static IServices ServiceProvider { get; private set; } = new Services();
-	public static Player GlobalPlayer { get; private set; }
-	private IClockManager _clockManager = ServiceProvider.CoreContainer.Resolve<IClockManager>();
+	private readonly IClockManager _clockManager = ServiceProvider.CoreContainer.Resolve<IClockManager>();
+	private readonly IPlayerDataManager _PlayerDataManager = ServiceProvider.CoreContainer.Resolve<IPlayerDataManager>();
 	// Flags and States
 	private State CurrentState { get; set; } = State.Menu;
 	private bool _isGameOver = false;
@@ -48,6 +41,7 @@ public partial class Main : Node2D
 		// Do we have everything?
 		NullCheck();
 		Subscribe();
+		ServiceProvider.DelayedToolBuilder();
 		GD.PrintRich("[color=#000][bgcolor=#00ff00]Main node ready. Initializing game...[/bgcolor][/color]");
 		_clockManager.InitGame(this);
 		ITilingTool tilingTool = ServiceProvider.ToolContainer.Resolve<ITilingTool>();
@@ -87,8 +81,6 @@ public partial class Main : Node2D
 		_clockManager.GameTimeout += OnGameTimeout;
 		_clockManager.StartingTimeout += OnStartingTimeout;
 		GD.PrintRich("[color=green]ClockManager subscription complete.");
-		GD.Print("Setting Global Player reference...");
-		GlobalPlayer = Player;
 		GD.PrintRich("[color=green]Global Player reference set.");
 	}
 
