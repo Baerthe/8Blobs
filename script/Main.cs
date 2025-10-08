@@ -4,6 +4,7 @@ using Tool;
 using Core.Interface;
 using Tool.Interface;
 using System;
+using Container;
 /// <summary>
 /// The main class that handles main orchestration and dependency management of the game.
 /// </summary>
@@ -27,9 +28,8 @@ public partial class Main : Node2D
 	[Export] private Path2D _pickupPath;
 	[Export] private PathFollow2D _pickupSpawner;
 	// Core Orchestration Variables
-	public static IServices ServiceProvider { get; private set; } = new Services();
-	private readonly IClockManager _clockManager = ServiceProvider.CoreContainer.Resolve<IClockManager>();
-	private readonly IPlayerDataManager _PlayerDataManager = ServiceProvider.CoreContainer.Resolve<IPlayerDataManager>();
+	private readonly IClockManager _clockManager = CoreBox.GetClockManager();
+	private readonly IPlayerDataManager _playerDataManager = CoreBox.GetPlayerDataManager();
 	// Flags and States
 	private State CurrentState { get; set; } = State.Menu;
 	private bool _isGameOver = false;
@@ -41,11 +41,11 @@ public partial class Main : Node2D
 		// Do we have everything?
 		NullCheck();
 		Subscribe();
-		ServiceProvider.DelayedToolBuilder();
 		GD.PrintRich("[color=#000][bgcolor=#00ff00]Main node ready. Initializing game...[/bgcolor][/color]");
 		_clockManager.InitGame(this);
-		ITilingTool tilingTool = ServiceProvider.ToolContainer.Resolve<ITilingTool>();
-
+		GD.PrintRich("[color=#000][bgcolor=#00ff00]Game Initialized.[/bgcolor][/color]");
+		_playerDataManager.SetGlobalPlayer(Player);
+		ITilingTool tilingTool = ToolBox.GetTilingTool();
 	}
 	public override void _Process(double delta)
 	{

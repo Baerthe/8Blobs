@@ -1,6 +1,7 @@
 namespace Mobs;
 
 using System.Formats.Asn1;
+using Container;
 using Core;
 using Godot;
 /// <summary>
@@ -64,7 +65,7 @@ public abstract partial class Mob : RigidBody2D
             _lock = false;
             return;
         }
-        Player _player = Main.GlobalPlayer;
+        Player _player = CoreBox.GetPlayerDataManager().GlobalPlayer;
         Vector2 directionToPlayer = (_player.Position - GlobalPosition).Normalized();
         switch (MovementType)
         {

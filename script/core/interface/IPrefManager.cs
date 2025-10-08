@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /// <summary>
 /// Interface for managing user preferences.
 /// </summary>
-public interface IPrefManager
+public interface IPrefManager : ICore
 {
     
 }

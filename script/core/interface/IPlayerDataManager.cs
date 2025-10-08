@@ -4,7 +4,7 @@ using System.Collections.Generic;
 /// <summary>
 /// Interface for the PlayerDataManager; this manager handles player data such as unlocked heros, equipment, weapons, items, and achievements.
 /// </summary>
-public interface IPlayerDataManager
+public interface IPlayerDataManager : ICore
 {
     Player GlobalPlayer { get; }
     Dictionary<string, bool> UnlockedHeros { get; }

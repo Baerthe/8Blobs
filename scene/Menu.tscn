@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://dbeepstjbey3p"]
 
-[ext_resource type="Script" uid="uid://0l280xdpklsp" path="res://script/Menu.cs" id="1_6pedr"]
+[ext_resource type="Script" uid="uid://cv4s8om31xk8n" path="res://script/node/Menu.cs" id="2_sd5c8"]
 [ext_resource type="LabelSettings" uid="uid://dae0ujns4cmco" path="res://Main.tres" id="2_syfuq"]
 [ext_resource type="Theme" uid="uid://cih5xv4c26sce" path="res://MainTheme.tres" id="3_s2c3o"]
 [ext_resource type="Texture2D" uid="uid://xs14vhmcqc3m" path="res://res/SPRITES/ITEMS/item8BIT_gem.png" id="4_ma218"]
@@ -17,7 +17,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("3_s2c3o")
-script = ExtResource("1_6pedr")
+script = ExtResource("2_sd5c8")
 _startButton = NodePath("StartButton")
 _quitButton = NodePath("QuitButton")
 

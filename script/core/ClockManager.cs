@@ -20,18 +20,37 @@ public sealed class ClockManager : IClockManager
     private static Timer _mobSpawnTimer;
     private static Timer _pickupSpawnTimer;
     private static Dictionary<byte, Timer> _timers = new();
+    private bool _isInitialized = false;
     public ClockManager()
     {
-        GD.PrintRich("[color=#0fff00]ClockManager initializing...[/color]");
+        _isInitialized = false;
+    }
+    /// <summary>
+    /// Initializes the ClockManager and starts all timers.
+    /// </summary>
+    /// <param name="parent"></param>
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <remarks>
+    /// This method should be called once when the game starts from the main parent node; because it uses Godot Timers, not System.Timers.
+    /// </remarks>
+    public void InitGame(Node parent)
+    {
+        if (_isInitialized)
+        {
+            GD.PrintErr("ClockManager is already initialized. InitGame should only be called once per game session.");
+            return;
+        }
+        if (parent == null)
+        {
+            GD.PrintErr("Parent node is null. Cannot initialize ClockManager.");
+            throw new InvalidOperationException("ERROR 002: Parent node is null in ClockManager. Timers cannot start.");
+        }
         CreatePulseTimer();
         CreateSlowPulseTimer();
         CreateMobSpawnTimer();
         CreatePickupSpawnTimer();
         CreateGameTimer();
         CreateStartingTimer();
-    }
-    public void InitGame(Node parent)
-    {
         StartTimers(parent);
     }
     public void ResetGame()

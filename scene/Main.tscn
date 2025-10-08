@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://wnqc80wplhnk" path="res://scene/Player.tscn" id="3_jw32o"]
 [ext_resource type="PackedScene" uid="uid://b4jpqjanerag8" path="res://scene/mobs/SnakeMob.tscn" id="4_1p5hy"]
 [ext_resource type="LabelSettings" uid="uid://dae0ujns4cmco" path="res://Main.tres" id="4_jw32o"]
-[ext_resource type="Script" uid="uid://c00j7j5oyrhs0" path="res://script/tool/Ui.cs" id="5_bmxlf"]
+[ext_resource type="Script" uid="uid://c00j7j5oyrhs0" path="res://script/node/Ui.cs" id="5_bmxlf"]
 [ext_resource type="PackedScene" uid="uid://cyfiamvtba675" path="res://scene/pickups/items/Potion.tscn" id="5_h1m7h"]
 [ext_resource type="TileSet" uid="uid://c1okyqiwq2m7e" path="res://res/TILESET/Tileset.tres" id="7_jw32o"]
 [ext_resource type="PackedScene" uid="uid://dbeepstjbey3p" path="res://scene/Menu.tscn" id="9_vy5pj"]
@@ -700,4 +700,3 @@ tile_set = SubResource("TileSet_vy5pj")
 [connection signal="timeout" from="Timers/PickUpTimer" to="." method="OnPickupTimerTimeout"]
 [connection signal="timeout" from="Timers/ScoreTimer" to="." method="OnScoreTimerTimeout"]
 [connection signal="timeout" from="Timers/StartingTimer" to="." method="OnStartTimerTimeout"]
-[connection signal="StartGame" from="Menu" to="." method="OnMenuStartGame"]

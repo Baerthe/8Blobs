@@ -9,7 +9,7 @@ using Godot;
 /// Classes can (like and) subscribe to the PulseTimeout and SlowPulseTimeout events to get regular update calls, avoiding the need for a monolithic update loop. By default the pulse is set to 20hrz (0.05s) and the slow pulse to 5hrz (0.2s). These can be adjusted in the ClockManager, directly, if needed.
 /// Things like Mob spawn rate and pickup spawn rate can be managed seprate from score and game time, etc. This allows for differences in levels, increase or decrease in difficulty, etc. without needing to change the core game loop.
 /// </remarks>
-public interface IClockManager
+public interface IClockManager : ICore
 {
     /// <summary>
     /// Event triggered on each heartbeat pulse timeout.

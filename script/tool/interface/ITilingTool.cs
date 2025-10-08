@@ -1,10 +1,8 @@
 namespace Tool.Interface;
-
-using Godot;
 /// <summary>
 /// Interface for TilingManager to handle tiling of scene map elements.
 /// </summary>
-public interface ITilingTool
+public interface ITilingTool : ITool
 {
     void LoadTiles();
     void PlayerCrossedBorder(Player player);

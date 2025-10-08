@@ -6,7 +6,7 @@ using Mobs;
 /// <summary>
 /// Interface for the current game state.
 /// </summary>
-public interface IStateManager
+public interface IStateManager : ICore
 {
     Player player { get; }
     Ui ui { get; }
