@@ -15,27 +15,39 @@ public sealed class PlayerDataManager : IPlayerDataManager
     public Dictionary<string, bool> UnlockedAcheivments { get; private set; }
     public PlayerDataManager()
     {
-        var json = ResourceLoader.Load<Json>("res://DataIndex.tres");
-        if (json == null)
-        {
-            GD.PrintErr("Could not load DataIndex.tres; cannot build unlock books.");
-            return;
-        }
-        UnlockedHeros = BuildUnlockBook(json, UnlockBook.heros);
-        UnlockedEquipment = BuildUnlockBook(json, UnlockBook.equipment);
-        UnlockedWeapons = BuildUnlockBook(json, UnlockBook.weapons);
-        UnlockedItems = BuildUnlockBook(json, UnlockBook.items);
-        UnlockedAcheivments = BuildUnlockBook(json, UnlockBook.achievements);
+        Json json = ResourceLoader.Load<Json>("res://DataIndex.tres") as Json;
+        var data = Json.Stringify(json.Data);
+        UnlockedHeros = BuildUnlockBook(data, UnlockBook.heros);
+        UnlockedEquipment = BuildUnlockBook(data, UnlockBook.equipment);
+        UnlockedWeapons = BuildUnlockBook(data, UnlockBook.weapons);
+        UnlockedItems = BuildUnlockBook(data, UnlockBook.items);
+        UnlockedAcheivments = BuildUnlockBook(data, UnlockBook.achievements);
     }
     public void SetGlobalPlayer(Player player)
     {
         if (GlobalPlayer != null) return;
         GlobalPlayer = player;
     }
-    private Dictionary<string, bool> BuildUnlockBook(Json input, UnlockBook book)
+    private Dictionary<string, bool> BuildUnlockBook(string input, UnlockBook book)
     {
-
-        return null;
+        var result = new Dictionary<string, bool>();
+        foreach (var line in input.Split("\n"))
+        {
+            if (line.StartsWith($"[{book.ToString()}]"))
+            {
+                var entries = line.Replace($"[{book.ToString()}]", "").Split(",");
+                foreach (var entry in entries)
+                {
+                    var trimmedEntry = entry.Trim();
+                    if (!string.IsNullOrEmpty(trimmedEntry) && !result.ContainsKey(trimmedEntry))
+                    {
+                        result.Add(trimmedEntry, false);
+                    }
+                }
+                break;
+            }
+        }
+        return result;
     }
     private enum UnlockBook
     {

@@ -1,6 +1,4 @@
 using Godot;
-using Core;
-using Tool;
 using Core.Interface;
 using Tool.Interface;
 using System;
