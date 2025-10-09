@@ -5,7 +5,7 @@ using System.Collections.Generic;
 /// <summary>
 /// A tool for handling tiling of scene map elements. Has to be a Node to be able to affect other Nodes in the scene tree.
 /// </summary>
-public sealed partial class TilingTool : Node, ITilingTool
+public sealed partial class TilingTool : Node2D, ITilingTool
 {
 	private TileMapLayer _foregroundLayer;
 	private TileMapLayer _backgroundLayer;
@@ -22,6 +22,7 @@ public sealed partial class TilingTool : Node, ITilingTool
 		_worldRect = new Rect2();
 		_width = 0;
 		_height = 0;
+		GD.Print("TilingTool created");
 	}
 	public override void _Ready()
 	{

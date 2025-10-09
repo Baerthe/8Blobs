@@ -1,9 +1,44 @@
 namespace Tool;
-
 using Godot;
+using System;
+using Core.Interface;
 using Tool.Interface;
+using Container;
+
 public partial class LevelTool : Node2D, ILevelTool
 {
-    [Export] public Player player { get; set; }
-    [Export] public Camera2D camera { get; set; }
+    public Player player { get; private set; }
+    public Camera2D camera { get; private set; }
+    public Vector2 OffsetBetweenPickupAndPlayer { get; private set; }
+    public Vector2 OffsetBetweenMobAndPlayer { get; private set; }
+    private readonly IClockManager _clockManager;
+    public LevelTool()
+    {
+        _clockManager = CoreBox.GetClockManager();
+        _clockManager.SlowPulseTimeout += OnSlowPulseTimeout;
+        GD.Print("LevelTool created");
+    }
+    public override void _Ready()
+    {
+        player = GetNode<Player>("../Player");
+        camera = GetNode<Camera2D>("../Camera2D");
+        if (player == null)
+        {
+            GD.PrintErr("Player node not found in LevelTool");
+            throw new InvalidOperationException("ERROR 301: Player node not found in LevelTool. Game cannot load.");
+        }
+        if (camera == null)
+        {
+            GD.PrintErr("Camera node not found in LevelTool");
+            throw new InvalidOperationException("ERROR 302: Camera node not found in LevelTool. Game cannot load.");
+        }
+        //TODO: offsets
+    }
+    private void OnSlowPulseTimeout()
+    {
+        if (player != null)
+        {
+            //
+        }
+    }
 }
