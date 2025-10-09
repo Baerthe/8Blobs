@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public sealed class PlayerDataManager : IPlayerDataManager
 {
     public Dictionary<string, bool> UnlockedHeros { get; private set; }
-    public Dictionary<string, bool> UnlockedEquipment { get; private set; }
+    public Dictionary<string, bool> UnlockedPickup { get; private set; }
     public Dictionary<string, bool> UnlockedWeapons { get; private set; }
     public Dictionary<string, bool> UnlockedItems { get; private set; }
     public Dictionary<string, bool> UnlockedAcheivments { get; private set; }
@@ -20,7 +20,7 @@ public sealed class PlayerDataManager : IPlayerDataManager
         Json json = ResourceLoader.Load<Json>("res://DataIndex.tres") as Json;
         var data = Json.Stringify(json.Data);
         UnlockedHeros = BuildUnlockBook(data, UnlockBook.heros);
-        UnlockedEquipment = BuildUnlockBook(data, UnlockBook.equipment);
+        UnlockedPickup = BuildUnlockBook(data, UnlockBook.Pickup);
         UnlockedWeapons = BuildUnlockBook(data, UnlockBook.weapons);
         UnlockedItems = BuildUnlockBook(data, UnlockBook.items);
         UnlockedAcheivments = BuildUnlockBook(data, UnlockBook.achievements);
@@ -53,7 +53,7 @@ public sealed class PlayerDataManager : IPlayerDataManager
     private enum UnlockBook
     {
         heros,
-        equipment,
+        Pickup,
         weapons,
         items,
         achievements

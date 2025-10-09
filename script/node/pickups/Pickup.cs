@@ -1,4 +1,4 @@
-namespace Equipment;
+namespace Pickup;
 using Godot;
 /// <summary>
 /// A base class for all pickups that can be used by the player.
@@ -11,7 +11,7 @@ public abstract partial class Pickup : RigidBody2D
     public abstract Sprite2D Sprite { get; set; }
     public abstract CollisionShape2D HitBox { get; set; }
     public abstract AudioStreamPlayer2D PickUpSound { get; set; }
-    public void PickupEquipment()
+    public void PickupPickup()
     {
         PickUpSound.Play();
     }

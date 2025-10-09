@@ -1,5 +1,5 @@
 using Godot;
-using Equipment;
+using Pickup;
 using Mobs;
 using System.Collections.Generic;
 /// <summary>

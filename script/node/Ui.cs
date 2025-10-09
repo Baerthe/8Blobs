@@ -1,5 +1,5 @@
 using Godot;
-using Equipment;
+using Pickup;
 /// <summary>
 /// A class that manages the user interface (UI) elements of the game, such as health display and inventory display.
 /// </summary>

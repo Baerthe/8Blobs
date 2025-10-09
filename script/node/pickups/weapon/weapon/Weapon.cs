@@ -1,4 +1,4 @@
-namespace Equipment;
+namespace Pickup;
 using System;
 using Godot;
 /// <summary>

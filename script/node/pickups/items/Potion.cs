@@ -1,4 +1,4 @@
-namespace Equipment;
+namespace Pickup;
 using Godot;
 /// <summary>
 /// Represents a healing potion that restores health.
