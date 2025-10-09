@@ -13,6 +13,18 @@ public static class CoreBox
     {
         InitilizationCheck();
     }
+    public static IAudioManager GetAudioManager()
+    {
+        return CoreContainer.Resolve<IAudioManager>();
+    }
+    public static ISaveManager GetSaveManager()
+    {
+        return CoreContainer.Resolve<ISaveManager>();
+    }
+    public static ILevelManager GetLevelManager()
+    {
+        return CoreContainer.Resolve<ILevelManager>();
+    }
     public static IClockManager GetClockManager()
     {
         return CoreContainer.Resolve<IClockManager>();

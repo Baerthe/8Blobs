@@ -11,51 +11,39 @@ public partial class Main : Node2D
 	[ExportGroup("Singles")]
 	[ExportSubgroup("Core")]
 	[Export] public Menu Menu { get; private set; }
-	[Export] public Player Player { get; private set; }
-	[Export] public Marker2D PlayerStart { get; private set; }
 	[Export] public Camera2D Camera { get; private set; }
 	[Export] public Ui Ui { get; private set; }
-	// Spawners
-	[ExportGroup("Spawnables")]
-	[ExportSubgroup("Mobs")]
-	[Export] public PackedScene[] MobScenes { get; private set; }
-	[Export] private Path2D _mobPath;
-	[Export] private PathFollow2D _mobSpawner;
-	[ExportSubgroup("Pickups")]
-	[Export] public PackedScene[] PickupScenes { get; private set; }
-	[Export] private Path2D _pickupPath;
-	[Export] private PathFollow2D _pickupSpawner;
 	// Core Orchestration Variables
+	private readonly IAudioManager _audioManager = CoreBox.GetAudioManager();
+	private readonly ISaveManager _saveManager = CoreBox.GetSaveManager();
+	private readonly ILevelManager _levelManager = CoreBox.GetLevelManager();
 	private readonly IClockManager _clockManager = CoreBox.GetClockManager();
 	private readonly IPlayerDataManager _playerDataManager = CoreBox.GetPlayerDataManager();
 	// Flags and States
 	private State CurrentState { get; set; } = State.Menu;
 	private bool _isGameOver = false;
 	private bool _isGameStarted = false;
-	private double _delta;
 	// Engine Callbacks
 	public override void _Ready()
 	{
 		// Do we have everything?
 		NullCheck();
 		Subscribe();
-		GD.PrintRich("[color=#000][bgcolor=#00ff00]Main node ready. Initializing game...[/bgcolor][/color]");
 		_clockManager.InitGame(this);
+		GD.PrintRich("[color=#000][bgcolor=#00ff00]Main node ready. Initializing game...[/bgcolor][/color]");
 		GD.PrintRich("[color=#000][bgcolor=#00ff00]Game Initialized.[/bgcolor][/color]");
-		ITilingTool tilingTool = ToolBox.GetTilingTool();
 		Menu.Show();
 	}
 	public override void _Process(double delta)
 	{
-		_delta = delta;
 	}
 	// Initialization Helpers
 	private void NullCheck()
 	{
-		if (Player == null)
+		if (Ui == null)
 		{
-			GD.PrintErr("Player node not set in Main");
-			throw new InvalidOperationException("ERROR 201: Player node not set in Main. Game cannot load.");
+			GD.PrintErr("UI node not set in Main");
+			throw new InvalidOperationException("ERROR 201: UI node not set in Main. Game cannot load.");
 		}
 		if (Camera == null)
 		{
