@@ -1,7 +1,6 @@
 namespace Tool;
 using Godot;
 using System;
-using Core.Interface;
 using Tool.Interface;
 using Container;
 
@@ -17,11 +16,9 @@ public partial class LevelTool : Node2D, ILevelTool
     public PathFollow2D MobSpawner { get; set; }
     public Path2D PickupPath { get; set; }
     public PathFollow2D PickupSpawner { get; set; }
-    private readonly IClockManager _clockManager;
     public LevelTool()
     {
-        _clockManager = CoreBox.GetClockManager();
-        _clockManager.SlowPulseTimeout += OnSlowPulseTimeout;
+        CoreBox.GetClockManager().SlowPulseTimeout += OnSlowPulseTimeout;
         GD.Print("LevelTool created");
     }
     public override void _Ready()

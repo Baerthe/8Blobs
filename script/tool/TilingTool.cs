@@ -1,6 +1,7 @@
 namespace Tool;
-using Tool.Interface;
 using Godot;
+using Container;
+using Tool.Interface;
 using System.Collections.Generic;
 /// <summary>
 /// A tool for handling tiling of scene map elements. Has to be a Node to be able to affect other Nodes in the scene tree.
@@ -27,6 +28,7 @@ public sealed partial class TilingTool : Node2D, ITilingTool
 	public override void _Ready()
 	{
 		LoadTiles();
+		CoreBox.GetClockManager().SlowPulseTimeout += OnSlowPulseTimeout;
 	}
 	public Rect2 GetWorldRect() => _worldRect;
 	public void LoadTiles()
@@ -89,7 +91,17 @@ public sealed partial class TilingTool : Node2D, ITilingTool
 		if (direction == Direction.OutOfBounds) return;
 		MoveLayers(direction);
 	}
-
+	private void OnSlowPulseTimeout()
+	{
+		//TODO: Fix this later
+		var player = GetNode<Player>("../Player");
+		if (player == null)
+		{
+			GD.PrintErr("Player node not found in TilingTool");
+			return;
+		}
+		PlayerCrossedBorder(player);
+	}
 	private Direction GetBorderDirection(Vector2 playerPosition)
 	{
 		bool isWest = playerPosition.X < _worldRect.Position.X;

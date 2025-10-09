@@ -11,8 +11,6 @@ public sealed class ClockManager : IClockManager
     public event Action PickupSpawnTimeout;
     public event Action GameTimeout;
     public event Action StartingTimeout;
-    public Vector2 OffsetBetweenPickupAndPlayer { get; private set; }
-    public Vector2 OffsetBetweenMobAndPlayer { get; private set; }
     private Timer _pulseTimer;
     private Timer _slowPulseTimer;
     private Timer _gameTimer;
