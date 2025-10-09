@@ -3,6 +3,8 @@ namespace Mobs;
 using System.Formats.Asn1;
 using Container;
 using Core;
+using Core.Interface;
+using Tool.Interface;
 using Godot;
 /// <summary>
 /// A mob is a mobile enemy that moves around the screen and can collide with the player. This is a base class for all mobs.
@@ -39,11 +41,13 @@ public abstract partial class Mob : RigidBody2D
     // Private Variables
     private bool _ifOffScreen = false;
     private bool _lock = false;
+    private Player _player;
     public override void _Ready()
     {
         if (_sprite2D == null) GD.PrintErr("Mob: Sprite2D is null.");
         if (_collision2D == null) GD.PrintErr("Mob: Collision2D is null.");
         _sprite2D.Animation = "Walk";
+        _player = ToolBox.GetLevelTool().player;
     }
     public override void _Process(double delta)
     {
@@ -65,7 +69,6 @@ public abstract partial class Mob : RigidBody2D
             _lock = false;
             return;
         }
-        Player _player = CoreBox.GetPlayerDataManager().GlobalPlayer;
         Vector2 directionToPlayer = (_player.Position - GlobalPosition).Normalized();
         switch (MovementType)
         {

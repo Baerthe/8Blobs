@@ -5,5 +5,9 @@ using Godot;
 /// </summary>
 public interface ILevelManager : ICore
 {
-
+    PackedScene CurrentLevel { get; }
+    Node2D LevelInstance { get; }
+    Node ParentNode { get; }
+    void LoadLevel(PackedScene levelScene, Node parentNode = null);
+    void UnloadLevel();
 }

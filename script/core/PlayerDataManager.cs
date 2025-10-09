@@ -1,19 +1,21 @@
 namespace Core;
-
 using Godot;
 using Core.Interface;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
 public sealed class PlayerDataManager : IPlayerDataManager
 {
-    public Player GlobalPlayer { get; private set; } = null;
     public Dictionary<string, bool> UnlockedHeros { get; private set; }
     public Dictionary<string, bool> UnlockedEquipment { get; private set; }
     public Dictionary<string, bool> UnlockedWeapons { get; private set; }
     public Dictionary<string, bool> UnlockedItems { get; private set; }
     public Dictionary<string, bool> UnlockedAcheivments { get; private set; }
+    private bool _isInitialized = false;
     public PlayerDataManager()
+    {
+        _isInitialized = false;
+        Initilize();
+    }
+    private void Initilize()
     {
         Json json = ResourceLoader.Load<Json>("res://DataIndex.tres") as Json;
         var data = Json.Stringify(json.Data);
@@ -22,11 +24,8 @@ public sealed class PlayerDataManager : IPlayerDataManager
         UnlockedWeapons = BuildUnlockBook(data, UnlockBook.weapons);
         UnlockedItems = BuildUnlockBook(data, UnlockBook.items);
         UnlockedAcheivments = BuildUnlockBook(data, UnlockBook.achievements);
-    }
-    public void SetGlobalPlayer(Player player)
-    {
-        if (GlobalPlayer != null) return;
-        GlobalPlayer = player;
+        _isInitialized = true;
+        GD.PrintRich("[color=#00ff88]PlayerDataManager initialized.[/color]");
     }
     private Dictionary<string, bool> BuildUnlockBook(string input, UnlockBook book)
     {
@@ -41,7 +40,9 @@ public sealed class PlayerDataManager : IPlayerDataManager
                     var trimmedEntry = entry.Trim();
                     if (!string.IsNullOrEmpty(trimmedEntry) && !result.ContainsKey(trimmedEntry))
                     {
-                        result.Add(trimmedEntry, false);
+                        bool unlocked = false; // Default to locked; can implement save/load later
+                        result.Add(trimmedEntry, unlocked);
+                        GD.Print($"Added '{trimmedEntry}' to {book.ToString()} unlock book.");
                     }
                 }
                 break;

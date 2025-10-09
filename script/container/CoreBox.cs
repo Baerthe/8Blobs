@@ -1,7 +1,6 @@
 namespace Container;
 using Godot;
 using Core;
-using System;
 using Core.Interface;
 /// <summary>
 /// Where the magic happens; builds our dependency injection containers for core and tool singletons.
@@ -12,20 +11,21 @@ public static class CoreBox
     private static bool _isBuilt = false;
     static CoreBox()
     {
-        BuildCoreContainer();
-        ToolBox.BuildToolContainer();
+        InitilizationCheck();
     }
     public static IClockManager GetClockManager()
     {
-        if (!_isBuilt)
-            BuildCoreContainer();
         return CoreContainer.Resolve<IClockManager>();
     }
     public static IPlayerDataManager GetPlayerDataManager()
     {
+        return CoreContainer.Resolve<IPlayerDataManager>();
+    }
+    private static void InitilizationCheck()
+    {
         if (!_isBuilt)
             BuildCoreContainer();
-        return CoreContainer.Resolve<IPlayerDataManager>();
+        ToolBox.BuildToolContainer();
     }
     /// <summary>
     /// Builds the core container with all core singletons.
@@ -38,6 +38,7 @@ public static class CoreBox
         if (_isBuilt)
             return;
         GD.PrintRich("[color=#00ff00]Registering Cores to CoreBox...[/color]");
+        CoreContainer.Register<ISaveManager, SaveManager>();
         CoreContainer.Register<IClockManager, ClockManager>();
         CoreContainer.Register<IPlayerDataManager, PlayerDataManager>();
         CoreContainer.Register<ILevelManager, LevelManager>();

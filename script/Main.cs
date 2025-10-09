@@ -42,8 +42,8 @@ public partial class Main : Node2D
 		GD.PrintRich("[color=#000][bgcolor=#00ff00]Main node ready. Initializing game...[/bgcolor][/color]");
 		_clockManager.InitGame(this);
 		GD.PrintRich("[color=#000][bgcolor=#00ff00]Game Initialized.[/bgcolor][/color]");
-		_playerDataManager.SetGlobalPlayer(Player);
 		ITilingTool tilingTool = ToolBox.GetTilingTool();
+		Menu.Show();
 	}
 	public override void _Process(double delta)
 	{

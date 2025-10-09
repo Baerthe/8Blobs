@@ -1,7 +1,6 @@
 namespace Container;
 using Godot;
-using Core;
-using System;
+using Tool;
 using Tool.Interface;
 /// <summary>
 /// Where the magic happens; builds our dependency injection containers for core and tool singletons.
@@ -10,10 +9,12 @@ public static class ToolBox
 {
     private static ToolContainer ToolContainer { get; } = new();
     private static bool _isBuilt = false;
+    public static ILevelTool GetLevelTool()
+    {
+        return ToolContainer.Resolve<ILevelTool>();
+    }
     public static ITilingTool GetTilingTool()
     {
-        if (!_isBuilt)
-            BuildToolContainer();
         return ToolContainer.Resolve<ITilingTool>();
     }
     /// <summary>
@@ -28,6 +29,7 @@ public static class ToolBox
         if (_isBuilt)
             return;
         GD.PrintRich("[color=#0088ff]Registering Tools to ToolBox...[/color]");
+        ToolContainer.Register<ILevelTool, LevelTool>();
         ToolContainer.Register<ITilingTool, TilingTool>();
         GD.PrintRich("[color=#0088ff]Tools Registered.[/color]");
         _isBuilt = true;

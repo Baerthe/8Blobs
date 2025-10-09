@@ -13,17 +13,18 @@ public sealed class ClockManager : IClockManager
     public event Action StartingTimeout;
     public Vector2 OffsetBetweenPickupAndPlayer { get; private set; }
     public Vector2 OffsetBetweenMobAndPlayer { get; private set; }
-    private static Timer _pulseTimer;
-    private static Timer _slowPulseTimer;
-    private static Timer _gameTimer;
-    private static Timer _startingTimer;
-    private static Timer _mobSpawnTimer;
-    private static Timer _pickupSpawnTimer;
-    private static Dictionary<byte, Timer> _timers = new();
+    private Timer _pulseTimer;
+    private Timer _slowPulseTimer;
+    private Timer _gameTimer;
+    private Timer _startingTimer;
+    private Timer _mobSpawnTimer;
+    private Timer _pickupSpawnTimer;
+    private Dictionary<byte, Timer> _timers = new();
     private bool _isInitialized = false;
     public ClockManager()
     {
         _isInitialized = false;
+        GD.Print("ClockManager created, early stage, init during main load.");
     }
     /// <summary>
     /// Initializes the ClockManager and starts all timers.
@@ -52,6 +53,8 @@ public sealed class ClockManager : IClockManager
         CreateGameTimer();
         CreateStartingTimer();
         StartTimers(parent);
+        GD.PrintRich("[color=#00ff88]ClockManager initialized, late stage, and timers started.[/color]");
+        _isInitialized = true;
     }
     public void ResetGame()
     {

@@ -6,11 +6,9 @@ using System.Collections.Generic;
 /// </summary>
 public interface IPlayerDataManager : ICore
 {
-    Player GlobalPlayer { get; }
     Dictionary<string, bool> UnlockedHeros { get; }
     Dictionary<string, bool> UnlockedEquipment { get; }
     Dictionary<string, bool> UnlockedWeapons { get; }
     Dictionary<string, bool> UnlockedItems { get; }
     Dictionary<string, bool> UnlockedAcheivments { get; }
-    void SetGlobalPlayer(Player player);
 }
