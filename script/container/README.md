@@ -1,1 +1,0 @@
-The Container folder contains scripts that contain the dependency injection container and the service locator pattern implementation. These scripts are responsible for managing the core services of the game, such as player data management, level management, clock management, and save management.

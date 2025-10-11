@@ -1,3 +1,0 @@
-The [[Node]] folder contains all the scripts that are used inside of the Godot Editor on nodes to create functionality. These scripts are not standalone and require the Godot Engine to run, Core Services and Tools to be functional.
-These form the backbone of the game and are used to create the game world, player interactions, and other essential features. They are designed to be modular and reusable, allowing for easy maintenance and updates to the game; as they try to only define function and classification.
-They are implemented in engine and should never be instantiated directly.
