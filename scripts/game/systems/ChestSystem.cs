@@ -1,7 +1,8 @@
-namespace Pickups;
+namespace Game;
 
 using Godot;
-public partial class Chest : Area2D
+//TODO: This is setup as more so a node, we need a manager, create chest res
+public partial class ChestSystem : Area2D
 {
     [Export] internal ChestState State { get; set; } = ChestState.Locked;
     [Export] public string Contains { get; set; } = "gold_001";

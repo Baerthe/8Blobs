@@ -7,6 +7,7 @@ using System.Collections.Generic;
 /// </summary>
 public partial class Player : CharacterBody2D
 {
+	//TODO: right now this is a direct player controller but we want to move to it being a controller of the hero entity
 	[Signal] public delegate void OnDeathEventHandler();
 	[Export] public int MaxHealth { get; set; } = 4;
 	public int Health { get { return _health; } }

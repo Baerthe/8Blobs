@@ -1,2 +1,0 @@
-The [[Tool]] folder contains node-based services that can be added to scenes as needed. These tools provide specific functionality and interact with the core services to implement game features.
-They can depend on core services but should *never* be referenced by core services to avoid circular dependencies; they should only be injected by instance copying via the [[Services]] provider singleton.

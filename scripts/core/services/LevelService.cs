@@ -1,7 +1,7 @@
 namespace Core;
 using Core.Interface;
 using Godot;
-public sealed partial class LevelService : ILevelService
+public sealed class LevelService : ILevelService
 {
     public PackedScene CurrentLevel { get; private set; }
     public Node2D LevelInstance { get; private set; }

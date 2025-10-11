@@ -33,9 +33,6 @@ public partial class Main : Node2D
 		GD.PrintRich("[color=#000][bgcolor=#00ff00]Game Initialized.[/bgcolor][/color]");
 		Menu.Show();
 	}
-	public override void _Process(double delta)
-	{
-	}
 	// Initialization Helpers
 	private void NullCheck()
 	{

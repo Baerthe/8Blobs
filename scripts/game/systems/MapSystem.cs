@@ -1,12 +1,13 @@
 namespace Tool;
 using Godot;
-using Container;
-using Tool.Interface;
+using Core;
 using System.Collections.Generic;
+using Game.Interface;
+using Core.Interface;
 /// <summary>
-/// A tool for handling tiling of scene map elements. Has to be a Node to be able to affect other Nodes in the scene tree.
+/// A system for handling tiling of scene map elements.
 /// </summary>
-public sealed partial class TilingTool : Node2D, ITilingTool
+public sealed partial class MapSystem : Node2D, IMapSystem
 {
 	private TileMapLayer _foregroundLayer;
 	private TileMapLayer _backgroundLayer;
@@ -14,21 +15,13 @@ public sealed partial class TilingTool : Node2D, ITilingTool
 	private Rect2 _worldRect;
 	private float _width;
 	private float _height;
+	private readonly IClockService _clock = CoreProvider.GetClockService();
 	private readonly Dictionary<string, (TileMapLayer background, TileMapLayer foreground)> _chunks = new();
-	public TilingTool()
-	{
-		_foregroundLayer = null;
-		_backgroundLayer = null;
-		_usedRect = new Rect2();
-		_worldRect = new Rect2();
-		_width = 0;
-		_height = 0;
-		GD.Print("TilingTool created");
-	}
 	public override void _Ready()
 	{
+		GD.Print("MapSystem Present.");
+		_clock.SlowPulseTimeout += OnSlowPulseTimeout;
 		LoadTiles();
-		CoreBox.GetClockService().SlowPulseTimeout += OnSlowPulseTimeout;
 	}
 	public Rect2 GetWorldRect() => _worldRect;
 	public void LoadTiles()

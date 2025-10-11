@@ -5,7 +5,7 @@ using Core.Interface;
 /// <summary>
 /// Manages user save data.
 /// </summary>
-public class SaveService : ISaveService
+public sealed class SaveService : ISaveService
 {
     private bool _isInitialized;
     public SaveService()
