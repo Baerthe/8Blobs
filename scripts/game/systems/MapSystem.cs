@@ -15,13 +15,22 @@ public sealed partial class MapSystem : Node2D, IMapSystem
 	private Rect2 _worldRect;
 	private float _width;
 	private float _height;
-	private readonly IClockService _clock = CoreProvider.GetClockService();
 	private readonly Dictionary<string, (TileMapLayer background, TileMapLayer foreground)> _chunks = new();
 	public override void _Ready()
 	{
 		GD.Print("MapSystem Present.");
-		_clock.SlowPulseTimeout += OnSlowPulseTimeout;
 		LoadTiles();
+	}
+	public void Update()
+	{
+		//TODO: Fix this later
+		var player = GetNode<Player>("../Player");
+		if (player == null)
+		{
+			GD.PrintErr("Player node not found in TilingTool");
+			return;
+		}
+		PlayerCrossedBorder(player);
 	}
 	public Rect2 GetWorldRect() => _worldRect;
 	public void LoadTiles()
@@ -83,17 +92,6 @@ public sealed partial class MapSystem : Node2D, IMapSystem
 		Direction direction = GetBorderDirection(player.Position);
 		if (direction == Direction.OutOfBounds) return;
 		MoveLayers(direction);
-	}
-	private void OnSlowPulseTimeout()
-	{
-		//TODO: Fix this later
-		var player = GetNode<Player>("../Player");
-		if (player == null)
-		{
-			GD.PrintErr("Player node not found in TilingTool");
-			return;
-		}
-		PlayerCrossedBorder(player);
 	}
 	private Direction GetBorderDirection(Vector2 playerPosition)
 	{

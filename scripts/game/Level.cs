@@ -3,6 +3,7 @@ namespace Game;
 using Godot;
 using Core;
 using Core.Interface;
+using Tool;
 
 public sealed partial class Level : Node2D
 {
@@ -14,6 +15,7 @@ public sealed partial class Level : Node2D
     [Export] public Node2D PlayerSpawn { get; private set; }
     [ExportSubgroup("Systems")]
     [Export] public LevelSystem GetLevelSystem { get; private set; }
+    [Export] public MapSystem GetMapSystem { get; private set; }
     private readonly ILevelService _levelService = CoreProvider.GetLevelService();
 	private readonly IClockService _clockService = CoreProvider.GetClockService();
 	private readonly IDataService _DataService = CoreProvider.GetDataService();
@@ -27,12 +29,17 @@ public sealed partial class Level : Node2D
     {
         _delta = delta;
     }
+    public override void _ExitTree()
+	{
+		_clockService.SlowPulseTimeout -= OnSlowPulseTimeout;
+        base._ExitTree();
+    }
     private void OnPulseTimeout()
     {
         GetLevelSystem.Update();
     }
     private void OnSlowPulseTimeout()
     {
-
+        GetMapSystem.Update();
     }
 }
