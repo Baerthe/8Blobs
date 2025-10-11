@@ -3,7 +3,7 @@ using Core.Interface;
 using System;
 using System.Collections.Generic;
 using Godot;
-public sealed class ClockManager : IClockManager
+public sealed class ClockService : IClockService
 {
     public event Action PulseTimeout;
     public event Action SlowPulseTimeout;
@@ -19,13 +19,13 @@ public sealed class ClockManager : IClockManager
     private Timer _pickupSpawnTimer;
     private Dictionary<byte, Timer> _timers = new();
     private bool _isInitialized = false;
-    public ClockManager()
+    public ClockService()
     {
         _isInitialized = false;
-        GD.Print("ClockManager created, early stage, init during main load.");
+        GD.Print("ClockService created, early stage, init during main load.");
     }
     /// <summary>
-    /// Initializes the ClockManager and starts all timers.
+    /// Initializes the ClockService and starts all timers.
     /// </summary>
     /// <param name="parent"></param>
     /// <exception cref="InvalidOperationException"></exception>
@@ -36,13 +36,13 @@ public sealed class ClockManager : IClockManager
     {
         if (_isInitialized)
         {
-            GD.PrintErr("ClockManager is already initialized. InitGame should only be called once per game session.");
+            GD.PrintErr("ClockService is already initialized. InitGame should only be called once per game session.");
             return;
         }
         if (parent == null)
         {
-            GD.PrintErr("Parent node is null. Cannot initialize ClockManager.");
-            throw new InvalidOperationException("ERROR 002: Parent node is null in ClockManager. Timers cannot start.");
+            GD.PrintErr("Parent node is null. Cannot initialize ClockService.");
+            throw new InvalidOperationException("ERROR 002: Parent node is null in ClockService. Timers cannot start.");
         }
         CreatePulseTimer();
         CreateSlowPulseTimer();
@@ -51,7 +51,7 @@ public sealed class ClockManager : IClockManager
         CreateGameTimer();
         CreateStartingTimer();
         StartTimers(parent);
-        GD.PrintRich("[color=#00ff88]ClockManager initialized, late stage, and timers started.[/color]");
+        GD.PrintRich("[color=#00ff88]ClockService initialized, late stage, and timers started.[/color]");
         _isInitialized = true;
     }
     public void ResetGame()
@@ -103,7 +103,7 @@ public sealed class ClockManager : IClockManager
         if (parent == null)
         {
             GD.PrintErr("Parent node is null. Cannot start timers.");
-            throw new InvalidOperationException("ERROR 002: Parent node is null in ClockManager. Timers cannot start.");
+            throw new InvalidOperationException("ERROR 002: Parent node is null in ClockService. Timers cannot start.");
         }
         foreach (var timer in _timers.Values)
         {
@@ -154,7 +154,7 @@ public sealed class ClockManager : IClockManager
         if (timer == null)
         {
             GD.PrintErr("Timer is null after creation!");
-            throw new InvalidOperationException($"ERROR 001: Timer failed to initialize in ClockManager. Sender: {sender}");
+            throw new InvalidOperationException($"ERROR 001: Timer failed to initialize in ClockService. Sender: {sender}");
         }
         _timers.Add((byte)timer.GetHashCode(), timer);
         return timer;

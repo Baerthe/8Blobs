@@ -1,2 +1,0 @@
-The [[Core]] folder contains the core singleton logic services for the game. These are services that are not directly related to the game tools, but provide essential functionality for the game to operate.
-They should *never* be dependent on any tool logic or services and never be instantiated; only injected via the [[Services]] provider singleton.

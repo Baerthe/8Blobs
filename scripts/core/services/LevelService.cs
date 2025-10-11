@@ -1,14 +1,14 @@
 namespace Core;
 using Core.Interface;
 using Godot;
-public sealed partial class LevelManager : ILevelManager
+public sealed partial class LevelService : ILevelService
 {
     public PackedScene CurrentLevel { get; private set; }
     public Node2D LevelInstance { get; private set; }
     public Node ParentNode { get; private set; }
     public string LevelName { get; private set; }
     private bool _isInitialized = false;
-    public LevelManager()
+    public LevelService()
     {
         _isInitialized = false;
         Initilize();
@@ -26,14 +26,14 @@ public sealed partial class LevelManager : ILevelManager
     {
         if (!_isInitialized)
         {
-            GD.PrintErr("LevelManager is not initialized. Call Initilize before loading levels.");
+            GD.PrintErr("LevelService is not initialized. Call Initilize before loading levels.");
             return;
         }
         if (parentNode != null
             && ParentNode != null
             && parentNode != ParentNode)
         {
-            GD.PrintErr("LevelManager: ParentNode is already set to a different node. Cannot change ParentNode after it has been set.");
+            GD.PrintErr("LevelService: ParentNode is already set to a different node. Cannot change ParentNode after it has been set.");
             return;
         }
         if (parentNode != null)
@@ -42,7 +42,7 @@ public sealed partial class LevelManager : ILevelManager
         }
         if (levelScene == null)
         {
-            GD.PrintErr("LevelManager: LoadLevel called with null levelScene.");
+            GD.PrintErr("LevelService: LoadLevel called with null levelScene.");
             return;
         }
         CurrentLevel = levelScene;
@@ -56,7 +56,7 @@ public sealed partial class LevelManager : ILevelManager
             ParentNode.AddChild(LevelInstance);
         }
         LevelName = LevelInstance.Name;
-        GD.Print($"LevelManager: Loaded level '{LevelName}'.");
+        GD.Print($"LevelService: Loaded level '{LevelName}'.");
     }
     public void UnloadLevel()
     {
@@ -66,21 +66,21 @@ public sealed partial class LevelManager : ILevelManager
             LevelInstance = null;
             CurrentLevel = null;
             LevelName = null;
-            GD.Print("LevelManager: Unloaded current level.");
+            GD.Print("LevelService: Unloaded current level.");
         }
         else
         {
-            GD.PrintErr("LevelManager: No level is currently loaded to unload.");
+            GD.PrintErr("LevelService: No level is currently loaded to unload.");
         }
     }
     private void Initilize()
     {
         if (_isInitialized)
         {
-            GD.PrintErr("LevelManager is already initialized. Initilize should only be called once per game session.");
+            GD.PrintErr("LevelService is already initialized. Initilize should only be called once per game session.");
             return;
         }
         _isInitialized = true;
-        GD.PrintRich("[color=#00ff88]LevelManager initialized.[/color]");
+        GD.PrintRich("[color=#00ff88]LevelService initialized.[/color]");
     }
 }

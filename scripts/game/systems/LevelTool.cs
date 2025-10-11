@@ -18,7 +18,7 @@ public partial class LevelTool : Node2D, ILevelTool
     public PathFollow2D PickupSpawner { get; set; }
     public LevelTool()
     {
-        CoreBox.GetClockManager().SlowPulseTimeout += OnSlowPulseTimeout;
+        CoreBox.GetClockService().SlowPulseTimeout += OnSlowPulseTimeout;
         GD.Print("LevelTool created");
     }
     public override void _Ready()

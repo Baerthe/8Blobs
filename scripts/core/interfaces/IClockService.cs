@@ -3,13 +3,13 @@ using System;
 using System.Collections.Generic;
 using Godot;
 /// <summary>
-/// Interface for the ClockManager; this manager that contains the heartbeat pulse of the game, allowing decoupled update calls; also stores game data not directly related to the player. A box of clocks!
+/// Interface for the ClockService; this Service that contains the heartbeat pulse of the game, allowing decoupled update calls; also stores game data not directly related to the player. A box of clocks!
 /// </summary>
 /// <remarks>
-/// Classes can (like and) subscribe to the PulseTimeout and SlowPulseTimeout events to get regular update calls, avoiding the need for a monolithic update loop. By default the pulse is set to 20hrz (0.05s) and the slow pulse to 5hrz (0.2s). These can be adjusted in the ClockManager, directly, if needed.
+/// Classes can (like and) subscribe to the PulseTimeout and SlowPulseTimeout events to get regular update calls, avoiding the need for a monolithic update loop. By default the pulse is set to 20hrz (0.05s) and the slow pulse to 5hrz (0.2s). These can be adjusted in the ClockService, directly, if needed.
 /// Things like Mob spawn rate and pickup spawn rate can be managed seprate from score and game time, etc. This allows for differences in levels, increase or decrease in difficulty, etc. without needing to change the core game loop.
 /// </remarks>
-public interface IClockManager : ICore
+public interface IClockService
 {
     /// <summary>
     /// Event triggered on each heartbeat pulse timeout.
@@ -36,11 +36,11 @@ public interface IClockManager : ICore
     /// </summary>
     event Action StartingTimeout;
     /// <summary>
-    /// Pauses all active timers in the game manager.
+    /// Pauses all active timers in the game Service.
     /// </summary>
     void PauseTimers();
     /// <summary>
-    /// Resumes all paused timers in the game manager.
+    /// Resumes all paused timers in the game Service.
     /// </summary>
     void ResumeTimers();
     /// <summary>
@@ -60,7 +60,7 @@ public interface IClockManager : ICore
     /// <param name="ScoreTime"></param>
     /// <param name="StartingTime"></param>
     /// <remarks>
-    /// This is to avoid hardcoding timer values in the ClockManager, allowing flexibility for different levels or game modes.
+    /// This is to avoid hardcoding timer values in the ClockService, allowing flexibility for different levels or game modes.
     /// </remarks>
     void SetTimers(List<float> Timers);
 }

@@ -1,9 +1,9 @@
-namespace Container;
+namespace Core;
 using Godot;
 using System;
 using System.Collections.Generic;
 /// <summary>
-/// A container for core services, the managers; these are singletons that persist through scenes.
+/// A container for core services, the Services; these are singletons that persist through scenes.
 /// </summary>
 /// <remarks>
 /// Core services are not nodes; they are global helpers that manage the state and behavior of the application.

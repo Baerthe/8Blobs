@@ -1,17 +1,17 @@
 namespace Core;
 using Godot;
 using Core.Interface;
-public sealed class AudioManager : IAudioManager
+public sealed class AudioService : IAudioService
 {
     private readonly AudioStreamPlayer _audioPlayer;
     private float _volume = 1.0f;
-    public AudioManager()
+    public AudioService()
     {
         _audioPlayer = new AudioStreamPlayer();
         _audioPlayer.VolumeDb = LinearToDb(_volume);
         _audioPlayer.Autoplay = false;
         _audioPlayer.Bus = "Master"; // Ensure this bus exists in your project settings
-        GD.Print("AudioManager created");
+        GD.Print("AudioService created");
     }
     public void PlaySound(string soundName)
     {

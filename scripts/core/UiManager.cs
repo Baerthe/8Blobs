@@ -3,7 +3,8 @@ using Pickup;
 /// <summary>
 /// A class that manages the user interface (UI) elements of the game, such as health display and inventory display.
 /// </summary>
-public partial class Ui : CanvasLayer
+public partial class UiManager
+ : CanvasLayer
 {
     [Export] private Label _scoreLiteral;
     [Export] private Label _healthLiteral;
@@ -29,8 +30,8 @@ public partial class Ui : CanvasLayer
     {
         Show();
         _scoreLiteral.Show();
-		_healthLiteral.Show();
-		DisplayMessage($"Get Ready!\n{countdown:0.0}", countdown);
+        _healthLiteral.Show();
+        DisplayMessage($"Get Ready!\n{countdown:0.0}", countdown);
     }
     private void DisplayMessage(string message, double duration = 2.0)
     {

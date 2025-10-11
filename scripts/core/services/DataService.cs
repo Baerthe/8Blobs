@@ -2,7 +2,7 @@ namespace Core;
 using Godot;
 using Core.Interface;
 using System.Collections.Generic;
-public sealed class PlayerDataManager : IPlayerDataManager
+public sealed class DataService : IDataService
 {
     public Dictionary<string, bool> UnlockedHeros { get; private set; }
     public Dictionary<string, bool> UnlockedPickup { get; private set; }
@@ -10,7 +10,7 @@ public sealed class PlayerDataManager : IPlayerDataManager
     public Dictionary<string, bool> UnlockedItems { get; private set; }
     public Dictionary<string, bool> UnlockedAcheivments { get; private set; }
     private bool _isInitialized = false;
-    public PlayerDataManager()
+    public DataService()
     {
         _isInitialized = false;
         Initilize();
@@ -25,7 +25,7 @@ public sealed class PlayerDataManager : IPlayerDataManager
         UnlockedItems = BuildUnlockBook(data, UnlockBook.items);
         UnlockedAcheivments = BuildUnlockBook(data, UnlockBook.achievements);
         _isInitialized = true;
-        GD.PrintRich("[color=#00ff88]PlayerDataManager initialized.[/color]");
+        GD.PrintRich("[color=#00ff88]DataService initialized.[/color]");
     }
     private Dictionary<string, bool> BuildUnlockBook(string input, UnlockBook book)
     {

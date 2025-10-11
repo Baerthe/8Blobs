@@ -2,9 +2,9 @@ namespace Core.Interface;
 
 using System.Collections.Generic;
 /// <summary>
-/// Interface for the PlayerDataManager; this manager handles player data such as unlocked heros, Pickup, weapons, items, and achievements.
+/// Interface for the DataService; this Service handles player data such as unlocked heros, Pickup, weapons, items, and achievements.
 /// </summary>
-public interface IPlayerDataManager : ICore
+public interface IDataService
 {
     Dictionary<string, bool> UnlockedHeros { get; }
     Dictionary<string, bool> UnlockedPickup { get; }

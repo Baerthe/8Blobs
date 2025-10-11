@@ -5,10 +5,10 @@ using Core.Interface;
 /// <summary>
 /// Manages user save data.
 /// </summary>
-public class SaveManager : ISaveManager
+public class SaveService : ISaveService
 {
     private bool _isInitialized;
-    public SaveManager()
+    public SaveService()
     {
         _isInitialized = false;
         Initilize();
@@ -17,10 +17,10 @@ public class SaveManager : ISaveManager
     {
         if (_isInitialized)
         {
-            GD.PrintErr("SaveManager is already initialized. Initilize should only be called once per game session.");
+            GD.PrintErr("SaveService is already initialized. Initilize should only be called once per game session.");
             return;
         }
         _isInitialized = true;
-        GD.PrintRich("[color=#00ff88]SaveManager initialized.[/color]");
+        GD.PrintRich("[color=#00ff88]SaveService initialized.[/color]");
     }
 }

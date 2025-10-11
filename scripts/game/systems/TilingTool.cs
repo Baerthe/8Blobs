@@ -28,7 +28,7 @@ public sealed partial class TilingTool : Node2D, ITilingTool
 	public override void _Ready()
 	{
 		LoadTiles();
-		CoreBox.GetClockManager().SlowPulseTimeout += OnSlowPulseTimeout;
+		CoreBox.GetClockService().SlowPulseTimeout += OnSlowPulseTimeout;
 	}
 	public Rect2 GetWorldRect() => _worldRect;
 	public void LoadTiles()
@@ -118,7 +118,7 @@ public sealed partial class TilingTool : Node2D, ITilingTool
 		if (isNorth) return Direction.North;
 		if (isSouth) return Direction.South;
 
-		GD.PrintErr("Player is outside world rect but no direction matched. How they do that??? TilingManager cannot find the direction and has lost the player.");
+		GD.PrintErr("Player is outside world rect but no direction matched. How they do that??? TilingService cannot find the direction and has lost the player.");
 		return Direction.OutOfBounds;
 	}
 	private void MoveLayers(Direction direction)

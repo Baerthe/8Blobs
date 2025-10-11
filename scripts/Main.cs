@@ -1,6 +1,6 @@
 using Godot;
+using Core;
 using Core.Interface;
-using Tool.Interface;
 using System;
 using Container;
 /// <summary>
@@ -14,11 +14,11 @@ public partial class Main : Node2D
 	[Export] public Camera2D Camera { get; private set; }
 	[Export] public Ui Ui { get; private set; }
 	// Core Orchestration Variables
-	private readonly IAudioManager _audioManager = CoreBox.GetAudioManager();
-	private readonly ISaveManager _saveManager = CoreBox.GetSaveManager();
-	private readonly ILevelManager _levelManager = CoreBox.GetLevelManager();
-	private readonly IClockManager _clockManager = CoreBox.GetClockManager();
-	private readonly IPlayerDataManager _playerDataManager = CoreBox.GetPlayerDataManager();
+	private readonly IAudioService _audioService = CoreProvider.GetAudioService();
+	private readonly ISaveService _saveService = CoreProvider.GetSaveService();
+	private readonly ILevelService _levelService = CoreProvider.GetLevelService();
+	private readonly IClockService _clockService = CoreProvider.GetClockService();
+	private readonly IDataService _DataService = CoreProvider.GetDataService();
 	// Flags and States
 	private State CurrentState { get; set; } = State.Menu;
 	private bool _isGameOver = false;
@@ -29,7 +29,7 @@ public partial class Main : Node2D
 		// Do we have everything?
 		NullCheck();
 		Subscribe();
-		_clockManager.InitGame(this);
+		_clockService.InitGame(this);
 		GD.PrintRich("[color=#000][bgcolor=#00ff00]Main node ready. Initializing game...[/bgcolor][/color]");
 		GD.PrintRich("[color=#000][bgcolor=#00ff00]Game Initialized.[/bgcolor][/color]");
 		Menu.Show();
@@ -59,14 +59,14 @@ public partial class Main : Node2D
 	}
 	private void Subscribe()
 	{
-		GD.Print("Subscribing to ClockManager events...");
-		_clockManager.PulseTimeout += OnPulseTimeout;
-		_clockManager.SlowPulseTimeout += OnSlowPulseTimeout;
-		_clockManager.MobSpawnTimeout += OnMobSpawnTimeout;
-		_clockManager.PickupSpawnTimeout += OnPickupSpawnTimeout;
-		_clockManager.GameTimeout += OnGameTimeout;
-		_clockManager.StartingTimeout += OnStartingTimeout;
-		GD.PrintRich("[color=green]ClockManager subscription complete.");
+		GD.Print("Subscribing to ClockService events...");
+		_clockService.PulseTimeout += OnPulseTimeout;
+		_clockService.SlowPulseTimeout += OnSlowPulseTimeout;
+		_clockService.MobSpawnTimeout += OnMobSpawnTimeout;
+		_clockService.PickupSpawnTimeout += OnPickupSpawnTimeout;
+		_clockService.GameTimeout += OnGameTimeout;
+		_clockService.StartingTimeout += OnStartingTimeout;
+		GD.PrintRich("[color=green]ClockService subscription complete.");
 		GD.PrintRich("[color=green]Global Player reference set.");
 	}
 

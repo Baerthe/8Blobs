@@ -1,6 +1,6 @@
 namespace Tool.Interface;
 /// <summary>
-/// Interface for TilingManager to handle tiling of scene map elements.
+/// Interface for TilingService to handle tiling of scene map elements.
 /// </summary>
 public interface ITilingTool : ITool
 {
