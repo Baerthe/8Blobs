@@ -15,7 +15,7 @@ public sealed class AudioService : IAudioService
     }
     public void PlaySound(string soundName)
     {
-        var soundPath = $"res://assets/sounds/{soundName}.wav"; // Assuming sounds are stored in this path
+        var soundPath = $"res://assets/.../{soundName}.wav"; // Assuming sounds are stored in this path
         var audioStream = GD.Load<AudioStream>(soundPath);
         if (audioStream == null)
         {

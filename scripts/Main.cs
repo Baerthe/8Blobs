@@ -2,7 +2,6 @@ using Godot;
 using Core;
 using Core.Interface;
 using System;
-using Container;
 /// <summary>
 /// The main class that handles main orchestration and dependency management of the game.
 /// </summary>
@@ -10,9 +9,9 @@ public partial class Main : Node2D
 {
 	[ExportGroup("Singles")]
 	[ExportSubgroup("Core")]
-	[Export] public Menu Menu { get; private set; }
+	[Export] public MenuManager Menu { get; private set; }
 	[Export] public Camera2D Camera { get; private set; }
-	[Export] public Ui Ui { get; private set; }
+	[Export] public UiManager Ui { get; private set; }
 	// Core Orchestration Variables
 	private readonly IAudioService _audioService = CoreProvider.GetAudioService();
 	private readonly ISaveService _saveService = CoreProvider.GetSaveService();

@@ -1,8 +1,8 @@
 namespace Core;
-using Core.Interface;
+using Godot;
 using System;
 using System.Collections.Generic;
-using Godot;
+using Core.Interface;
 public sealed class ClockService : IClockService
 {
     public event Action PulseTimeout;

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 /// Core services are not nodes; they are global helpers that manage the state and behavior of the application.
 /// These are the core dependencies that get injected.
 /// </remarks>
-public partial class CoreContainer
+public class CoreContainer
 {
     private Dictionary<Type, object> _cores = new();
     /// <summary>
