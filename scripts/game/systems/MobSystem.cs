@@ -1,10 +1,10 @@
 namespace Game;
-
 using Godot;
 using Entities;
 using Game.Interface;
 using System.Collections.Generic;
-public sealed partial class MobSystem() : Node2D, IGameSystem
+[GlobalClass]
+public sealed partial class MobSystem : Node2D, IGameSystem
 {
     public bool IsInitialized { get; private set; } = false;
     private Dictionary<MobEntity, MobData> _mobDataLookup;

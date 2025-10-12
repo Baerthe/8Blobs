@@ -3,8 +3,10 @@ using Godot;
 using Core;
 using System;
 using Game.Interface;
+[GlobalClass]
 public sealed partial class LevelSystem : Node2D, IGameSystem
 {
+    public bool IsInitialized { get; private set; } = false;
     public Node2D player { get; private set; } //temp
     public Camera2D camera { get; private set; }
     public Vector2 OffsetBetweenPickupAndPlayer { get; private set; }

@@ -5,8 +5,10 @@ using Game.Interface;
 /// <summary>
 /// A system for handling tiling of scene map elements.
 /// </summary>
+[GlobalClass]
 public sealed partial class MapSystem : Node2D, IGameSystem
 {
+	public bool IsInitialized { get; private set; } = false;
 	private TileMapLayer _foregroundLayer;
 	private TileMapLayer _backgroundLayer;
 	private Rect2 _usedRect;

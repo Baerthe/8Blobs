@@ -1,0 +1,11 @@
+[gd_scene load_steps=4 format=3 uid="uid://7nch6lsv336o"]
+
+[ext_resource type="Script" uid="uid://croqldtdyjv2d" path="res://scripts/entities/mob/MobEntity.cs" id="1_yvs0u"]
+[ext_resource type="Script" uid="uid://bcqb5i68rkuur" path="res://scripts/entities/mob/MobData.cs" id="2_yvs0u"]
+
+[sub_resource type="Resource" id="Resource_a17hn"]
+script = ExtResource("2_yvs0u")
+
+[node name="Test" type="RigidBody2D"]
+script = ExtResource("1_yvs0u")
+Data = SubResource("Resource_a17hn")

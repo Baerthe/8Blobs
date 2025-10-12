@@ -3,6 +3,7 @@ using Godot;
 using Core;
 using Game;
 using Core.Interface;
+[GlobalClass]
 public sealed partial class LevelEntity : Node2D
 {
     [ExportGroup("Details")]
@@ -10,6 +11,9 @@ public sealed partial class LevelEntity : Node2D
     [Export] public LevelType Location { get; private set; } = LevelType.Unset;
     [Export] public MobIndex SpawnTable { get; private set; }
     [ExportGroup("Components")]
+    [ExportSubgroup("TileMaps")]
+    [Export] public TileMapLayer ForegroundLayer { get; private set; }
+    [Export] public TileMapLayer BackgroundLayer { get; private set; }
     [ExportSubgroup("Markers")]
     [Export] public Node2D PlayerSpawn { get; private set; }
     [ExportSubgroup("Systems")]
