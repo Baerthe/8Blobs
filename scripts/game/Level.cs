@@ -2,16 +2,18 @@ namespace Game;
 using Godot;
 using Core;
 using Core.Interface;
+using Entities;
+
 public sealed partial class Level : Node2D
 {
     [ExportGroup("Details")]
     [Export] public string LocationName { get; private set; } = "";
     [Export] public LevelType LocationType { get; private set; } = LevelType.Unset;
+    [Export] public MobIndex SpawnTable { get; private set; }
     [ExportGroup("Components")]
     [ExportSubgroup("Markers")]
     [Export] public Node2D PlayerSpawn { get; private set; }
     [ExportSubgroup("Systems")]
-    private ChestSystem _chestSystem;
     [Export] public ChestSystem CurrentChestSystem { get; private set; }
     [Export] public LevelSystem CurrentLevelSystem { get; private set; }
     [Export] public MapSystem CurrentMapSystem { get; private set; }
