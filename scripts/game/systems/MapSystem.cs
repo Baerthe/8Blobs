@@ -1,13 +1,11 @@
-namespace Tool;
+namespace Game;
 using Godot;
-using Core;
 using System.Collections.Generic;
 using Game.Interface;
-using Core.Interface;
 /// <summary>
 /// A system for handling tiling of scene map elements.
 /// </summary>
-public sealed partial class MapSystem : Node2D, IMapSystem
+public sealed partial class MapSystem : Node2D, IGameSystem
 {
 	private TileMapLayer _foregroundLayer;
 	private TileMapLayer _backgroundLayer;

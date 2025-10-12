@@ -3,7 +3,7 @@ using Godot;
 using Core;
 using System;
 using Game.Interface;
-public partial class LevelSystem : Node2D, ILevelSystem
+public sealed partial class LevelSystem : Node2D, IGameSystem
 {
     public Player player { get; private set; }
     public Camera2D camera { get; private set; }
