@@ -6,6 +6,7 @@ public partial class MobData : Resource
 {
     [ExportCategory("Stats")]
     [ExportGroup("Attributes")]
+    [Export] public MobTribe Tribe { get; private set; }
     [Export] public RarityType Rarity { get; private set; } = RarityType.Basic;
     [Export] public MobLevel Level { get; private set; } = MobLevel.Basic;
     [Export] public uint Health { get; private set; } = 10;

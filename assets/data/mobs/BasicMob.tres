@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="MobData" load_steps=2 format=3 uid="uid://cmwjmdh4rq0c2"]
+
+[ext_resource type="Script" uid="uid://bcqb5i68rkuur" path="res://scripts/entities/mob/MobData.cs" id="1_5s3qe"]
+
+[resource]
+resource_name = "BasicMobData"
+script = ExtResource("1_5s3qe")
+metadata/_custom_type_script = "uid://bcqb5i68rkuur"

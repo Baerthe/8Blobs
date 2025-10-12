@@ -1,6 +1,0 @@
-[gd_resource type="Resource" script_class="MobData" load_steps=2 format=3 uid="uid://cwiuoqo0b3or"]
-
-[ext_resource type="Script" uid="uid://bcqb5i68rkuur" path="res://scripts/entities/mob/MobData.cs" id="1_22jhq"]
-
-[resource]
-script = ExtResource("1_22jhq")
