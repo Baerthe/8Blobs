@@ -5,5 +5,5 @@ using Godot;
 /// </summary>
 public abstract partial class Item : Pickup
 {
-    public abstract void Effect(Player player);
+
 }

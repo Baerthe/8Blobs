@@ -5,7 +5,7 @@ using System;
 using Game.Interface;
 public sealed partial class LevelSystem : Node2D, IGameSystem
 {
-    public Player player { get; private set; }
+    public Node2D player { get; private set; } //temp
     public Camera2D camera { get; private set; }
     public Vector2 OffsetBetweenPickupAndPlayer { get; private set; }
     public Vector2 OffsetBetweenMobAndPlayer { get; private set; }

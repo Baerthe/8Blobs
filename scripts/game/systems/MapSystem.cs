@@ -22,13 +22,13 @@ public sealed partial class MapSystem : Node2D, IGameSystem
 	public void Update()
 	{
 		//TODO: Fix this later
-		var player = GetNode<Player>("../Player");
-		if (player == null)
-		{
-			GD.PrintErr("Player node not found in TilingTool");
-			return;
-		}
-		PlayerCrossedBorder(player);
+		//var player = GetNode<Player>("../Player");
+		// if (player == null)
+		// {
+		// 	GD.PrintErr("Player node not found in TilingTool");
+		// 	return;
+		// }
+		// PlayerCrossedBorder(player);
 	}
 	public Rect2 GetWorldRect() => _worldRect;
 	public void LoadTiles()
@@ -84,7 +84,7 @@ public sealed partial class MapSystem : Node2D, IGameSystem
 			}
 		}
 	}
-	public void PlayerCrossedBorder(Player player)
+	public void PlayerCrossedBorder(Node2D player)
 	{
 		if (player == null || _worldRect.HasPoint(player.Position)) return;
 		Direction direction = GetBorderDirection(player.Position);

@@ -13,8 +13,4 @@ public partial class Potion : Item
     [Export] public override AudioStreamPlayer2D PickUpSound { get; set; }
     [ExportGroup("Effect")]
     [Export] public int HealAmount { get; private set; } = 2;
-    public override void Effect(Player player)
-    {
-        player.Heal(HealAmount);
-    }
 }

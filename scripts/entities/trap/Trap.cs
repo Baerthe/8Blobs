@@ -1,4 +1,4 @@
-namespace Mobs;
+namespace Entities;
 using Godot;
 public partial class Trap : RigidBody2D
 {

@@ -78,7 +78,6 @@ public partial class Main : Node2D
 	{
 		GD.PrintRich("[color=#ffaa00]Slow Pulse Tick processing...");
 		if (CurrentState != State.Playing) return;
-		ProcessMobLogic();
 	}
 	///TODO: These should be moved to the level tools. They are level specific after all.
 	/// We can have the level tool subscribe to these events when the level loads, and unsubscribe when the level unloads (by deleting the level tool node along side the level loaded).
@@ -129,21 +128,6 @@ public partial class Main : Node2D
 			default:
 				GD.PrintErr("Unknown game state!");
 				throw new InvalidOperationException("ERROR 200: Unknown game state in Main. Game cannot load.");
-		}
-	}
-	private void ProcessMobLogic()
-	{
-		GD.Print("Processing mob logic...");
-		// Get all mobs in the scene and call their process logic.
-		// This assumes mobs are in a group called "Mobs". When called, each mob will handle its own logic and only act if within the current chunk.
-		// Mobs out of all loaded chunks for long enough will get teleported into the current chunk by the level tool.
-		var mobs = GetTree().GetNodesInGroup("Mobs");
-		foreach (var mob in mobs)
-		{
-			if (mob is Mobs.Mob m)
-			{
-				m.OnSlowPulseTimeout();
-			}
 		}
 	}
 	private enum State
