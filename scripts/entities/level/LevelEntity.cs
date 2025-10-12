@@ -1,14 +1,13 @@
-namespace Game;
+namespace Entities;
 using Godot;
 using Core;
+using Game;
 using Core.Interface;
-using Entities;
-
-public sealed partial class Level : Node2D
+public sealed partial class LevelEntity : Node2D
 {
     [ExportGroup("Details")]
-    [Export] public string LocationName { get; private set; } = "";
-    [Export] public LevelType LocationType { get; private set; } = LevelType.Unset;
+    [Export] public string LevelName { get; private set; } = "";
+    [Export] public LevelType Location { get; private set; } = LevelType.Unset;
     [Export] public MobIndex SpawnTable { get; private set; }
     [ExportGroup("Components")]
     [ExportSubgroup("Markers")]
@@ -19,7 +18,7 @@ public sealed partial class Level : Node2D
     [Export] public MapSystem CurrentMapSystem { get; private set; }
     [Export] public MobSystem CurrentMobSystem { get; private set; }
     [Export] public PlayerSystem CurrentPlayerSystem { get; private set; }
-	private readonly IClockService _clockService = CoreProvider.GetClockService();
+    private readonly IClockService _clockService = CoreProvider.GetClockService();
     private readonly IDataService _dataService = CoreProvider.GetDataService();
     private readonly ILevelService _levelService = CoreProvider.GetLevelService();
     private double _delta;
