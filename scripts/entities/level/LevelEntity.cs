@@ -4,13 +4,13 @@ using Core;
 using Game;
 using Core.Interface;
 [GlobalClass]
-public sealed partial class LevelEntity : Node2D
+public partial class LevelEntity : Node2D
 {
     [ExportGroup("Details")]
     [Export] public string LevelName { get; private set; } = "";
-    [Export] public LevelType Location { get; private set; } = LevelType.Unset;
-    [Export] public MobIndex SpawnTable { get; private set; }
+    [Export] public string Description { get; private set; } = "";
     [ExportGroup("Components")]
+    [Export] public LevelData Data { get; private set; }
     [ExportSubgroup("TileMaps")]
     [Export] public TileMapLayer ForegroundLayer { get; private set; }
     [Export] public TileMapLayer BackgroundLayer { get; private set; }

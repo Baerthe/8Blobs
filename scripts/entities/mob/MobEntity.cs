@@ -18,6 +18,7 @@ public partial class MobEntity : RigidBody2D
     public uint CurrentHealth { get; set; }
     public override void _Ready()
     {
+        NullCheck();
         AddToGroup("mobs");
     }
     private void NullCheck()
