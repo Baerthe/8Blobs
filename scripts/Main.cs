@@ -7,10 +7,10 @@ using System;
 /// </summary>
 public partial class Main : Node2D
 {
-	[ExportGroup("Singles")]
+	[ExportGroup("Main Nodes")]
 	[ExportSubgroup("Core")]
 	[Export] public MenuManager Menu { get; private set; }
-	[Export] public Camera2D Camera { get; private set; }
+	[Export] public Camera2D MainCamera { get; private set; }
 	[Export] public UiManager Ui { get; private set; }
 	// Core Orchestration Variables
 	private readonly IAudioService _audioService = CoreProvider.GetAudioService();
@@ -41,7 +41,7 @@ public partial class Main : Node2D
 			GD.PrintErr("UI node not set in Main");
 			throw new InvalidOperationException("ERROR 201: UI node not set in Main. Game cannot load.");
 		}
-		if (Camera == null)
+		if (MainCamera == null)
 		{
 			GD.PrintErr("Camera node not set in Main");
 			throw new InvalidOperationException("ERROR 202: Camera node not set in Main. Game cannot load.");

@@ -1,6 +1,5 @@
 namespace Game;
 using Godot;
-using Core;
 using System;
 using Game.Interface;
 [GlobalClass]
