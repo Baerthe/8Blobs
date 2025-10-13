@@ -1,5 +1,4 @@
 namespace Entities;
-
 using Godot;
 [GlobalClass]
 public partial class MobData : Resource
