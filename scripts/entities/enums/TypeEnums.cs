@@ -1,5 +1,7 @@
 namespace Entities;
-
+/// <summary>
+/// Global enumerations used across various entities in the game.
+/// </summary>
 public enum DamageType : byte
 {
     Blunt = 0,

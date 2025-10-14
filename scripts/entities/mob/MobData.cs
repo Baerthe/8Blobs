@@ -1,5 +1,8 @@
 namespace Entities;
 using Godot;
+/// <summary>
+/// Data container for mobs
+/// </summary>
 [GlobalClass]
 public partial class MobData : Resource
 {

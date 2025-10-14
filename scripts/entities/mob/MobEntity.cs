@@ -1,6 +1,9 @@
 namespace Entities;
 using Godot;
 using System;
+/// <summary>
+/// MobEntity is a RigidBody2D that represents a mobile entity (mob) in the game. It contains various properties that define the mob's characteristics, including its name, description, lore, data, hitbox, sprite, cry sound, and visibility notifier. It ensures that all necessary properties are set and adds itself to the "mobs" group for easy management within the game.
+/// </summary>
 [GlobalClass]
 public partial class MobEntity : RigidBody2D
 {

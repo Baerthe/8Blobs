@@ -1,6 +1,9 @@
 namespace Entities;
 using Godot;
 using System;
+/// <summary>
+/// The Entity class for Heroes, stores components and runtime data
+/// </summary>
 [GlobalClass]
 public partial class HeroEntity : CharacterBody2D
 {

@@ -1,5 +1,9 @@
 namespace Entities;
+
 using Godot;
+/// <summary>
+/// LevelData is a Resource that encapsulates the core attributes of a game level, including its type, tier, and the mob spawn table associated with it.
+/// </summary>
 [GlobalClass]
 public partial class LevelData : Resource
 {

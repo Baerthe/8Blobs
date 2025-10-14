@@ -1,6 +1,8 @@
 namespace Entities;
 using Godot;
-using System;
+/// <summary>
+/// The Data class for Heroes, stores static data
+/// </summary>
 [GlobalClass]
 public partial class HeroData : Resource
 {

@@ -1,5 +1,7 @@
 namespace Entities;
-
+/// <summary>
+/// LevelEnums contains enumerations related to level types and tiers in the game.
+/// </summary>
 public enum LevelType : byte
 {
     Unset = 0,
