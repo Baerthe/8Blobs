@@ -2,17 +2,17 @@ namespace Entities;
 using Godot;
 using System;
 [GlobalClass]
-public partial class MobEntity : RigidBody2D
+public partial class HeroEntity : CharacterBody2D
 {
     [ExportCategory("Stats")]
     [ExportGroup("Info")]
-    [Export] public string MobName { get; private set; }
+    [Export] public string HeroName { get; private set; }
     [Export] public string Description { get; private set; }
     [Export] public string Lore { get; private set; }
     [ExportGroup("Components")]
-    [Export] public MobData Data { get; private set; }
+    [Export] public HeroData Data { get; private set; }
     [Export] public CollisionShape2D Hitbox { get; private set; }
-    [Export] public Sprite2D Sprite { get; private set; }
+    [Export] public AnimatedSprite2D Sprite { get; private set; }
     [Export] public AudioStream Cry { get; private set; }
     [Export] public VisibleOnScreenNotifier2D Notifier2D { get; private set; }
     public Vector2 CurrentVelocity { get; set; }
@@ -20,15 +20,14 @@ public partial class MobEntity : RigidBody2D
     public override void _Ready()
     {
         NullCheck();
-        AddToGroup("mobs");
+        AddToGroup("players");
     }
     private void NullCheck()
     {
         byte failure = 0;
-        if (MobName == null) { GD.PrintErr($"ERROR: {this.Name} does not have MobName set!"); failure++; }
+        if (HeroName == null) { GD.PrintErr($"ERROR: {this.Name} does not have HeroName set!"); failure++; }
         if (Description == null) { GD.PrintErr($"ERROR: {this.Name} does not have Description set!"); failure++; }
         if (Lore == null) { GD.PrintErr($"ERROR: {this.Name} does not have Lore set!"); failure++; }
-        if (Data == null) { GD.PrintErr($"ERROR: {this.Name} does not have Data set!"); failure++; }
         if (Hitbox == null) { GD.PrintErr($"ERROR: {this.Name} does not have Hitbox set!"); failure++; }
         if (Sprite == null) { GD.PrintErr($"ERROR: {this.Name} does not have Sprite set!"); failure++; }
         if (Cry == null) { GD.PrintErr($"ERROR: {this.Name} does not have Cry set!"); failure++; }

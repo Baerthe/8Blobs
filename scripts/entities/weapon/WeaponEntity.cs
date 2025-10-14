@@ -11,7 +11,7 @@ public partial class WeaponEntity : Node2D
     [Export] public string Lore { get; private set; }
     [ExportGroup("Components")]
     [Export] public WeaponData Data { get; private set; }
-    [Export] public Sprite2D Sprite { get; private set; }
+    [Export] public Texture2D Icon { get; private set; }
     [Export] public AudioStream SwingSound { get; private set; }
     [Export] public AudioStream HitSound { get; private set; }
     public override void _Ready()
@@ -26,7 +26,7 @@ public partial class WeaponEntity : Node2D
         if (Description == null) { GD.PrintErr($"ERROR: {this.Name} does not have Description set!"); failure++; }
         if (Lore == null) { GD.PrintErr($"ERROR: {this.Name} does not have Lore set!"); failure++; }
         if (Data == null) { GD.PrintErr($"ERROR: {this.Name} does not have Data set!"); failure++; }
-        if (Sprite == null) { GD.PrintErr($"ERROR: {this.Name} does not have Sprite set!"); failure++; }
+        if (Icon == null) { GD.PrintErr($"ERROR: {this.Name} does not have Icon set!"); failure++; }
         if (SwingSound == null) { GD.PrintErr($"ERROR: {this.Name} does not have SwingSound set!"); failure++; }
         if (HitSound == null) { GD.PrintErr($"ERROR: {this.Name} does not have HitSound set!"); failure++; }
         if (failure > 0) throw new InvalidOperationException($"{this.Name} has failed null checking with {failure} missing components!");
