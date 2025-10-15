@@ -1,5 +1,6 @@
 using Godot;
 using Core;
+using Game;
 using Core.Interface;
 using System;
 /// <summary>
@@ -9,15 +10,16 @@ public partial class Main : Node2D
 {
 	[ExportGroup("Main Nodes")]
 	[ExportSubgroup("Core")]
-	[Export] public MenuManager Menu { get; private set; }
 	[Export] public Camera2D MainCamera { get; private set; }
-	[Export] public UiManager Ui { get; private set; }
+	[Export] public GameManager Game { get; private set; }
+	[Export] public MenuManager Menu { get; private set; }
+	[Export] public UiManager Hud { get; private set; }
 	// Core Orchestration Variables
 	private readonly IAudioService _audioService = CoreProvider.GetAudioService();
 	private readonly ISaveService _saveService = CoreProvider.GetSaveService();
 	private readonly ILevelService _levelService = CoreProvider.GetLevelService();
 	private readonly IClockService _clockService = CoreProvider.GetClockService();
-	private readonly IDataService _DataService = CoreProvider.GetDataService();
+	private readonly IDataService _dataService = CoreProvider.GetDataService();
 	// Flags and States
 	private State CurrentState { get; set; } = State.Menu;
 	private bool _isGameOver = false;
@@ -36,10 +38,10 @@ public partial class Main : Node2D
 	// Initialization Helpers
 	private void NullCheck()
 	{
-		if (Ui == null)
+		if (Hud == null)
 		{
-			GD.PrintErr("UI node not set in Main");
-			throw new InvalidOperationException("ERROR 201: UI node not set in Main. Game cannot load.");
+			GD.PrintErr("HUD node not set in Main");
+			throw new InvalidOperationException("ERROR 201: HUD node not set in Main. Game cannot load.");
 		}
 		if (MainCamera == null)
 		{
@@ -50,6 +52,11 @@ public partial class Main : Node2D
 		{
 			GD.PrintErr("Menu node not set in Main");
 			throw new InvalidOperationException("ERROR 203: Menu node not set in Main. Game cannot load.");
+		}
+		if (Game == null)
+		{
+			GD.PrintErr("Game node not set in Main");
+			throw new InvalidOperationException("ERROR 204: Game node not set in Main. Game cannot load.");
 		}
 		GD.Print("We got all of our nodes! NullCheck Complete");
 	}

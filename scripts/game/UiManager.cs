@@ -2,8 +2,8 @@ using Godot;
 /// <summary>
 /// A class that manages the user interface (UI) elements of the game, such as health display and inventory display.
 /// </summary>
-public partial class UiManager
- : CanvasLayer
+[GlobalClass]
+public partial class UiManager : CanvasLayer
 {
     [Export] private Label _scoreLiteral;
     [Export] private Label _healthLiteral;

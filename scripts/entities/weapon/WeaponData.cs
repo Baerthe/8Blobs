@@ -5,6 +5,7 @@ public partial class WeaponData : Resource
 {
     [ExportCategory("Stats")]
     [ExportGroup("Attributes")]
+    [Export] public Texture2D Icon { get; private set; }
     [Export] public RarityType Rarity { get; set; } = RarityType.Basic;
     [Export] public uint MaxLevel { get; set; } = 1;
     [Export] public uint Damage { get; set; }

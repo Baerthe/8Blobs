@@ -2,7 +2,6 @@ namespace Game;
 using Godot;
 using System;
 using Game.Interface;
-[GlobalClass]
 public sealed partial class LevelSystem : Node2D, IGameSystem
 {
     public bool IsInitialized { get; private set; } = false;

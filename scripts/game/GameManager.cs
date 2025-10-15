@@ -1,40 +1,78 @@
 namespace Game;
 using Godot;
 using Core;
+using System;
 using Core.Interface;
 /// <summary>
 /// GameManager is a Node that manages the core systems of the game, including chest, level, map, mob, and player systems. It integrates with core services for clock management, data handling, and level management, and ensures that these systems are updated appropriately during the game's lifecycle.
 /// </summary>
-public partial class GameManager : Node
+[GlobalClass]
+public partial class GameManager : Node2D
 {
     [ExportGroup("Systems")]
-    [Export] public ChestSystem CurrentChestSystem { get; private set; }
-    [Export] public LevelSystem CurrentLevelSystem { get; private set; }
-    [Export] public MapSystem CurrentMapSystem { get; private set; }
-    [Export] public MobSystem CurrentMobSystem { get; private set; }
-    [Export] public PlayerSystem CurrentPlayerSystem { get; private set; }
+    public ChestSystem CurrentChestSystem { get; private set; }
+    public LevelSystem CurrentLevelSystem { get; private set; }
+    public MapSystem CurrentMapSystem { get; private set; }
+    public MobSystem CurrentMobSystem { get; private set; }
+    public PlayerSystem CurrentPlayerSystem { get; private set; }
     private readonly IClockService _clockService = CoreProvider.GetClockService();
-    private readonly IDataService _dataService = CoreProvider.GetDataService();
-    private readonly ILevelService _levelService = CoreProvider.GetLevelService();
     private double _delta;
+    private bool _levelLoaded = false;
     public override void _Ready()
     {
         _clockService.PulseTimeout += OnPulseTimeout;
     }
     public override void _Process(double delta)
     {
+        if (!_levelLoaded) return;
         _delta = delta;
     }
-    public override void _ExitTree()
+    public void PrepareLevel(Node2D Level)
     {
-		_clockService.SlowPulseTimeout -= OnSlowPulseTimeout;
+        if (_levelLoaded)
+        {
+            GD.PrintErr("Level already loaded in GameManager");
+            throw new InvalidOperationException("ERROR 300: Level already loaded in GameManager. Cannot load another level.");
+        }
+        CurrentChestSystem = new();
+        Level.AddChild(CurrentChestSystem);
+        CurrentLevelSystem = new();
+        Level.AddChild(CurrentLevelSystem);
+        CurrentMapSystem = new();
+        Level.AddChild(CurrentMapSystem);
+        CurrentMobSystem = new();
+        Level.AddChild(CurrentMobSystem);
+        CurrentPlayerSystem = new();
+        Level.AddChild(CurrentPlayerSystem);
+        _levelLoaded = true;
+    }
+    public void UnloadLevel()
+    {
+        if (!_levelLoaded)
+        {
+            GD.PrintErr("No level loaded in GameManager to unload");
+            return;
+        }
+        CurrentChestSystem.QueueFree();
+        CurrentChestSystem = null;
+        CurrentLevelSystem.QueueFree();
+        CurrentLevelSystem = null;
+        CurrentMapSystem.QueueFree();
+        CurrentMapSystem = null;
+        CurrentMobSystem.QueueFree();
+        CurrentMobSystem = null;
+        CurrentPlayerSystem.QueueFree();
+        CurrentPlayerSystem = null;
+        _levelLoaded = false;
     }
     private void OnPulseTimeout()
     {
+        if (!_levelLoaded) return;
         CurrentLevelSystem.Update();
     }
     private void OnSlowPulseTimeout()
     {
+        if (!_levelLoaded) return;
         CurrentMapSystem.Update();
     }
 }

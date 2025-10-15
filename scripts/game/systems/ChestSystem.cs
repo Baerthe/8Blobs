@@ -1,7 +1,6 @@
 namespace Game;
 using Godot;
 using Game.Interface;
-[GlobalClass]
 public sealed partial class ChestSystem : Node2D, IGameSystem
 {
     public bool IsInitialized { get; private set; } = false;
