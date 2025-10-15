@@ -18,6 +18,7 @@ public partial class GameManager : Node2D
     private readonly IClockService _clockService = CoreProvider.GetClockService();
     private double _delta;
     private bool _levelLoaded = false;
+    private bool _isPaused = false;
     public override void _Ready()
     {
         _clockService.PulseTimeout += OnPulseTimeout;
@@ -25,7 +26,12 @@ public partial class GameManager : Node2D
     public override void _Process(double delta)
     {
         if (!_levelLoaded) return;
+        if (_isPaused) return;
         _delta = delta;
+    }
+    public void TogglePause()
+    {
+        _isPaused = !_isPaused;
     }
     public void PrepareLevel(Node2D Level)
     {
@@ -68,11 +74,13 @@ public partial class GameManager : Node2D
     private void OnPulseTimeout()
     {
         if (!_levelLoaded) return;
+        if (_isPaused) return;
         CurrentLevelSystem.Update();
     }
     private void OnSlowPulseTimeout()
     {
         if (!_levelLoaded) return;
+        if (_isPaused) return;
         CurrentMapSystem.Update();
     }
 }

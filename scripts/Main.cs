@@ -4,14 +4,14 @@ using Game;
 using Core.Interface;
 using System;
 /// <summary>
-/// The main class that handles main orchestration and dependency management of the game.
+/// The main class that handles orchestration and dependency management of the game.
 /// </summary>
 public partial class Main : Node2D
 {
 	[ExportGroup("Main Nodes")]
 	[ExportSubgroup("Core")]
 	[Export] public Camera2D MainCamera { get; private set; }
-	[Export] public GameManager Game { get; private set; }
+	[Export] public GameManager GameSystems { get; private set; }
 	[Export] public MenuManager Menu { get; private set; }
 	[Export] public UiManager Hud { get; private set; }
 	// Core Orchestration Variables
@@ -22,7 +22,6 @@ public partial class Main : Node2D
 	private readonly IDataService _dataService = CoreProvider.GetDataService();
 	// Flags and States
 	private State CurrentState { get; set; } = State.Menu;
-	private bool _isGameOver = false;
 	private bool _isGameStarted = false;
 	// Engine Callbacks
 	public override void _Ready()
@@ -30,7 +29,6 @@ public partial class Main : Node2D
 		// Do we have everything?
 		NullCheck();
 		Subscribe();
-		_clockService.InitGame(this);
 		GD.PrintRich("[color=#000][bgcolor=#00ff00]Main node ready. Initializing game...[/bgcolor][/color]");
 		GD.PrintRich("[color=#000][bgcolor=#00ff00]Game Initialized.[/bgcolor][/color]");
 		Menu.Show();
@@ -53,7 +51,7 @@ public partial class Main : Node2D
 			GD.PrintErr("Menu node not set in Main");
 			throw new InvalidOperationException("ERROR 203: Menu node not set in Main. Game cannot load.");
 		}
-		if (Game == null)
+		if (GameSystems == null)
 		{
 			GD.PrintErr("Game node not set in Main");
 			throw new InvalidOperationException("ERROR 204: Game node not set in Main. Game cannot load.");
@@ -65,17 +63,12 @@ public partial class Main : Node2D
 		GD.Print("Subscribing to ClockService events...");
 		_clockService.PulseTimeout += OnPulseTimeout;
 		_clockService.SlowPulseTimeout += OnSlowPulseTimeout;
-		_clockService.MobSpawnTimeout += OnMobSpawnTimeout;
-		_clockService.PickupSpawnTimeout += OnPickupSpawnTimeout;
-		_clockService.GameTimeout += OnGameTimeout;
-		_clockService.StartingTimeout += OnStartingTimeout;
 		GD.PrintRich("[color=green]ClockService subscription complete.");
 		GD.PrintRich("[color=green]Global Player reference set.");
 	}
 
 	// Event Handlers
-	// Main is subscribed to both pulse clock events, for batching, and this way we can print debug info, but also this let's us optimize some of the logic by having select onEvents
-	// get called by main instead of each individual class listeners. We can also solve race conditions this way, if needed.
+	// Main is subscribed to both pulse clock events, for batching, and this way we can print debug info.
 	private void OnPulseTimeout()
 	{
 		GD.PrintRich("[color=#afdd00]Pulse Tick processing...");
@@ -84,29 +77,6 @@ public partial class Main : Node2D
 	private void OnSlowPulseTimeout()
 	{
 		GD.PrintRich("[color=#ffaa00]Slow Pulse Tick processing...");
-		if (CurrentState != State.Playing) return;
-	}
-	///TODO: These should be moved to the level tools. They are level specific after all.
-	/// We can have the level tool subscribe to these events when the level loads, and unsubscribe when the level unloads (by deleting the level tool node along side the level loaded).
-	private void OnMobSpawnTimeout()
-	{
-		GD.PrintRich("[color=#00aaff]Mob Spawn Tick processing...");
-		if (CurrentState != State.Playing) return;
-	}
-	private void OnPickupSpawnTimeout()
-	{
-		GD.PrintRich("[color=#D0a0f2]Pickup Spawn Tick processing...");
-		if (CurrentState != State.Playing) return;
-	}
-	private void OnGameTimeout()
-	{
-		GD.PrintRich("[color=#1f9fA0]Game Timer processing...");
-		if (CurrentState != State.Playing) return;
-	}
-	private void OnStartingTimeout()
-	{
-		GD.PrintRich("[color=#ffffff]Starting Timer processing...");
-		if (CurrentState != State.Playing) return;
 	}
 	private void ProcessGameState()
 	{
@@ -120,17 +90,23 @@ public partial class Main : Node2D
 				break;
 			case State.Paused:
 				// Game is paused; waiting for player to unpause
+				GameSystems.TogglePause();
 				break;
 			case State.Playing:
 				if (!_isGameStarted)
-				{
-				}
-				if (_isGameOver)
-				{
-				}
+                {
+					_clockService.InitGame(this);
+					GameSystems.PrepareLevel(_levelService.LevelInstance);
+					Menu.Hide();
+					Hud.Show();
+					_isGameStarted = true;
+                }
 				break;
 			case State.GameOver:
 				// Game over; waiting for player to return to menu or restart
+				GameSystems.UnloadLevel();
+				_levelService.UnloadLevel();
+				_clockService.ResetGame();
 				break;
 			default:
 				GD.PrintErr("Unknown game state!");
