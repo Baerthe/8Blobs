@@ -1,4 +1,5 @@
 namespace Game;
+
 using Godot;
 using Core;
 using System;
