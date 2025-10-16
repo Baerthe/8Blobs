@@ -51,6 +51,7 @@ public partial class GameManager : Node2D
         Level.AddChild(CurrentMobSystem);
         CurrentPlayerSystem = new();
         Level.AddChild(CurrentPlayerSystem);
+        CurrentLevelSystem.Initialize(CurrentPlayerSystem.PlayerInstance);
         _levelLoaded = true;
     }
     public void UnloadLevel()

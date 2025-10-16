@@ -27,11 +27,6 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
     }
     public void LoadPlayer(PackedScene playerScene)
     {
-        if (!IsInitialized)
-        {
-            GD.PrintErr("PlayerSystem is not initialized. Call _Ready before loading player.");
-            return;
-        }
         if (playerScene == null)
         {
             GD.PrintErr("PlayerSystem: LoadPlayer called with null playerScene.");
