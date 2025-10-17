@@ -26,7 +26,7 @@ public interface IClockService
     /// <summary>
     /// Event triggered when it's time to spawn a new pickup item.
     /// </summary>
-    event Action PickupSpawnTimeout;
+    event Action ChestSpawnTimeout;
     /// <summary>
     /// Event triggered when the game timer runs out.
     /// </summary>
@@ -56,7 +56,7 @@ public interface IClockService
     /// Sends over the default timer times from the main scene or passes level specific timers.
     /// </summary>
     /// <param name="MobSpawnTime"></param>
-    /// <param name="PickupSpawnTime"></param>
+    /// <param name="ChestSpawnTime"></param>
     /// <param name="ScoreTime"></param>
     /// <param name="StartingTime"></param>
     /// <remarks>

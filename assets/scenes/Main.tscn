@@ -529,7 +529,7 @@ texture = ExtResource("2_idj7w")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_50glp")
 
-[node name="Main" type="Node2D" node_paths=PackedStringArray("Menu", "Player", "PlayerStart", "Camera", "Ui", "_mobPath", "_mobSpawner", "_pickupPath", "_pickupSpawner")]
+[node name="Main" type="Node2D" node_paths=PackedStringArray("Menu", "Player", "PlayerStart", "Camera", "Ui", "_mobPath", "_mobSpawner", "_pickupPath", "_ChestSpawner")]
 texture_filter = 1
 script = ExtResource("1_r150o")
 Menu = NodePath("Menu")
@@ -542,7 +542,7 @@ _mobPath = NodePath("SpawnPath")
 _mobSpawner = NodePath("SpawnPath/Spawner")
 PickupScenes = Array[PackedScene]([ExtResource("5_h1m7h")])
 _pickupPath = NodePath("PickUpPath")
-_pickupSpawner = NodePath("PickUpPath/PickupSpawner")
+_ChestSpawner = NodePath("PickUpPath/ChestSpawner")
 
 [node name="BackgroundLayer" type="TileMapLayer" parent="."]
 show_behind_parent = true
@@ -664,7 +664,7 @@ position = Vector2(225.99998, 279.99997)
 scale = Vector2(0.8, 0.8)
 curve = SubResource("Curve2D_grg3l")
 
-[node name="PickupSpawner" type="PathFollow2D" parent="PickUpPath"]
+[node name="ChestSpawner" type="PathFollow2D" parent="PickUpPath"]
 position = Vector2(127.499985, -20)
 rotation = 0.51914614
 

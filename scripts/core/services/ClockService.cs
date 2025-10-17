@@ -8,7 +8,7 @@ public sealed class ClockService : IClockService
     public event Action PulseTimeout;
     public event Action SlowPulseTimeout;
     public event Action MobSpawnTimeout;
-    public event Action PickupSpawnTimeout;
+    public event Action ChestSpawnTimeout;
     public event Action GameTimeout;
     public event Action StartingTimeout;
     private Timer _pulseTimer;
@@ -16,7 +16,7 @@ public sealed class ClockService : IClockService
     private Timer _gameTimer;
     private Timer _startingTimer;
     private Timer _mobSpawnTimer;
-    private Timer _pickupSpawnTimer;
+    private Timer _ChestSpawnTimer;
     private Dictionary<byte, Timer> _timers = new();
     private bool _isInitialized = false;
     public ClockService()
@@ -47,7 +47,7 @@ public sealed class ClockService : IClockService
         CreatePulseTimer();
         CreateSlowPulseTimer();
         CreateMobSpawnTimer();
-        CreatePickupSpawnTimer();
+        CreateChestSpawnTimer();
         CreateGameTimer();
         CreateStartingTimer();
         StartTimers(parent);
@@ -83,7 +83,7 @@ public sealed class ClockService : IClockService
         {
             _mobSpawnTimer.WaitTime = Timers[0];
             GD.Print($"Mob Spawn Timer set to {Timers[0]} seconds.");
-            _pickupSpawnTimer.WaitTime = Timers[1];
+            _ChestSpawnTimer.WaitTime = Timers[1];
             GD.Print($"Pickup Spawn Timer set to {Timers[1]} seconds.");
             _gameTimer.WaitTime = Timers[2];
             GD.Print($"Game Timer set to {Timers[2]} seconds.");
@@ -113,9 +113,9 @@ public sealed class ClockService : IClockService
             }
             timer.Start();
         }
-        if (_pulseTimer.IsStopped() || _slowPulseTimer.IsStopped() || _mobSpawnTimer.IsStopped() || _pickupSpawnTimer.IsStopped() || _gameTimer.IsStopped() || _startingTimer.IsStopped())
+        if (_pulseTimer.IsStopped() || _slowPulseTimer.IsStopped() || _mobSpawnTimer.IsStopped() || _ChestSpawnTimer.IsStopped() || _gameTimer.IsStopped() || _startingTimer.IsStopped())
         {
-            GD.PrintErr($"One or more timers failed to start! Pulse: {_pulseTimer.IsStopped()}, SlowPulse: {_slowPulseTimer.IsStopped()}, MobSpawn: {_mobSpawnTimer.IsStopped()}, PickupSpawn: {_pickupSpawnTimer.IsStopped()}, Game: {_gameTimer.IsStopped()}, Starting: {_startingTimer.IsStopped()}");
+            GD.PrintErr($"One or more timers failed to start! Pulse: {_pulseTimer.IsStopped()}, SlowPulse: {_slowPulseTimer.IsStopped()}, MobSpawn: {_mobSpawnTimer.IsStopped()}, ChestSpawn: {_ChestSpawnTimer.IsStopped()}, Game: {_gameTimer.IsStopped()}, Starting: {_startingTimer.IsStopped()}");
         }
     }
     /// <summary>
@@ -127,9 +127,9 @@ public sealed class ClockService : IClockService
         {
             timer.Stop();
         }
-        if (_pulseTimer.IsStopped() == false || _slowPulseTimer.IsStopped() == false || _mobSpawnTimer.IsStopped() == false || _pickupSpawnTimer.IsStopped() == false || _gameTimer.IsStopped() == false || _startingTimer.IsStopped() == false)
+        if (_pulseTimer.IsStopped() == false || _slowPulseTimer.IsStopped() == false || _mobSpawnTimer.IsStopped() == false || _ChestSpawnTimer.IsStopped() == false || _gameTimer.IsStopped() == false || _startingTimer.IsStopped() == false)
         {
-            GD.PrintErr($"One or more timers failed to stop! Pulse: {_pulseTimer.IsStopped()}, SlowPulse: {_slowPulseTimer.IsStopped()}, MobSpawn: {_mobSpawnTimer.IsStopped()}, PickupSpawn: {_pickupSpawnTimer.IsStopped()}, Game: {_gameTimer.IsStopped()}, Starting: {_startingTimer.IsStopped()}");
+            GD.PrintErr($"One or more timers failed to stop! Pulse: {_pulseTimer.IsStopped()}, SlowPulse: {_slowPulseTimer.IsStopped()}, MobSpawn: {_mobSpawnTimer.IsStopped()}, ChestSpawn: {_ChestSpawnTimer.IsStopped()}, Game: {_gameTimer.IsStopped()}, Starting: {_startingTimer.IsStopped()}");
         }
     }
     /// <summary>
@@ -177,10 +177,10 @@ public sealed class ClockService : IClockService
         _mobSpawnTimer = BuildTimer(5f, false, false, () => MobSpawnTimeout?.Invoke(), this);
         GD.Print("Mob Spawn Timer created with WaitTime 5f (0.2hrz), ~12 per minute");
     }
-    private void CreatePickupSpawnTimer()
+    private void CreateChestSpawnTimer()
     {
-        if (_pickupSpawnTimer != null) return;
-        _pickupSpawnTimer = BuildTimer(10f, false, false, () => PickupSpawnTimeout?.Invoke(), this);
+        if (_ChestSpawnTimer != null) return;
+        _ChestSpawnTimer = BuildTimer(10f, false, false, () => ChestSpawnTimeout?.Invoke(), this);
         GD.Print("Pickup Spawn Timer created with WaitTime 10f (0.1hrz), ~6 per minute");
     }
     private void CreateGameTimer()

@@ -27,6 +27,9 @@ public partial class GameManager : Node2D
         if (!_levelLoaded) return;
         if (_isPaused) return;
     }
+    /// <summary>
+    /// Toggles the paused state of the game. When paused, it stops processing for the player and mob systems.
+    /// </summary>
     public void TogglePause()
     {
         _isPaused = !_isPaused;
@@ -45,6 +48,11 @@ public partial class GameManager : Node2D
             CurrentMobSystem.ResumeMobs();
         }
     }
+    /// <summary>
+    /// Prepares the level by initializing and adding the core systems to the provided level node.
+    /// </summary>
+    /// <param name="Level"></param>
+    /// <exception cref="InvalidOperationException"></exception>
     public void PrepareLevel(Node2D Level)
     {
         if (_levelLoaded)
@@ -65,6 +73,9 @@ public partial class GameManager : Node2D
         CurrentChestSystem.PlayerInstance = CurrentPlayerSystem.PlayerInstance;
         _levelLoaded = true;
     }
+    /// <summary>
+    /// Unloads the current level by freeing all core systems and resetting the level loaded state.
+    /// </summary>
     public void UnloadLevel()
     {
         if (!_levelLoaded)

@@ -19,10 +19,8 @@ public partial class Main : Node2D
 	private State _priorState;
 	// Core Orchestration Variables
 	private readonly IAudioService _audioService = CoreProvider.GetAudioService();
-	private readonly ISaveService _saveService = CoreProvider.GetSaveService();
 	private readonly ILevelService _levelService = CoreProvider.GetLevelService();
 	private readonly IClockService _clockService = CoreProvider.GetClockService();
-	private readonly IDataService _dataService = CoreProvider.GetDataService();
 	// Flags
 	private bool _isGameStarted = false;
 	// State Enum
