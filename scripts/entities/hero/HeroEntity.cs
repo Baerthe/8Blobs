@@ -12,6 +12,7 @@ public partial class HeroEntity : CharacterBody2D
     [Export] public string HeroName { get; private set; }
     [Export] public string Description { get; private set; }
     [Export] public string Lore { get; private set; }
+    [Export] public bool Unlocked { get; private set; } = false;
     [ExportGroup("Components")]
     [Export] public HeroData Data { get; private set; }
     [Export] public CollisionShape2D Hitbox { get; private set; }
@@ -24,6 +25,7 @@ public partial class HeroEntity : CharacterBody2D
         NullCheck();
         AddToGroup("players");
     }
+    public void Unlock() => Unlocked = true;
     private void NullCheck()
     {
         byte failure = 0;

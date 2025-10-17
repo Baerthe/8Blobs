@@ -41,7 +41,12 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
         AddChild(PlayerInstance);
         GD.Print($"PlayerSystem: Loaded player '{PlayerInstance.HeroName}'.");
     }
-	public void Update()
+    public void Update()
     {
+    }
+    public override void _ExitTree()
+    {
+        PlayerInstance.QueueFree();
+        base._ExitTree();
     }
 }
