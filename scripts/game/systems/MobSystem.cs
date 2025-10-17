@@ -9,6 +9,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     public Vector2 OffsetBetweenMobSpawnerAndPlayer { get; private set; }
     public Path2D MobSpawnPath { get; set; }
     public PathFollow2D MobSpawner { get; set; }
+    public HeroEntity PlayerInstance { get; set; }
     private Dictionary<MobEntity, MobData> _mobDataLookup;
     private Dictionary<MobEntity, System.Action<MobEntity, MobData>> _aiHandlers;
     private List<MobEntity> _activeMobs = new();
@@ -21,6 +22,6 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     }
     public void Update()
     {
-        OffsetBetweenMobSpwanerAndPlayer = _playerInstance.Position - MobPath.Position;
+        OffsetBetweenMobSpawnerAndPlayer = PlayerInstance.Position - MobSpawnPath.Position;
     }
 }

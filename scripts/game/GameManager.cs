@@ -14,8 +14,6 @@ public partial class GameManager : Node2D
     public MobSystem CurrentMobSystem { get; private set; }
     public PlayerSystem CurrentPlayerSystem { get; private set; }
     private Camera2D _camera;
-    private HeroEntity _playerInstance;
-    private double _delta;
     private bool _levelLoaded = false;
     private bool _isPaused = false;
     public override void _Ready()
@@ -27,7 +25,6 @@ public partial class GameManager : Node2D
     {
         if (!_levelLoaded) return;
         if (_isPaused) return;
-        _delta = delta;
     }
     public void TogglePause()
     {
@@ -48,8 +45,9 @@ public partial class GameManager : Node2D
         Level.AddChild(CurrentMobSystem);
         CurrentPlayerSystem = new();
         Level.AddChild(CurrentPlayerSystem);
-        CurrentPlayerSystem.LoadPlayer()
-        _playerInstance = CurrentPlayerSystem.PlayerInstance;
+        CurrentPlayerSystem.LoadPlayer(ResourceLoader.Load<PackedScene>("res://scenes/entities/heros/TestHero.tscn")); // Temporary until we have a proper player selection system
+        CurrentMobSystem.PlayerInstance = CurrentPlayerSystem.PlayerInstance;
+        CurrentChestSystem.PlayerInstance = CurrentPlayerSystem.PlayerInstance;
         _levelLoaded = true;
     }
     public void UnloadLevel()

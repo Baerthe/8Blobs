@@ -1,5 +1,7 @@
 namespace Game;
+
 using Godot;
+using Entities;
 using Game.Interface;
 public sealed partial class ChestSystem : Node2D, IGameSystem
 {
@@ -7,10 +9,12 @@ public sealed partial class ChestSystem : Node2D, IGameSystem
     public Path2D PickupPath { get; set; }
     public PathFollow2D PickupSpawner { get; set; }
     public Vector2 OffsetBetweenPickupAndPlayer { get; private set; }
+    public HeroEntity PlayerInstance;
     public override void _Ready()
     {
     }
     public void Update()
     {
+        OffsetBetweenPickupAndPlayer = PlayerInstance.Position - PickupPath.Position;
     }
 }
