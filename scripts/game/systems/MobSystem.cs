@@ -20,6 +20,22 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         _aiHandlers = new Dictionary<MobEntity, System.Action<MobEntity, MobData>>();
         IsInitialized = true;
     }
+    public void PauseMobs()
+    {
+        foreach (var mob in _activeMobs)
+        {
+            mob.SetProcess(false);
+            mob.SetPhysicsProcess(false);
+        }
+    }
+    public void ResumeMobs()
+    {
+        foreach (var mob in _activeMobs)
+        {
+            mob.SetProcess(true);
+            mob.SetPhysicsProcess(true);
+        }
+    }
     public void Update()
     {
         OffsetBetweenMobSpawnerAndPlayer = PlayerInstance.Position - MobSpawnPath.Position;

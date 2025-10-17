@@ -14,26 +14,40 @@ public partial class Main : Node2D
 	[Export] public GameManager GameManagerInstance { get; private set; }
 	[Export] public MenuManager MenuManagerInstance { get; private set; }
 	[Export] public UiManager HudManagerInstance { get; private set; }
+	// State
+	public static State CurrentState { get; set; } = State.Menu;
+	private State _priorState;
 	// Core Orchestration Variables
 	private readonly IAudioService _audioService = CoreProvider.GetAudioService();
 	private readonly ISaveService _saveService = CoreProvider.GetSaveService();
 	private readonly ILevelService _levelService = CoreProvider.GetLevelService();
 	private readonly IClockService _clockService = CoreProvider.GetClockService();
 	private readonly IDataService _dataService = CoreProvider.GetDataService();
-	// Flags and States
-	private State CurrentState { get; set; } = State.Menu;
+	// Flags
 	private bool _isGameStarted = false;
+	// State Enum
+	public enum State
+	{
+		Menu,
+		LevelSelect,
+		Paused,
+		Playing,
+		GameOver
+	}
 	// Engine Callbacks
 	public override void _Ready()
 	{
-		// Do we have everything?
 		NullCheck();
 		Subscribe();
 		GD.PrintRich("[color=#000][bgcolor=#00ff00]Main node ready. Initializing game...[/bgcolor][/color]");
 		GD.PrintRich("[color=#000][bgcolor=#00ff00]Game Initialized.[/bgcolor][/color]");
-		MenuManagerInstance.Show();
+		CurrentState = State.Menu;
+		_priorState = CurrentState;
 	}
-	// Initialization Helpers
+	/// <summary>
+    /// Validates that all critical nodes are assigned in the editor. If any are missing, it logs an error and throws an exception to prevent the game from running in an invalid state.
+    /// </summary>
+    /// <exception cref="InvalidOperationException"></exception>
 	private void NullCheck()
 	{
 		if (HudManagerInstance == null)
@@ -58,6 +72,9 @@ public partial class Main : Node2D
 		}
 		GD.Print("We got all of our nodes! NullCheck Complete");
 	}
+	/// <summary>
+    /// Subscribes to ClockService events for pulse and slow pulse ticks. This is where we drive the main game loop by processing game state changes on each tick.
+    /// </summary>
 	private void Subscribe()
 	{
 		GD.Print("Subscribing to ClockService events...");
@@ -66,9 +83,9 @@ public partial class Main : Node2D
 		GD.PrintRich("[color=green]ClockService subscription complete.");
 		GD.PrintRich("[color=green]Global Player reference set.");
 	}
-
-	// Event Handlers
-	// Main is subscribed to both pulse clock events, for batching, and this way we can print debug info.
+	/// <summary>
+    /// Handles regular pulse ticks from the ClockService to update game state.
+    /// </summary>
 	private void OnPulseTimeout()
 	{
 		GD.PrintRich("[color=#afdd00]Pulse Tick processing...");
@@ -78,12 +95,18 @@ public partial class Main : Node2D
 	{
 		GD.PrintRich("[color=#ffaa00]Slow Pulse Tick processing...");
 	}
+	/// <summary>
+    /// Handles transitions between different game states. CurrentState is static and can be changed from anywhere, it is checked every pulse tick; this allows for decoupled state changes that intrrupt the game flow.
+    /// </summary>
+    /// <exception cref="InvalidOperationException"></exception>
 	private void ProcessGameState()
 	{
+		if (_priorState == CurrentState) return;
 		switch (CurrentState)
 		{
 			case State.Menu:
 				// Waiting for player to start game
+				MenuManagerInstance.Show();
 				break;
 			case State.LevelSelect:
 				// Waiting for player to select level
@@ -93,14 +116,18 @@ public partial class Main : Node2D
 				GameManagerInstance.TogglePause();
 				break;
 			case State.Playing:
+				if (GameManagerInstance.IsPaused)
+				{
+					GameManagerInstance.TogglePause();
+				}
 				if (!_isGameStarted)
-                {
+				{
 					_clockService.InitGame(this);
 					GameManagerInstance.PrepareLevel(_levelService.LevelInstance);
 					MenuManagerInstance.Hide();
 					HudManagerInstance.Show();
 					_isGameStarted = true;
-                }
+				}
 				break;
 			case State.GameOver:
 				// Game over; waiting for player to return to menu or restart
@@ -112,13 +139,6 @@ public partial class Main : Node2D
 				GD.PrintErr("Unknown game state!");
 				throw new InvalidOperationException("ERROR 200: Unknown game state in Main. Game cannot load.");
 		}
-	}
-	private enum State
-	{
-		Menu,
-		LevelSelect,
-		Paused,
-		Playing,
-		GameOver
+		_priorState = CurrentState;
 	}
 }

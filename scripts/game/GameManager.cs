@@ -13,6 +13,7 @@ public partial class GameManager : Node2D
     public MapSystem CurrentMapSystem { get; private set; }
     public MobSystem CurrentMobSystem { get; private set; }
     public PlayerSystem CurrentPlayerSystem { get; private set; }
+    public bool IsPaused => _isPaused;
     private Camera2D _camera;
     private bool _levelLoaded = false;
     private bool _isPaused = false;
@@ -29,6 +30,20 @@ public partial class GameManager : Node2D
     public void TogglePause()
     {
         _isPaused = !_isPaused;
+        if (_isPaused)
+        {
+            GetTree().Paused = true;
+            CurrentPlayerSystem.PlayerInstance?.SetProcess(false);
+            CurrentPlayerSystem.PlayerInstance?.SetPhysicsProcess(false);
+            CurrentMobSystem.PauseMobs();
+        }
+        else
+        {
+            GetTree().Paused = false;
+            CurrentPlayerSystem.PlayerInstance?.SetProcess(true);
+            CurrentPlayerSystem.PlayerInstance?.SetPhysicsProcess(true);
+            CurrentMobSystem.ResumeMobs();
+        }
     }
     public void PrepareLevel(Node2D Level)
     {
