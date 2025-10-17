@@ -3,26 +3,24 @@ namespace Game;
 using Godot;
 using Core;
 using System;
-using Core.Interface;
 /// <summary>
 /// GameManager is a Node that manages the core systems of the game, including chest, level, map, mob, and player systems. It integrates with core services for clock management, data handling, and level management, and ensures that these systems are updated appropriately during the game's lifecycle.
 /// </summary>
 [GlobalClass]
 public partial class GameManager : Node2D
 {
-    [ExportGroup("Systems")]
     public ChestSystem CurrentChestSystem { get; private set; }
-    public LevelSystem CurrentLevelSystem { get; private set; }
     public MapSystem CurrentMapSystem { get; private set; }
     public MobSystem CurrentMobSystem { get; private set; }
     public PlayerSystem CurrentPlayerSystem { get; private set; }
-    private readonly IClockService _clockService = CoreProvider.GetClockService();
+    private Camera2D _camera;
     private double _delta;
     private bool _levelLoaded = false;
     private bool _isPaused = false;
     public override void _Ready()
     {
-        _clockService.PulseTimeout += OnPulseTimeout;
+        GetParent().GetNode<Camera2D>("MainCamera");
+        CoreProvider.GetClockService().PulseTimeout += OnPulseTimeout;
     }
     public override void _Process(double delta)
     {
@@ -43,15 +41,12 @@ public partial class GameManager : Node2D
         }
         CurrentChestSystem = new();
         Level.AddChild(CurrentChestSystem);
-        CurrentLevelSystem = new();
-        Level.AddChild(CurrentLevelSystem);
         CurrentMapSystem = new();
         Level.AddChild(CurrentMapSystem);
         CurrentMobSystem = new();
         Level.AddChild(CurrentMobSystem);
         CurrentPlayerSystem = new();
         Level.AddChild(CurrentPlayerSystem);
-        CurrentLevelSystem.Initialize(CurrentPlayerSystem.PlayerInstance);
         _levelLoaded = true;
     }
     public void UnloadLevel()
@@ -63,8 +58,6 @@ public partial class GameManager : Node2D
         }
         CurrentChestSystem.QueueFree();
         CurrentChestSystem = null;
-        CurrentLevelSystem.QueueFree();
-        CurrentLevelSystem = null;
         CurrentMapSystem.QueueFree();
         CurrentMapSystem = null;
         CurrentMobSystem.QueueFree();
@@ -77,12 +70,14 @@ public partial class GameManager : Node2D
     {
         if (!_levelLoaded) return;
         if (_isPaused) return;
-        CurrentLevelSystem.Update();
+        CurrentPlayerSystem.Update();
+        CurrentMobSystem.Update();
     }
     private void OnSlowPulseTimeout()
     {
         if (!_levelLoaded) return;
         if (_isPaused) return;
+        CurrentChestSystem.Update();
         CurrentMapSystem.Update();
     }
 }

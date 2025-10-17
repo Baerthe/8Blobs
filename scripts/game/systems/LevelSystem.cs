@@ -8,13 +8,14 @@ public sealed partial class LevelSystem : Node2D, IGameSystem
 {
     public bool IsInitialized { get; private set; } = false;
     public Camera2D camera { get; private set; }
+    // to chest
+        public Path2D PickupPath { get; set; }
+    public PathFollow2D PickupSpawner { get; set; }
     public Vector2 OffsetBetweenPickupAndPlayer { get; private set; }
+    // to mob
     public Vector2 OffsetBetweenMobAndPlayer { get; private set; }
     public Path2D MobPath { get; set; }
     public PathFollow2D MobSpawner { get; set; }
-    public Path2D PickupPath { get; set; }
-    public PathFollow2D PickupSpawner { get; set; }
-    private HeroEntity _playerInstance;
     public void Initialize(HeroEntity playerInstance)
     {
         if (IsInitialized)
