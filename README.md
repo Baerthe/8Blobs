@@ -12,9 +12,7 @@ This project uses a service-oriented architecture, with a focus on modularity an
 ### Main Services
 - **AudioService**: Manages audio playback and sound effects.
 - **ClockService**: Manages game timing, including pulse ticks for game updates.
-- **DataService**: Handles data persistence and retrieval as it concerns progression.
 - **InputService**: Handles player input and controls.
-- **SaveService**: Manages saving and loading game data.
 - **UIService**: Manages UI elements and interactions.
 ### Main Systems
 - **ChestSystem**: Manages chest interactions and loot generation.
