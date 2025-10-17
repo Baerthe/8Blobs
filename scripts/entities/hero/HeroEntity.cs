@@ -15,7 +15,7 @@ public partial class HeroEntity : CharacterBody2D
     [Export] public bool Unlocked { get; private set; } = false;
     [ExportGroup("Components")]
     [Export] public HeroData Data { get; private set; }
-    [Export] public CollisionShape2D Hitbox { get; private set; }
+    [Export] public CollisionObject2D Hitbox { get; private set; }
     [Export] public AnimatedSprite2D Sprite { get; private set; }
     [Export] public AudioStream Cry { get; private set; }
     public Vector2 CurrentVelocity { get; set; }

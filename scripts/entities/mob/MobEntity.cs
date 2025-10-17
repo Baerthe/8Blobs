@@ -14,7 +14,7 @@ public partial class MobEntity : RigidBody2D
     [Export] public string Lore { get; private set; }
     [ExportGroup("Components")]
     [Export] public MobData Data { get; private set; }
-    [Export] public CollisionShape2D Hitbox { get; private set; }
+    [Export] public CollisionObject2D Hitbox { get; private set; }
     [Export] public Sprite2D Sprite { get; private set; }
     [Export] public AudioStream Cry { get; private set; }
     [Export] public VisibleOnScreenNotifier2D Notifier2D { get; private set; }
