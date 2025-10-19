@@ -13,12 +13,11 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     public PathFollow2D MobSpawner { get; set; }
     public HeroEntity PlayerInstance { get; set; }
     public LevelEntity LevelInstance { get; set; }
-    private Dictionary<uint, MobEntity> _mobDataLookup;
-    private uint _maxSpawnWeight = 0;
-    private uint _lowestSpawnWeight = 0;
+    private List<MobEntity> _mobDataLookup;
     private Dictionary<MobEntity, System.Action<MobEntity, MobData>> _aiHandlers;
     private List<MobEntity> _activeMobs = new();
     private Vector2 _lastPlayerPosition;
+    private ulong _gameElapsedTime = 0;
     public override void _Ready()
     {
         if (IsInitialized) return;
@@ -50,47 +49,52 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     }
     private void OnMobTimeout()
     {
-        int rand = GD.RandRange(0, _mobDataLookup.Count);
-        MobEntity mob = _mobDataLookup[rand].Instantiate();
-        MobSpawner.ProgressRatio = GD.Randf();
+        if (_mobDataLookup == null || _mobDataLookup.Count == 0)
+        {
+            GD.PrintErr("MobSystem: OnMobTimeout called but mob data lookup is empty.");
+            return;
+        }
+        // Build weighted random selection
+        ushort totalWeight = 0;
+        foreach (MobEntity mob in _mobDataLookup)
+        {
+            totalWeight += (ushort)CalculateSpawnWeight(mob.Data);
+        }
+        //TODO: Implement spawning logic based on weights and game time
     }
-    /// <summary>
-    /// Handles the game timeout event to adjust mob spawn weights over time, increasing the difficulty by forcing higher weight mobs to spawn.
-    /// </summary>
     private void OnGameTimeout()
     {
-        _lowestSpawnWeight++;
-        if (_lowestSpawnWeight >= _maxSpawnWeight)
-        {
-            _lowestSpawnWeight = _maxSpawnWeight - 4;
-        }
+        _gameElapsedTime += 1;
     }
     /// <summary>
-    /// Builds the mob pool for the current level based on the level's mob table, sorting mobs by their spawn weight derived from their rarity and level.
+    /// Builds the mob pool from the current level, sorts them by spawn weight, and prepares them for spawning by loading their scenes.
     /// </summary>
     private void BuildMobPool()
     {
+        if (LevelInstance == null || LevelInstance.Data == null)
+        {
+            GD.PrintErr("MobSystem: BuildMobPool called but LevelInstance or LevelInstance.Data is null.");
+            return;
+        }
         _mobDataLookup = new();
         foreach (var mob in LevelInstance.Data.MobTable)
         {
             MobEntity mobInstance = mob.Instantiate<MobEntity>();
-            uint spawnWeight = (uint)mobInstance.Data.Rarity * 2 + (uint)mobInstance.Data.Level * 4;
-            while (_mobDataLookup.ContainsKey(spawnWeight))
-            {
-                spawnWeight++;
-            }
-            _mobDataLookup[spawnWeight] = mobInstance;
+            _mobDataLookup.Add(mobInstance);
+            mobInstance.SetProcess(false);
+            mobInstance.SetPhysicsProcess(false);
+            mobInstance.Hide();
+            AddChild(mobInstance);
         }
-        // move all values down to fill any gaps in the dictionary keys
-        uint currentKey = 0;
-        foreach (var key in new List<uint>(_mobDataLookup.Keys))
-        {
-            if (key != currentKey)
-            {
-                _mobDataLookup[currentKey] = _mobDataLookup[key];
-                _mobDataLookup.Remove(key);
-            }
-            currentKey++;
-        }
+        // Sort mobs by spawn weight descending
+        _mobDataLookup.Sort((a, b) => CalculateSpawnWeight(b.Data).CompareTo(CalculateSpawnWeight(a.Data)));
+        GD.Print($"MobSystem: Built mob pool with {_mobDataLookup.Count} mobs for level");
+    }
+    private float CalculateSpawnWeight(MobData mobData)
+    {
+        float baseWeight = ((float)mobData.Rarity + 1f) * 100f;
+        float modWeight = baseWeight / 255f;
+        float levelMultiplier = 1f + ((float)mobData.Level) * 0.2f;
+        return modWeight * levelMultiplier;
     }
 }
