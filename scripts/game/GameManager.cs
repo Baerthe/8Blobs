@@ -13,13 +13,14 @@ public partial class GameManager : Node2D
     public MapSystem CurrentMapSystem { get; private set; }
     public MobSystem CurrentMobSystem { get; private set; }
     public PlayerSystem CurrentPlayerSystem { get; private set; }
+    public LevelEntity CurrentLevelEntity { get; private set; }
     public bool IsPaused => _isPaused;
     private Camera2D _camera;
     private bool _levelLoaded = false;
     private bool _isPaused = false;
     public override void _Ready()
     {
-        GetParent().GetNode<Camera2D>("MainCamera");
+        _camera = GetParent().GetNode<Camera2D>("MainCamera");
         CoreProvider.GetClockService().PulseTimeout += OnPulseTimeout;
     }
     public override void _Process(double delta)
@@ -53,24 +54,27 @@ public partial class GameManager : Node2D
     /// </summary>
     /// <param name="Level"></param>
     /// <exception cref="InvalidOperationException"></exception>
-    public void PrepareLevel(Node2D Level)
+    public void PrepareLevel()
     {
         if (_levelLoaded)
         {
             GD.PrintErr("Level already loaded in GameManager");
             throw new InvalidOperationException("ERROR 300: Level already loaded in GameManager. Cannot load another level.");
         }
+        CurrentLevelEntity = ResourceLoader.Load<LevelEntity>(CoreProvider.GetLevelService().CurrentLevel.GetPath());
+        AddChild(CurrentLevelEntity);
         CurrentChestSystem = new();
-        Level.AddChild(CurrentChestSystem);
         CurrentMapSystem = new();
-        Level.AddChild(CurrentMapSystem);
         CurrentMobSystem = new();
-        Level.AddChild(CurrentMobSystem);
         CurrentPlayerSystem = new();
-        Level.AddChild(CurrentPlayerSystem);
+        CurrentLevelEntity.AddChild(CurrentChestSystem);
+        CurrentLevelEntity.AddChild(CurrentMapSystem);
+        CurrentLevelEntity.AddChild(CurrentMobSystem);
+        CurrentLevelEntity.AddChild(CurrentPlayerSystem);
         CurrentPlayerSystem.LoadPlayer(ResourceLoader.Load<PackedScene>("res://scenes/entities/heros/TestHero.tscn")); // Temporary until we have a proper player selection system
         CurrentMobSystem.PlayerInstance = CurrentPlayerSystem.PlayerInstance;
         CurrentChestSystem.PlayerInstance = CurrentPlayerSystem.PlayerInstance;
+        CurrentMobSystem.LevelInstance = CurrentLevelEntity;
         _levelLoaded = true;
     }
     /// <summary>
