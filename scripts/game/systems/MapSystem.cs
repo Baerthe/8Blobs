@@ -10,6 +10,7 @@ using Entities;
 public sealed partial class MapSystem : Node2D, IGameSystem
 {
 	public bool IsInitialized { get; private set; } = false;
+	public LevelEntity LevelInstance { get; set; }
     public HeroEntity PlayerInstance { get; set; }
 	private TileMapLayer _foregroundLayer;
 	private TileMapLayer _backgroundLayer;
@@ -35,12 +36,13 @@ public sealed partial class MapSystem : Node2D, IGameSystem
         GD.Print("MapSystem Present.");
         GetParent<GameManager>().OnLevelLoad += (sender, args) =>
         {
-            OnLevelLoad(args.PlayerInstance);
+            OnLevelLoad(args.LevelInstance, args.PlayerInstance);
         };
     }
-    public void OnLevelLoad(HeroEntity playerInstance)
+    public void OnLevelLoad(LevelEntity levelInstance, HeroEntity playerInstance)
 	{
 		if (IsInitialized) return;
+		LevelInstance = levelInstance;
 		PlayerInstance = playerInstance;
 		LoadTiles();
 		IsInitialized = true;
@@ -55,8 +57,8 @@ public sealed partial class MapSystem : Node2D, IGameSystem
 		if (_foregroundLayer == null || _backgroundLayer == null)
 		{
 			GD.PrintErr("ForegroundLayer or BackgroundLayer not set. Attempting to find in Tree.");
-			_foregroundLayer = GetParent().GetNode<TileMapLayer>("ForegroundLayer");
-			_backgroundLayer = GetParent().GetNode<TileMapLayer>("BackgroundLayer");
+			_foregroundLayer = LevelInstance.ForegroundLayer;
+			_backgroundLayer = LevelInstance.BackgroundLayer;
 			if (_foregroundLayer == null || _backgroundLayer == null)
 			{
 				GD.PrintErr("ForegroundLayer or BackgroundLayer not found in Tree.");

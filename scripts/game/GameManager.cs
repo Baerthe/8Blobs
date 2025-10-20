@@ -76,7 +76,7 @@ public partial class GameManager : Node2D
         _levelEntity.AddChild(CurrentPlayerSystem);
         CurrentPlayerSystem.LoadPlayer(CoreProvider.GetHeroService().CurrentHero);
         // All of our systems are ready, now initialize them by calling the load event.
-        OnLevelLoad?.Invoke(this, new LevelLoadArgs(CurrentPlayerSystem.PlayerInstance));
+        OnLevelLoad?.Invoke(this, new LevelLoadArgs(this, CurrentPlayerSystem.PlayerInstance));
         _levelLoaded = true;
     }
     /// <summary>
@@ -118,9 +118,11 @@ public partial class GameManager : Node2D
     }
     public class LevelLoadArgs : EventArgs
     {
+        public LevelEntity LevelInstance { get; set; }
         public HeroEntity PlayerInstance { get; set; }
-        public LevelLoadArgs(HeroEntity playerInstance)
+        public LevelLoadArgs(GameManager sender, HeroEntity playerInstance)
         {
+            LevelInstance = sender._levelEntity;
             PlayerInstance = playerInstance;
         }
     }

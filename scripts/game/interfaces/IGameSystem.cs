@@ -4,8 +4,9 @@ using Godot;
 using Entities;
 public interface IGameSystem
 {
+    LevelEntity LevelInstance { get; set; }
     HeroEntity PlayerInstance { get; set; }
     bool IsInitialized { get; }
     public void Update();
-    public void OnLevelLoad(HeroEntity playerInstance);
+    public void OnLevelLoad(LevelEntity levelInstance, HeroEntity playerInstance);
 }
