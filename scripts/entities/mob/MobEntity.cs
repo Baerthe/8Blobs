@@ -1,11 +1,13 @@
 namespace Entities;
+
 using Godot;
 using System;
+using Entities.Interfaces;
 /// <summary>
 /// MobEntity is a RigidBody2D that represents a mobile entity (mob) in the game. It contains various properties that define the mob's characteristics, including its name, description, lore, data, hitbox, sprite, cry sound, and visibility notifier. It ensures that all necessary properties are set and adds itself to the "mobs" group for easy management within the game.
 /// </summary>
 [GlobalClass]
-public partial class MobEntity : RigidBody2D
+public partial class MobEntity : RigidBody2D, IEntity
 {
     [ExportCategory("Stats")]
     [ExportGroup("Components")]
@@ -13,14 +15,31 @@ public partial class MobEntity : RigidBody2D
     [Export] public Sprite2D Sprite { get; private set; }
     [Export] public AudioStream Cry { get; private set; }
     [Export] public VisibleOnScreenNotifier2D Notifier2D { get; private set; }
+    public IData Data { get; private set; }
     public Vector2 CurrentVelocity { get; set; }
     public uint CurrentHealth { get; set; }
     public override void _Ready()
     {
+        if (Data == null)
+        {
+            GD.PrintErr($"MobEntity {Name} was not initialized with data before _Ready! Did you not call InitializeEntity() before adding to scene? Deleting instance.");
+            QueueFree();
+            return;
+        }
         NullCheck();
         AddToGroup("mobs");
     }
-    private void NullCheck()
+    public void InitializeEntity(IData data)
+    {
+        if (Data != null)
+        {
+            GD.PrintErr($"MobEntity {Name} already initialized with data!");
+            return;
+        }
+        Data = data ?? throw new ArgumentNullException(nameof(data));
+        CurrentHealth = ((MobData)Data).Health;
+    }
+    public void NullCheck()
     {
         byte failure = 0;
         if (Hitbox == null) { GD.PrintErr($"ERROR: {this.Name} does not have Hitbox set!"); failure++; }

@@ -1,10 +1,12 @@
 namespace Entities;
+
 using Godot;
+using Entities.Interfaces;
 /// <summary>
 /// Data container for mobs
 /// </summary>
 [GlobalClass]
-public partial class MobData : Resource
+public partial class MobData : Resource, IData
 {
     [ExportCategory("Stats")]
     [ExportGroup("Info")]
@@ -27,5 +29,5 @@ public partial class MobData : Resource
     [Export] public uint AbilityStrength { get; private set; }
     [Export] public MobMovement Movement { get; private set; } = MobMovement.PlayerAttracted;
     [ExportGroup("Scene")]
-    [Export] public PackedScene MobEntityScene { get; private set; }
+    [Export] public PackedScene Entity { get; private set; }
 }

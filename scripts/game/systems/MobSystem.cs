@@ -13,8 +13,8 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     public PathFollow2D MobSpawner { get; set; }
     public HeroEntity PlayerInstance { get; set; }
     public LevelEntity LevelInstance { get; set; }
-    private List<(MobEntity mob, float weight)> _mobDataLookup;
-    private Dictionary<MobEntity, System.Action<MobEntity, MobData>> _aiHandlers;
+    private List<(MobData mob, float weight)> _mobDataLookup;
+    private Dictionary<MobData, System.Action<MobEntity, MobData>> _aiHandlers;
     private List<MobEntity> _activeMobs = new();
     private Vector2 _lastPlayerPosition;
     private const int _maxLevel = 0;
