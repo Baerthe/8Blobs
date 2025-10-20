@@ -11,4 +11,5 @@ public partial class LevelData : Resource
     [Export] public LevelType Type { get; set; }
     [Export] public LevelTier Tier { get; set; }
     [Export] public Array<PackedScene> MobTable { get; private set; } = new();
+    [Export]]]
 }

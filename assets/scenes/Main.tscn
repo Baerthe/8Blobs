@@ -1,16 +1,11 @@
-[gd_scene load_steps=16 format=4 uid="uid://ddn3j7obdlhp4"]
+[gd_scene load_steps=11 format=4 uid="uid://ddn3j7obdlhp4"]
 
-[ext_resource type="Script" uid="uid://mevgk8q6vius" path="res://script/Main.cs" id="1_r150o"]
-[ext_resource type="Texture2D" uid="uid://ixp5qafsrmt8" path="res://res/TILESET/PixelPackTOPDOWN8BIT.png" id="2_idj7w"]
-[ext_resource type="PackedScene" uid="uid://bykyt1m4a7fdw" path="res://scene/mobs/BlobMob.tscn" id="2_v1gob"]
-[ext_resource type="PackedScene" uid="uid://hnpjt4v7lhd0" path="res://scene/mobs/NegaBlobMob.tscn" id="3_frkhe"]
-[ext_resource type="PackedScene" uid="uid://wnqc80wplhnk" path="res://scene/Player.tscn" id="3_jw32o"]
-[ext_resource type="PackedScene" uid="uid://b4jpqjanerag8" path="res://scene/mobs/SnakeMob.tscn" id="4_1p5hy"]
-[ext_resource type="LabelSettings" uid="uid://dae0ujns4cmco" path="res://Main.tres" id="4_jw32o"]
-[ext_resource type="Script" uid="uid://c00j7j5oyrhs0" path="res://script/node/Ui.cs" id="5_bmxlf"]
-[ext_resource type="PackedScene" uid="uid://cyfiamvtba675" path="res://scene/pickups/items/Potion.tscn" id="5_h1m7h"]
-[ext_resource type="TileSet" uid="uid://c1okyqiwq2m7e" path="res://res/TILESET/Tileset.tres" id="7_jw32o"]
-[ext_resource type="PackedScene" uid="uid://dbeepstjbey3p" path="res://scene/Menu.tscn" id="9_vy5pj"]
+[ext_resource type="Script" uid="uid://mevgk8q6vius" path="res://scripts/Main.cs" id="1_r150o"]
+[ext_resource type="Texture2D" uid="uid://ixp5qafsrmt8" path="res://assets/tilesets/PixelPackTOPDOWN8BIT.png" id="2_idj7w"]
+[ext_resource type="PackedScene" uid="uid://wnqc80wplhnk" path="res://assets/scenes/Player.tscn" id="3_jw32o"]
+[ext_resource type="LabelSettings" uid="uid://dae0ujns4cmco" path="res://assets/data/Main.tres" id="4_jw32o"]
+[ext_resource type="TileSet" uid="uid://c1okyqiwq2m7e" path="res://assets/tilesets/Tileset.tres" id="7_jw32o"]
+[ext_resource type="PackedScene" uid="uid://dbeepstjbey3p" path="res://assets/scenes/Menu.tscn" id="9_vy5pj"]
 
 [sub_resource type="Curve2D" id="Curve2D_grg3l"]
 resource_name = "PickupCurve"
@@ -529,20 +524,10 @@ texture = ExtResource("2_idj7w")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_50glp")
 
-[node name="Main" type="Node2D" node_paths=PackedStringArray("Menu", "Player", "PlayerStart", "Camera", "Ui", "_mobPath", "_mobSpawner", "_pickupPath", "_ChestSpawner")]
+[node name="Main" type="Node2D" node_paths=PackedStringArray("Menu")]
 texture_filter = 1
 script = ExtResource("1_r150o")
 Menu = NodePath("Menu")
-Player = NodePath("Player")
-PlayerStart = NodePath("StartingPosition")
-Camera = NodePath("Player/Camera2D")
-Ui = NodePath("Player/Camera2D/Ui")
-MobScenes = Array[PackedScene]([ExtResource("2_v1gob"), ExtResource("3_frkhe"), ExtResource("4_1p5hy")])
-_mobPath = NodePath("SpawnPath")
-_mobSpawner = NodePath("SpawnPath/Spawner")
-PickupScenes = Array[PackedScene]([ExtResource("5_h1m7h")])
-_pickupPath = NodePath("PickUpPath")
-_ChestSpawner = NodePath("PickUpPath/ChestSpawner")
 
 [node name="BackgroundLayer" type="TileMapLayer" parent="."]
 show_behind_parent = true
@@ -560,20 +545,16 @@ navigation_enabled = false
 [node name="Player" parent="." instance=ExtResource("3_jw32o")]
 texture_filter = 1
 position = Vector2(328, 328)
+script = null
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 top_level = true
 texture_filter = 1
 position = Vector2(128, 120)
 
-[node name="Ui" type="CanvasLayer" parent="Player/Camera2D" node_paths=PackedStringArray("_scoreLiteral", "_healthLiteral", "_middleScreenLabel", "_messageTimer")]
+[node name="Ui" type="CanvasLayer" parent="Player/Camera2D"]
 layer = 2
 visible = false
-script = ExtResource("5_bmxlf")
-_scoreLiteral = NodePath("Score")
-_healthLiteral = NodePath("Health")
-_middleScreenLabel = NodePath("MiddleScreenLabel")
-_messageTimer = NodePath("../../../Timers/MessageTimer")
 
 [node name="ScoreLabel" type="Label" parent="Player/Camera2D/Ui"]
 texture_filter = 1
@@ -687,6 +668,7 @@ position = Vector2(208, 208)
 visible = false
 top_level = true
 z_index = 99
+script = null
 
 [node name="ForegroundLayer" type="TileMapLayer" parent="."]
 z_index = 1
@@ -695,7 +677,6 @@ scale = Vector2(0.99999994, 0.99999994)
 tile_map_data = PackedByteArray("AAD//xEAAAAAAAQAAAAAABIAAAAAAAQAAAD//xIAAAAAAAQAAAAAABEAAAAAAAQAAAAPABEAAAAAAAQAAAAOABEAAAAAAAQAAAAOABIAAAAAAAQAAAAPABIAAAAAAAQAAAD9/w8AAAAAAAQAAAD9/w4AAAAAAAQAAAD8/w4AAAAAAAQAAAD8/w8AAAAAAAQAAAARAA8AAAAAAAQAAAASAA8AAAAAAAQAAAASAA4AAAAAAAQAAAARAA4AAAAAAAQAAAD9////AAAAAAQAAAD8////AAAAAAQAAAD8/wAAAAAAAAQAAAD9/wAAAAAAAAQAAAD///3/AAAAAAQAAAD///z/AAAAAAQAAAAAAPz/AAAAAAQAAAAAAP3/AAAAAAQAAAAPAP3/AAAAAAQAAAAOAP3/AAAAAAQAAAAOAPz/AAAAAAQAAAAPAPz/AAAAAAQAAAARAP//AAAAAAQAAAASAP//AAAAAAQAAAASAAAAAAAAAAQAAAARAAAAAAAAAAQAAAA=")
 tile_set = SubResource("TileSet_vy5pj")
 
-[connection signal="OnDeath" from="Player" to="." method="OnPlayerDeath"]
 [connection signal="timeout" from="Timers/MobTimer" to="." method="OnMobTimerTimeout"]
 [connection signal="timeout" from="Timers/PickUpTimer" to="." method="OnPickupTimerTimeout"]
 [connection signal="timeout" from="Timers/ScoreTimer" to="." method="OnScoreTimerTimeout"]

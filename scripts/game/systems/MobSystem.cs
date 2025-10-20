@@ -13,11 +13,14 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     public PathFollow2D MobSpawner { get; set; }
     public HeroEntity PlayerInstance { get; set; }
     public LevelEntity LevelInstance { get; set; }
-    private List<MobEntity> _mobDataLookup;
+    private List<(MobEntity mob, float weight)> _mobDataLookup;
     private Dictionary<MobEntity, System.Action<MobEntity, MobData>> _aiHandlers;
     private List<MobEntity> _activeMobs = new();
     private Vector2 _lastPlayerPosition;
-    private ulong _gameElapsedTime = 0;
+    private const int _maxLevel = 0;
+    private const float _maxTime = 600f; // 10 minutes
+    private float _grossMobWeight = 0f;
+    private float _gameElapsedTime = 0f;
     public override void _Ready()
     {
         if (IsInitialized) return;
@@ -54,17 +57,11 @@ public sealed partial class MobSystem : Node2D, IGameSystem
             GD.PrintErr("MobSystem: OnMobTimeout called but mob data lookup is empty.");
             return;
         }
-        // Build weighted random selection
-        ushort totalWeight = 0;
-        foreach (MobEntity mob in _mobDataLookup)
-        {
-            totalWeight += (ushort)CalculateSpawnWeight(mob.Data);
-        }
         //TODO: Implement spawning logic based on weights and game time
     }
     private void OnGameTimeout()
     {
-        _gameElapsedTime += 1;
+        _gameElapsedTime += 1f; // Increment game time by 1 second, which should be the timeout of this event.
     }
     /// <summary>
     /// Builds the mob pool from the current level, sorts them by spawn weight, and prepares them for spawning by loading their scenes.
@@ -80,14 +77,19 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         foreach (var mob in LevelInstance.Data.MobTable)
         {
             MobEntity mobInstance = mob.Instantiate<MobEntity>();
-            _mobDataLookup.Add(mobInstance);
+            float spawnWeight = CalculateSpawnWeight(mobInstance.Data);
+            while(_mobDataLookup.Find(x => x.mob == mobInstance).weight == spawnWeight)
+            {
+                spawnWeight += 0.32f; // Ensure unique weights
+            }
+            _mobDataLookup.Add((mobInstance, spawnWeight));
             mobInstance.SetProcess(false);
             mobInstance.SetPhysicsProcess(false);
             mobInstance.Hide();
             AddChild(mobInstance);
+            _grossMobWeight += spawnWeight;
         }
-        // Sort mobs by spawn weight descending
-        _mobDataLookup.Sort((a, b) => CalculateSpawnWeight(b.Data).CompareTo(CalculateSpawnWeight(a.Data)));
+        _mobDataLookup.Sort((a, b) => b.weight.CompareTo(a.weight));
         GD.Print($"MobSystem: Built mob pool with {_mobDataLookup.Count} mobs for level");
     }
     private float CalculateSpawnWeight(MobData mobData)
@@ -96,5 +98,13 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         float modWeight = baseWeight / 255f;
         float levelMultiplier = 1f + ((float)mobData.Level) * 0.2f;
         return modWeight * levelMultiplier;
+    }
+    private float CalculateLevelCurve(MobLevel level, float gameTime)
+    {
+        int levelValue = (int)level;
+        float progression = Mathf.Clamp(gameTime / _maxTime, 0f, 1f);
+        float levelBonus = Mathf.Pow(progression, 2f) * levelValue;
+        float levelPenalty = (1f - progression) * (_maxLevel - levelValue);
+        return levelBonus + levelPenalty + 0.1f;
     }
 }
