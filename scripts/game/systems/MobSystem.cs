@@ -23,7 +23,16 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     private float _gameElapsedTime = 0f;
     public override void _Ready()
     {
+        GD.Print("MobSystem Present.");
+        GetParent<GameManager>().OnLevelLoad += (sender, args) =>
+        {
+            OnLevelLoad(args.PlayerInstance);
+        };
+    }
+    public void OnLevelLoad(HeroEntity playerInstance)
+    {
         if (IsInitialized) return;
+        PlayerInstance = playerInstance;
         CoreProvider.GetClockService().MobSpawnTimeout += OnMobTimeout;
         CoreProvider.GetClockService().GameTimeout += OnGameTimeout;
         _aiHandlers = new Dictionary<MobEntity, System.Action<MobEntity, MobData>>();

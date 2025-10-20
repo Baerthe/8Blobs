@@ -13,12 +13,19 @@ public sealed partial class ChestSystem : Node2D, IGameSystem
     public Path2D ChestPath { get; private set; }
     public PathFollow2D ChestSpawner { get; private set; }
     public Vector2 OffsetBetweenChestAndPlayer { get; private set; }
-    public HeroEntity PlayerInstance;
+    public HeroEntity PlayerInstance { get; set; }
     public override void _Ready()
     {
+        GD.Print("ChestSystem Present.");
+        GetParent<GameManager>().OnLevelLoad += (sender, args) =>
+        {
+            OnLevelLoad(args.PlayerInstance);
+        };
     }
-    public void Initialize()
+    public void OnLevelLoad(HeroEntity playerInstance)
     {
+        if (IsInitialized) return;
+        PlayerInstance = playerInstance;
         CoreProvider.GetClockService().ChestSpawnTimeout += OnChestSpawnTimeout;
         ChestPath = CreatePath();
         ChestSpawner = new PathFollow2D();

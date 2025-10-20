@@ -4,15 +4,14 @@ using Core.Interface;
 using Entities;
 using Godot;
 /// <summary>
-/// Service that manages level loading and unloading.
+/// Service that manages hero loading and unloading.
 /// </summary>
-public sealed class LevelService : ILevelService
+public sealed class HeroService : IHeroService
 {
-    public LevelData CurrentLevel { get; private set; }
+    public HeroData CurrentHero { get; private set; }
     public Node ParentNode { get; private set; }
-    public string LevelName { get; private set; }
     private bool _isInitialized = false;
-    public LevelService()
+    public HeroService()
     {
         _isInitialized = false;
         Initilize();
@@ -26,32 +25,30 @@ public sealed class LevelService : ILevelService
     /// If ParentNode is already set and a different parentNode is provided, an error is logged and the method returns without making changes.
     /// If LevelInstance already exists, it is freed before loading the new level.
     /// </remarks>
-    public void LoadLevel(LevelData levelData)
+    public void LoadHero(HeroData heroData)
     {
         if (!_isInitialized)
         {
-            GD.PrintErr("LevelService is not initialized. Call Initilize before loading levels.");
+            GD.PrintErr("HeroService is not initialized. Call Initilize before loading heroes.");
             return;
         }
-        if (levelData == null)
+        if (heroData == null)
         {
-            GD.PrintErr("LevelService: LoadLevel called with null levelData.");
+            GD.PrintErr("HeroService: LoadHero called with null heroData.");
             return;
         }
-        CurrentLevel = levelData;
-        LevelName = levelData.LevelName;
+        CurrentHero = heroData;
     }
-    public void UnloadLevel()
+    public void UnloadHero()
     {
-        if (CurrentLevel != null)
+        if (CurrentHero != null)
         {
-            CurrentLevel = null;
-            LevelName = null;
-            GD.Print("LevelService: Unloaded current level.");
+            CurrentHero = null;
+            GD.Print("HeroService: Unloaded current hero.");
         }
         else
         {
-            GD.PrintErr("LevelService: No level is currently loaded to unload.");
+            GD.PrintErr("HeroService: No hero is currently loaded to unload.");
         }
     }
     private void Initilize()

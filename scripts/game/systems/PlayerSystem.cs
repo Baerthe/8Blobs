@@ -9,10 +9,19 @@ using Game.Interface;
 public sealed partial class PlayerSystem : Node2D, IGameSystem
 {
     public bool IsInitialized { get; private set; } = false;
-    public HeroEntity PlayerInstance { get; private set; }
+    public HeroEntity PlayerInstance { get; set; }
     private PackedScene _playerScene = null;
     public override void _Ready()
     {
+        GD.Print("MobSystem Present.");
+        GetParent<GameManager>().OnLevelLoad += (sender, args) =>
+        {
+            OnLevelLoad(args.PlayerInstance);
+        };
+    }
+    public void OnLevelLoad(HeroEntity _)
+    {
+        if (IsInitialized) return;
         IsInitialized = true;
     }
     public override void _Process(double delta)
@@ -25,21 +34,21 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
         if (!IsInitialized) return;
         if (PlayerInstance == null) return;
     }
-    public void LoadPlayer(PackedScene playerScene)
+    public void LoadPlayer(HeroData hero)
     {
-        if (playerScene == null)
+        if (hero == null)
         {
-            GD.PrintErr("PlayerSystem: LoadPlayer called with null playerScene.");
+            GD.PrintErr("PlayerSystem: LoadPlayer called with null hero data.");
             return;
         }
         if (PlayerInstance != null)
         {
             PlayerInstance.QueueFree();
         }
-        _playerScene = playerScene;
-        PlayerInstance = _playerScene.Instantiate<HeroEntity>();
+        _playerScene = hero.HeroEntityScene;
+        PlayerInstance = ResourceLoader.Load<PackedScene>(_playerScene.ResourcePath).Instantiate<HeroEntity>();
         AddChild(PlayerInstance);
-        GD.Print($"PlayerSystem: Loaded player '{PlayerInstance.HeroName}'.");
+        GD.Print($"PlayerSystem: Loaded player '{hero.HeroName}'.");
     }
     public void Update()
     {

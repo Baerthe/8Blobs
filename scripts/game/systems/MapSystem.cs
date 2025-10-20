@@ -2,12 +2,15 @@ namespace Game;
 using Godot;
 using System.Collections.Generic;
 using Game.Interface;
+using Entities;
+
 /// <summary>
 /// A system for handling tiling of scene map elements.
 /// </summary>
 public sealed partial class MapSystem : Node2D, IGameSystem
 {
 	public bool IsInitialized { get; private set; } = false;
+    public HeroEntity PlayerInstance { get; set; }
 	private TileMapLayer _foregroundLayer;
 	private TileMapLayer _backgroundLayer;
 	private Rect2 _usedRect;
@@ -15,30 +18,45 @@ public sealed partial class MapSystem : Node2D, IGameSystem
 	private float _width;
 	private float _height;
 	private readonly Dictionary<string, (TileMapLayer background, TileMapLayer foreground)> _chunks = new();
-	public override void _Ready()
+	private enum Direction : byte
 	{
-		GD.Print("MapSystem Present.");
+		NorthWest,
+		North,
+		NorthEast,
+		West,
+		East,
+		SouthWest,
+		South,
+		SouthEast,
+		OutOfBounds
+	}
+    public override void _Ready()
+    {
+        GD.Print("MapSystem Present.");
+        GetParent<GameManager>().OnLevelLoad += (sender, args) =>
+        {
+            OnLevelLoad(args.PlayerInstance);
+        };
+    }
+    public void OnLevelLoad(HeroEntity playerInstance)
+	{
+		if (IsInitialized) return;
+		PlayerInstance = playerInstance;
 		LoadTiles();
+		IsInitialized = true;
 	}
 	public void Update()
-	{
-		//TODO: Fix this later
-		//var player = GetNode<Player>("../Player");
-		// if (player == null)
-		// {
-		// 	GD.PrintErr("Player node not found in TilingTool");
-		// 	return;
-		// }
-		// PlayerCrossedBorder(player);
-	}
+    {
+		HasPlayerCrossedBorder();
+    }
 	public Rect2 GetWorldRect() => _worldRect;
 	public void LoadTiles()
 	{
 		if (_foregroundLayer == null || _backgroundLayer == null)
 		{
 			GD.PrintErr("ForegroundLayer or BackgroundLayer not set. Attempting to find in Tree.");
-			_foregroundLayer = GetNode<TileMapLayer>("ForegroundLayer");
-			_backgroundLayer = GetNode<TileMapLayer>("BackgroundLayer");
+			_foregroundLayer = GetParent().GetNode<TileMapLayer>("ForegroundLayer");
+			_backgroundLayer = GetParent().GetNode<TileMapLayer>("BackgroundLayer");
 			if (_foregroundLayer == null || _backgroundLayer == null)
 			{
 				GD.PrintErr("ForegroundLayer or BackgroundLayer not found in Tree.");
@@ -85,10 +103,10 @@ public sealed partial class MapSystem : Node2D, IGameSystem
 			}
 		}
 	}
-	public void PlayerCrossedBorder(Node2D player)
+	private void HasPlayerCrossedBorder()
 	{
-		if (player == null || _worldRect.HasPoint(player.Position)) return;
-		Direction direction = GetBorderDirection(player.Position);
+		if (PlayerInstance == null || _worldRect.HasPoint(PlayerInstance.Position)) return;
+		Direction direction = GetBorderDirection(PlayerInstance.Position);
 		if (direction == Direction.OutOfBounds) return;
 		MoveLayers(direction);
 	}
@@ -125,9 +143,7 @@ public sealed partial class MapSystem : Node2D, IGameSystem
 			Direction.SouthEast => new Vector2(_width, _height),
 			_ => Vector2.Zero
 		};
-		// Update the world rectangle position
 		_worldRect.Position += offset;
-		// DEBUG
 		GD.Print($"World Rect moved to: {_worldRect.Position}");
 		GD.Print($"Moving layers due to player crossing {direction} border.");
 		_backgroundLayer.Position += offset;
@@ -137,17 +153,5 @@ public sealed partial class MapSystem : Node2D, IGameSystem
 			chunk.background.Position += offset;
 			chunk.foreground.Position += offset;
 		}
-	}
-	private enum Direction : byte
-	{
-		NorthWest,
-		North,
-		NorthEast,
-		West,
-		East,
-		SouthWest,
-		South,
-		SouthEast,
-		OutOfBounds
 	}
 }

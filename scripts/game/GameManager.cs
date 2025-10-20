@@ -9,13 +9,15 @@ using System;
 [GlobalClass]
 public partial class GameManager : Node2D
 {
+    public event EventHandler<LevelLoadArgs> OnLevelLoad;
     public ChestSystem CurrentChestSystem { get; private set; }
     public MapSystem CurrentMapSystem { get; private set; }
     public MobSystem CurrentMobSystem { get; private set; }
     public PlayerSystem CurrentPlayerSystem { get; private set; }
-    public LevelEntity CurrentLevelEntity { get; private set; }
+    public LevelData CurrentLevelData { get; private set; }
     public bool IsPaused => _isPaused;
     private Camera2D _camera;
+    private LevelEntity _levelEntity;
     private bool _levelLoaded = false;
     private bool _isPaused = false;
     public override void _Ready()
@@ -61,20 +63,20 @@ public partial class GameManager : Node2D
             GD.PrintErr("Level already loaded in GameManager");
             throw new InvalidOperationException("ERROR 300: Level already loaded in GameManager. Cannot load another level.");
         }
-        CurrentLevelEntity = ResourceLoader.Load<LevelEntity>(CoreProvider.GetLevelService().CurrentLevel.GetPath());
-        AddChild(CurrentLevelEntity);
+        CurrentLevelData = CoreProvider.GetLevelService().CurrentLevel;
+        _levelEntity = ResourceLoader.Load<PackedScene>(CurrentLevelData.LevelEntityScene.ResourcePath).Instantiate<LevelEntity>();
+        AddChild(_levelEntity);
         CurrentChestSystem = new();
         CurrentMapSystem = new();
         CurrentMobSystem = new();
         CurrentPlayerSystem = new();
-        CurrentLevelEntity.AddChild(CurrentChestSystem);
-        CurrentLevelEntity.AddChild(CurrentMapSystem);
-        CurrentLevelEntity.AddChild(CurrentMobSystem);
-        CurrentLevelEntity.AddChild(CurrentPlayerSystem);
-        CurrentPlayerSystem.LoadPlayer(ResourceLoader.Load<PackedScene>("res://scenes/entities/heros/TestHero.tscn")); // Temporary until we have a proper player selection system
-        CurrentMobSystem.PlayerInstance = CurrentPlayerSystem.PlayerInstance;
-        CurrentChestSystem.PlayerInstance = CurrentPlayerSystem.PlayerInstance;
-        CurrentMobSystem.LevelInstance = CurrentLevelEntity;
+        _levelEntity.AddChild(CurrentChestSystem);
+        _levelEntity.AddChild(CurrentMapSystem);
+        _levelEntity.AddChild(CurrentMobSystem);
+        _levelEntity.AddChild(CurrentPlayerSystem);
+        CurrentPlayerSystem.LoadPlayer(CoreProvider.GetHeroService().CurrentHero);
+        // All of our systems are ready, now initialize them by calling the load event.
+        OnLevelLoad?.Invoke(this, new LevelLoadArgs(CurrentPlayerSystem.PlayerInstance));
         _levelLoaded = true;
     }
     /// <summary>
@@ -95,6 +97,8 @@ public partial class GameManager : Node2D
         CurrentMobSystem = null;
         CurrentPlayerSystem.QueueFree();
         CurrentPlayerSystem = null;
+        _levelEntity.QueueFree();
+        _levelEntity = null;
         _levelLoaded = false;
     }
     private void OnPulseTimeout()
@@ -102,6 +106,7 @@ public partial class GameManager : Node2D
         if (!_levelLoaded) return;
         if (_isPaused) return;
         CurrentPlayerSystem.Update();
+        CurrentMapSystem.Update();
         CurrentMobSystem.Update();
     }
     private void OnSlowPulseTimeout()
@@ -110,5 +115,13 @@ public partial class GameManager : Node2D
         if (_isPaused) return;
         CurrentChestSystem.Update();
         CurrentMapSystem.Update();
+    }
+    public class LevelLoadArgs : EventArgs
+    {
+        public HeroEntity PlayerInstance { get; set; }
+        public LevelLoadArgs(HeroEntity playerInstance)
+        {
+            PlayerInstance = playerInstance;
+        }
     }
 }
