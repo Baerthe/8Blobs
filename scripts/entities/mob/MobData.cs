@@ -7,6 +7,10 @@ using Godot;
 public partial class MobData : Resource
 {
     [ExportCategory("Stats")]
+    [ExportGroup("Info")]
+    [Export] public string MobName { get; private set; }
+    [Export] public string Description { get; private set; }
+    [Export] public string Lore { get; private set; }
     [ExportGroup("Attributes")]
     [Export] public MobTribe Tribe { get; private set; }
     [Export] public RarityType Rarity { get; private set; } = RarityType.Basic;
@@ -22,4 +26,6 @@ public partial class MobData : Resource
     [Export] public MobAbility Ability { get; private set; } = MobAbility.None;
     [Export] public uint AbilityStrength { get; private set; }
     [Export] public MobMovement Movement { get; private set; } = MobMovement.PlayerAttracted;
+    [ExportGroup("Scene")]
+    [Export] public PackedScene MobEntityScene { get; private set; }
 }

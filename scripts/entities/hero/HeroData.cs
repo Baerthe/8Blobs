@@ -1,4 +1,5 @@
 namespace Entities;
+
 using Godot;
 /// <summary>
 /// The Data class for Heroes, stores static data
@@ -7,6 +8,11 @@ using Godot;
 public partial class HeroData : Resource
 {
     [ExportCategory("Stats")]
+    [ExportGroup("Info")]
+    [Export] public string HeroName { get; private set; }
+    [Export] public string Description { get; private set; }
+    [Export] public string Lore { get; private set; }
+    [Export] public bool Unlocked { get; private set; } = false;
     [ExportGroup("Attributes")]
     [Export] public HeroLevel Level { get; private set; } = HeroLevel.Basic;
     [Export] public uint Health { get; private set; } = 100;
@@ -20,4 +26,7 @@ public partial class HeroData : Resource
     [Export] public HeroAbility Ability { get; private set; } = HeroAbility.None;
     [Export] public uint AbilityStrength { get; private set; }
     [Export] public HeroMovement Movement { get; private set; } = HeroMovement.Walk;
+    [ExportGroup("Scene")]
+    [Export] public PackedScene HeroEntityScene { get; private set; }
+    public void Unlock() => Unlocked = true;
 }

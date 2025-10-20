@@ -8,8 +8,13 @@ using Godot.Collections;
 [GlobalClass]
 public partial class LevelData : Resource
 {
+    [ExportCategory("Stats")]
+    [ExportGroup("Info")]
+    [Export] public string LevelName { get; private set; } = "";
+    [Export] public string Description { get; private set; } = "";
     [Export] public LevelType Type { get; set; }
     [Export] public LevelTier Tier { get; set; }
+    [ExportCategory("Scenes")]
     [Export] public Array<PackedScene> MobTable { get; private set; } = new();
-    [Export]]]
+    [Export] public PackedScene LevelEntityScene { get; private set; }
 }
