@@ -17,8 +17,8 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     private Dictionary<MobData, System.Action<MobEntity, MobData>> _aiHandlers;
     private List<MobEntity> _activeMobs = new();
     private Vector2 _lastPlayerPosition;
-    private const int _maxLevel = 0;
-    private const float _maxTime = 600f; // 10 minutes
+    private uint _maxLevel = 0;
+    private float _maxTime = 600f;
     private float _grossMobWeight = 0f;
     private float _gameElapsedTime = 0f;
     public override void _Ready()
@@ -33,6 +33,9 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     {
         if (IsInitialized) return;
         PlayerInstance = playerInstance;
+        var levelData = levelInstance.Data as LevelData;
+        _maxLevel = levelData.MaxLevel;
+        _maxTime = levelData.MaxTime;
         CoreProvider.GetClockService().MobSpawnTimeout += OnMobTimeout;
         CoreProvider.GetClockService().GameTimeout += OnGameTimeout;
         _aiHandlers = new Dictionary<MobData, System.Action<MobEntity, MobData>>();

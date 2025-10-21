@@ -15,6 +15,8 @@ public partial class LevelData : Resource, IData
     [Export] public string Description { get; private set; } = "";
     [Export] public LevelType Type { get; set; }
     [Export] public LevelTier Tier { get; set; }
+    [Export] public uint MaxLevel { get; set; } = 1;
+    [Export] public float MaxTime { get; set; } = 600f;
     [ExportCategory("Scenes")]
     [Export] public Array<MobData> MobTable { get; private set; } = new();
     [Export] public PackedScene Entity { get; private set; }

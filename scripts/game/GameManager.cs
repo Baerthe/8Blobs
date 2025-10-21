@@ -76,7 +76,6 @@ public partial class GameManager : Node2D
         _levelEntity.AddChild(CurrentMapSystem);
         _levelEntity.AddChild(CurrentMobSystem);
         _levelEntity.AddChild(CurrentPlayerSystem);
-        CurrentPlayerSystem.LoadPlayer(CoreProvider.GetHeroService().CurrentHero);
         // All of our systems are ready, now initialize them by calling the load event.
         OnLevelLoad?.Invoke(this, new LevelLoadArgs(this, CurrentPlayerSystem.PlayerInstance));
         _levelLoaded = true;

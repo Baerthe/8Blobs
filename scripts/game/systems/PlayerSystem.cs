@@ -9,19 +9,24 @@ using Game.Interface;
 public sealed partial class PlayerSystem : Node2D, IGameSystem
 {
     public bool IsInitialized { get; private set; } = false;
-    public HeroEntity PlayerInstance { get; set; }
+    public HeroEntity PlayerInstance { get; private set; }
+    public LevelEntity LevelInstance { get; private set; }
+    private HeroData _currentHeroData = null;
     private PackedScene _playerScene = null;
     public override void _Ready()
     {
-        GD.Print("MobSystem Present.");
+        GD.Print("PlayerSystem Present.");
         GetParent<GameManager>().OnLevelLoad += (sender, args) =>
         {
-            OnLevelLoad(args.PlayerInstance);
+            OnLevelLoad(args.LevelInstance, args.PlayerInstance);
         };
+        _currentHeroData = Core.CoreProvider.GetHeroService().CurrentHero;
+        LoadPlayer(_currentHeroData);
     }
-    public void OnLevelLoad(HeroEntity _)
+    public void OnLevelLoad(LevelEntity levelInstance, HeroEntity __)
     {
         if (IsInitialized) return;
+        LevelInstance = levelInstance;
         IsInitialized = true;
     }
     public override void _Process(double delta)
@@ -34,7 +39,15 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
         if (!IsInitialized) return;
         if (PlayerInstance == null) return;
     }
-    public void LoadPlayer(HeroData hero)
+    public void Update()
+    {
+    }
+    public override void _ExitTree()
+    {
+        PlayerInstance.QueueFree();
+        base._ExitTree();
+    }
+    private void LoadPlayer(HeroData hero)
     {
         if (hero == null)
         {
@@ -45,17 +58,13 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
         {
             PlayerInstance.QueueFree();
         }
-        _playerScene = hero.HeroEntityScene;
-        PlayerInstance = ResourceLoader.Load<PackedScene>(_playerScene.ResourcePath).Instantiate<HeroEntity>();
+        PlayerInstance = ResourceLoader.Load<PackedScene>(hero.Entity.ResourcePath).Instantiate<HeroEntity>();
+        PlayerInstance.InitializeEntity(hero);
+        PlayerInstance.Position = LevelInstance.PlayerSpawn.Position;
+        PlayerInstance.SetProcess(false);
+        PlayerInstance.SetPhysicsProcess(false);
+        PlayerInstance.Hide();
         AddChild(PlayerInstance);
         GD.Print($"PlayerSystem: Loaded player '{hero.HeroName}'.");
-    }
-    public void Update()
-    {
-    }
-    public override void _ExitTree()
-    {
-        PlayerInstance.QueueFree();
-        base._ExitTree();
     }
 }
