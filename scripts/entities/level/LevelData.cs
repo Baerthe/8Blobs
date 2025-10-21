@@ -2,11 +2,12 @@ namespace Entities;
 
 using Godot;
 using Godot.Collections;
+using Entities.Interfaces;
 /// <summary>
 /// LevelData is a Resource that encapsulates the core attributes of a game level, including its type, tier, and the mob spawn table associated with it.
 /// </summary>
 [GlobalClass]
-public partial class LevelData : Resource
+public partial class LevelData : Resource, IData
 {
     [ExportCategory("Stats")]
     [ExportGroup("Info")]
@@ -16,5 +17,5 @@ public partial class LevelData : Resource
     [Export] public LevelTier Tier { get; set; }
     [ExportCategory("Scenes")]
     [Export] public Array<PackedScene> MobTable { get; private set; } = new();
-    [Export] public PackedScene LevelEntityScene { get; private set; }
+    [Export] public PackedScene Entity { get; private set; }
 }

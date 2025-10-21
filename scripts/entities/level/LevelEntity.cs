@@ -2,11 +2,12 @@ namespace Entities;
 
 using Godot;
 using System;
+using Entities.Interfaces;
 /// <summary>
 /// LevelEntity is a Node2D that represents a level in the game. It contains various properties that define the level's characteristics, including its name, description, data, tilemap layers, player spawn point, and various systems for managing chests, mobs, and players.
 /// </summary>
 [GlobalClass]
-public partial class LevelEntity : Node2D
+public partial class LevelEntity : Node2D, IEntity
 {
     [ExportCategory("Stats")]
     [ExportGroup("Components")]
@@ -15,12 +16,22 @@ public partial class LevelEntity : Node2D
     [Export] public TileMapLayer BackgroundLayer { get; private set; }
     [ExportSubgroup("Markers")]
     [Export] public Node2D PlayerSpawn { get; private set; }
+    public IData Data { get; set; }
     public override void _Ready()
     {
         NullCheck();
         AddToGroup("levels");
     }
-    private void NullCheck()
+    public void InitializeEntity(IData data)
+    {
+        if (Data != null)
+        {
+            GD.PrintErr($"LevelEntity {Name} already initialized with data!");
+            return;
+        }
+        Data = data ?? throw new ArgumentNullException(nameof(data));
+    }
+    public void NullCheck()
     {
         byte failure = 0;
         if (ForegroundLayer == null) { GD.PrintErr($"ERROR: {this.Name} does not have ForegroundLayer set!"); failure++; }
