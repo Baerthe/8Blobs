@@ -2,6 +2,14 @@ namespace Entities;
 /// <summary>
 /// The Enums used for Heroes
 /// </summary>
+public enum PlayerDirection : byte
+	{
+		Up,
+		Right,
+		Down,
+		Left,
+		Diagonal
+	}
 public enum HeroClass : byte
 {
     Warrior = 0,

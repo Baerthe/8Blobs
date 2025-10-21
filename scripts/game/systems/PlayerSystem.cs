@@ -27,6 +27,9 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
     {
         if (IsInitialized) return;
         LevelInstance = levelInstance;
+        PlayerInstance.SetProcess(true);
+        PlayerInstance.SetPhysicsProcess(true);
+        PlayerInstance.Show();
         IsInitialized = true;
     }
     public override void _Process(double delta)
@@ -38,6 +41,43 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
     {
         if (!IsInitialized) return;
         if (PlayerInstance == null) return;
+        		var velocity = Vector2.Zero;
+		//What direction is the player going?
+		if (Input.IsActionPressed("move_up"))
+		{
+			velocity.Y -= 1;
+			PlayerInstance.CurrentDirection = PlayerDirection.Up;
+		}
+		if (Input.IsActionPressed("move_down"))
+		{
+			velocity.Y += 1;
+			PlayerInstance.CurrentDirection = PlayerDirection.Down;
+		}
+		if (Input.IsActionPressed("move_left"))
+		{
+			velocity.X -= 1;
+			PlayerInstance.CurrentDirection = PlayerDirection.Left;
+		}
+		if (Input.IsActionPressed("move_right"))
+		{
+			velocity.X += 1;
+			PlayerInstance.CurrentDirection = PlayerDirection.Right;
+		}
+		if (velocity.Y != 0 && velocity.X != 0)
+			PlayerInstance.CurrentDirection = PlayerDirection.Diagonal;
+		if (velocity.Length() > 0)
+		{
+			velocity = velocity.Normalized() * (PlayerInstance.Data as HeroData).Speed;
+			PlayerInstance.Sprite.Play();
+		}
+		else
+			PlayerInstance.Sprite.Stop();
+		// Move the player.
+		Position += velocity * (float)delta;
+		PlayerInstance.Sprite.FlipV = false; // Make sure we never flip vertically
+		PlayerInstance.Sprite.FlipH = velocity.X < 0;
+		PlayerInstance.MoveAndSlide();
+		//ExecuteWeaponAttacks();
     }
     public void Update()
     {

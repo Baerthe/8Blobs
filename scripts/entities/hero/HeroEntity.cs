@@ -16,6 +16,7 @@ public partial class HeroEntity : CharacterBody2D, IEntity
     [Export] public AudioStream Cry { get; private set; }
     public Vector2 CurrentVelocity { get; set; }
     public uint CurrentHealth { get; set; }
+    public PlayerDirection CurrentDirection { get; set; }
     public IData Data { get; private set; }
     public override void _Ready()
     {
