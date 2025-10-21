@@ -10,24 +10,28 @@ public partial class MobData : Resource, IData
 {
     [ExportCategory("Stats")]
     [ExportGroup("Info")]
-    [Export] public string MobName { get; private set; }
-    [Export] public string Description { get; private set; }
-    [Export] public string Lore { get; private set; }
+    [Export] public string Name { get; private set; } = "";
+    [Export] public string Description { get; private set; } = "";
+    [Export] public string Lore { get; private set; } = "";
     [ExportGroup("Attributes")]
     [Export] public MobTribe Tribe { get; private set; }
     [Export] public RarityType Rarity { get; private set; } = RarityType.Basic;
     [Export] public MobLevel Level { get; private set; } = MobLevel.Basic;
-    [Export] public uint Health { get; private set; } = 10;
-    [Export] public uint Damage { get; private set; } = 1;
-    [Export] public DamageType Attack { get; private set; } = DamageType.Blunt;
-    [Export] public uint ElementDamage { get; private set; } = 0;
-    [Export] public ElementType Element { get; private set; } = ElementType.None;
-    [Export] public float Speed { get; private set; } = 10f;
-    [Export] public byte CollisionRadius { get; private set; } = 16;
+    [Export] public MobStats Stats { get; private set; } = new MobStats();
     [ExportGroup("Behavior")]
     [Export] public MobAbility Ability { get; private set; } = MobAbility.None;
     [Export] public uint AbilityStrength { get; private set; }
     [Export] public MobMovement Movement { get; private set; } = MobMovement.PlayerAttracted;
-    [ExportGroup("Scene")]
-    [Export] public PackedScene Entity { get; private set; }
+    [ExportGroup("Assets")]
+    [Export] public Texture2D Sprite { get; set; }
+    [Export] public AudioStream HitSound { get; set; }
+    [Export] public AudioStream DeathSound { get; set; }
+    [Export] public Color TintColor { get; set; } = Colors.White;
+    [Export] public Shape2D CollisionShape { get; set; }
+    private static readonly Shader _defaultAnimationShader;
+    [Export] public Shader AnimationShader { get; set; } = _defaultAnimationShader;
+    static MobData()
+    {
+        _defaultAnimationShader = ResourceLoader.Load<Shader>("res://data/shaders/mobs/BasicMobMovement.gdshader");
+    }
 }

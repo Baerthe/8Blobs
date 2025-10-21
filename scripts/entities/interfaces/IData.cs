@@ -6,5 +6,7 @@ using Godot;
 /// </summary>
 public interface IData
 {
-    public PackedScene Entity { get; }
+    public string Name { get; }
+    public string Description { get; }
+    public string Lore { get; }
 }

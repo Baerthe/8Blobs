@@ -10,10 +10,8 @@ public partial class WeaponEntity : Node2D, IEntity
 {
     [ExportCategory("Components")]
     [ExportGroup("Components")]
-    [Export] public Texture2D AttackSprite { get; private set; }
-    [Export] public AudioStream SwingSound { get; private set; }
-    [Export] public AudioStream HitSound { get; private set; }
-    public IData Data { get; private set; }
+    [Export] public Sprite2D AttackSprite { get; private set; }
+    public WeaponData Data { get; private set; }
     public uint CurrentLevel
     {
         get
@@ -42,14 +40,13 @@ public partial class WeaponEntity : Node2D, IEntity
             GD.PrintErr($"WeaponEntity {Name} already initialized with data!");
             return;
         }
-        Data = data ?? throw new ArgumentNullException(nameof(data));
+        Data = (WeaponData)data ?? throw new ArgumentNullException(nameof(data));
+        AttackSprite.Texture = Data.AttackSprite;
     }
     public void NullCheck()
     {
         byte failure = 0;
         if (AttackSprite == null) { GD.PrintErr($"ERROR: {this.Name} does not have AttackSprite set!"); failure++; }
-        if (SwingSound == null) { GD.PrintErr($"ERROR: {this.Name} does not have SwingSound set!"); failure++; }
-        if (HitSound == null) { GD.PrintErr($"ERROR: {this.Name} does not have HitSound set!"); failure++; }
         if (failure > 0) throw new InvalidOperationException($"{this.Name} has failed null checking with {failure} missing components!");
     }
 }
