@@ -16,6 +16,6 @@ public partial class LevelData : Resource, IData
     [Export] public LevelType Type { get; set; }
     [Export] public LevelTier Tier { get; set; }
     [ExportCategory("Scenes")]
-    [Export] public Array<PackedScene> MobTable { get; private set; } = new();
+    [Export] public Array<MobData> MobTable { get; private set; } = new();
     [Export] public PackedScene Entity { get; private set; }
 }

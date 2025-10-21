@@ -15,14 +15,13 @@ public partial class GameManager : Node2D
     public MobSystem CurrentMobSystem { get; private set; }
     public PlayerSystem CurrentPlayerSystem { get; private set; }
     public LevelData CurrentLevelData { get; private set; }
+    public Camera2D Camera { get; private set; }
     public bool IsPaused => _isPaused;
-    private Camera2D _camera;
     private LevelEntity _levelEntity;
     private bool _levelLoaded = false;
     private bool _isPaused = false;
     public override void _Ready()
     {
-        _camera = GetParent().GetNode<Camera2D>("MainCamera");
         CoreProvider.GetClockService().PulseTimeout += OnPulseTimeout;
     }
     public override void _Process(double delta)
@@ -63,13 +62,16 @@ public partial class GameManager : Node2D
             GD.PrintErr("Level already loaded in GameManager");
             throw new InvalidOperationException("ERROR 300: Level already loaded in GameManager. Cannot load another level.");
         }
+        // Load level data and instantiate level entity
         CurrentLevelData = CoreProvider.GetLevelService().CurrentLevel;
-        _levelEntity = ResourceLoader.Load<PackedScene>(CurrentLevelData.LevelEntityScene.ResourcePath).Instantiate<LevelEntity>();
+        _levelEntity = ResourceLoader.Load<PackedScene>(CurrentLevelData.Entity.ResourcePath).Instantiate<LevelEntity>();
         AddChild(_levelEntity);
+        // Initialize and add core systems
         CurrentChestSystem = new();
         CurrentMapSystem = new();
         CurrentMobSystem = new();
         CurrentPlayerSystem = new();
+        // Add systems to level entity
         _levelEntity.AddChild(CurrentChestSystem);
         _levelEntity.AddChild(CurrentMapSystem);
         _levelEntity.AddChild(CurrentMobSystem);

@@ -13,7 +13,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     public PathFollow2D MobSpawner { get; set; }
     public HeroEntity PlayerInstance { get; set; }
     public LevelEntity LevelInstance { get; set; }
-    private List<(MobData mob, float weight)> _mobDataLookup;
+    private List<(MobData mob, float weight)> _mobSpawnPool;
     private Dictionary<MobData, System.Action<MobEntity, MobData>> _aiHandlers;
     private List<MobEntity> _activeMobs = new();
     private Vector2 _lastPlayerPosition;
@@ -26,16 +26,16 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         GD.Print("MobSystem Present.");
         GetParent<GameManager>().OnLevelLoad += (sender, args) =>
         {
-            OnLevelLoad(args.PlayerInstance);
+            OnLevelLoad(args.LevelInstance, args.PlayerInstance);
         };
     }
-    public void OnLevelLoad(HeroEntity playerInstance)
+    public void OnLevelLoad(LevelEntity levelInstance, HeroEntity playerInstance)
     {
         if (IsInitialized) return;
         PlayerInstance = playerInstance;
         CoreProvider.GetClockService().MobSpawnTimeout += OnMobTimeout;
         CoreProvider.GetClockService().GameTimeout += OnGameTimeout;
-        _aiHandlers = new Dictionary<MobEntity, System.Action<MobEntity, MobData>>();
+        _aiHandlers = new Dictionary<MobData, System.Action<MobEntity, MobData>>();
         IsInitialized = true;
     }
     public void PauseMobs()
@@ -61,7 +61,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     }
     private void OnMobTimeout()
     {
-        if (_mobDataLookup == null || _mobDataLookup.Count == 0)
+        if (_mobSpawnPool == null || _mobSpawnPool.Count == 0)
         {
             GD.PrintErr("MobSystem: OnMobTimeout called but mob data lookup is empty.");
             return;
@@ -82,24 +82,25 @@ public sealed partial class MobSystem : Node2D, IGameSystem
             GD.PrintErr("MobSystem: BuildMobPool called but LevelInstance or LevelInstance.Data is null.");
             return;
         }
-        _mobDataLookup = new();
-        foreach (var mob in LevelInstance.Data.MobTable)
+        LevelData levelData = LevelInstance.Data as LevelData;
+        _mobSpawnPool = new();
+        foreach (var mob in levelData.MobTable)
         {
-            MobEntity mobInstance = mob.Instantiate<MobEntity>();
-            float spawnWeight = CalculateSpawnWeight(mobInstance.Data);
-            while(_mobDataLookup.Find(x => x.mob == mobInstance).weight == spawnWeight)
+            MobEntity mobInstance = ResourceLoader.Load<PackedScene>(mob.Entity.ResourcePath).Instantiate<MobEntity>();
+            float spawnWeight = CalculateSpawnWeight(mobInstance.Data as MobData);
+            while(_mobSpawnPool.Find(x => x.mob == mob).weight == spawnWeight)
             {
                 spawnWeight += 0.32f; // Ensure unique weights
             }
-            _mobDataLookup.Add((mobInstance, spawnWeight));
+            _mobSpawnPool.Add((mob, spawnWeight));
             mobInstance.SetProcess(false);
             mobInstance.SetPhysicsProcess(false);
             mobInstance.Hide();
             AddChild(mobInstance);
             _grossMobWeight += spawnWeight;
         }
-        _mobDataLookup.Sort((a, b) => b.weight.CompareTo(a.weight));
-        GD.Print($"MobSystem: Built mob pool with {_mobDataLookup.Count} mobs for level");
+        _mobSpawnPool.Sort((a, b) => b.weight.CompareTo(a.weight));
+        GD.Print($"MobSystem: Built mob pool with {_mobSpawnPool.Count} mobs for level");
     }
     private float CalculateSpawnWeight(MobData mobData)
     {

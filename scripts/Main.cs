@@ -121,7 +121,7 @@ public partial class Main : Node2D
 				if (!_isGameStarted)
 				{
 					_clockService.InitGame(this);
-					GameManagerInstance.PrepareLevel(_levelService.LevelInstance);
+					GameManagerInstance.PrepareLevel();
 					MenuManagerInstance.Hide();
 					HudManagerInstance.Show();
 					_isGameStarted = true;
