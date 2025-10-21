@@ -1,11 +1,12 @@
 namespace Entities;
 
 using Godot;
+using Entities.Interfaces;
 /// <summary>
 /// The Data class for Heroes, stores static data
 /// </summary>
 [GlobalClass]
-public partial class HeroData : Resource
+public partial class HeroData : Resource, IData
 {
     [ExportCategory("Stats")]
     [ExportGroup("Info")]
@@ -27,6 +28,6 @@ public partial class HeroData : Resource
     [Export] public uint AbilityStrength { get; private set; }
     [Export] public HeroMovement Movement { get; private set; } = HeroMovement.Walk;
     [ExportGroup("Scene")]
-    [Export] public PackedScene HeroEntityScene { get; private set; }
+    [Export] public PackedScene Entity { get; private set; }
     public void Unlock() => Unlocked = true;
 }

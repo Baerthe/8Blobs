@@ -1,11 +1,13 @@
 namespace Entities;
+
 using Godot;
 using System;
+using Entities.Interfaces;
 /// <summary>
 /// The Entity class for Heroes, stores components and runtime data
 /// </summary>
 [GlobalClass]
-public partial class HeroEntity : CharacterBody2D
+public partial class HeroEntity : CharacterBody2D, IEntity
 {
     [ExportCategory("Stats")]
     [ExportGroup("Components")]
@@ -14,12 +16,22 @@ public partial class HeroEntity : CharacterBody2D
     [Export] public AudioStream Cry { get; private set; }
     public Vector2 CurrentVelocity { get; set; }
     public uint CurrentHealth { get; set; }
+    public IData Data { get; private set; }
     public override void _Ready()
     {
         NullCheck();
         AddToGroup("players");
     }
-    private void NullCheck()
+    public void InitializeEntity(IData data)
+    {
+        if (Data != null)
+        {
+            GD.PrintErr($"HeroEntity {Name} already initialized with data!");
+            return;
+        }
+        Data = data ?? throw new ArgumentNullException(nameof(data));
+    }
+    public void NullCheck()
     {
         byte failure = 0;
         if (Hitbox == null) { GD.PrintErr($"ERROR: {this.Name} does not have Hitbox set!"); failure++; }
