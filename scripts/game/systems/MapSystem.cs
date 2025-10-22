@@ -36,10 +36,10 @@ public sealed partial class MapSystem : Node2D, IGameSystem
         GD.Print("MapSystem Present.");
         GetParent<GameManager>().OnLevelLoad += (sender, args) =>
         {
-            OnLevelLoad(args.LevelInstance, args.PlayerInstance);
+            OnLevelLoad(args.Templates, args.LevelInstance, args.PlayerInstance);
         };
     }
-    public void OnLevelLoad(LevelEntity levelInstance, HeroEntity playerInstance)
+    public void OnLevelLoad(EntityIndex _, LevelEntity levelInstance, HeroEntity playerInstance)
 	{
 		if (IsInitialized) return;
 		LevelInstance = levelInstance;

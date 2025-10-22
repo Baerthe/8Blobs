@@ -18,15 +18,14 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
         GD.Print("PlayerSystem Present.");
         GetParent<GameManager>().OnLevelLoad += (sender, args) =>
         {
-            OnLevelLoad(args.LevelInstance, args.PlayerInstance);
+            OnLevelLoad(args.Templates, args.LevelInstance, args.PlayerInstance);
         };
-        _currentHeroData = Core.CoreProvider.GetHeroService().CurrentHero;
-        LoadPlayer(_currentHeroData);
     }
-    public void OnLevelLoad(LevelEntity levelInstance, HeroEntity __)
+    public void OnLevelLoad(EntityIndex _, LevelEntity levelInstance, HeroEntity playerInstance)
     {
         if (IsInitialized) return;
         LevelInstance = levelInstance;
+        LoadPlayer(_currentHeroData);
         PlayerInstance.SetProcess(true);
         PlayerInstance.SetPhysicsProcess(true);
         PlayerInstance.Show();
@@ -67,7 +66,7 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
 			PlayerInstance.CurrentDirection = PlayerDirection.Diagonal;
 		if (velocity.Length() > 0)
 		{
-			velocity = velocity.Normalized() * (PlayerInstance.Data as HeroData).Speed;
+			velocity = velocity.Normalized() * (PlayerInstance.Data as HeroData).Stats.Speed;
 			PlayerInstance.Sprite.Play();
 		}
 		else
@@ -87,7 +86,7 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
         PlayerInstance.QueueFree();
         base._ExitTree();
     }
-    private void LoadPlayer(HeroData hero)
+    public void LoadPlayer(HeroData hero)
     {
         if (hero == null)
         {
@@ -105,6 +104,6 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
         PlayerInstance.SetPhysicsProcess(false);
         PlayerInstance.Hide();
         AddChild(PlayerInstance);
-        GD.Print($"PlayerSystem: Loaded player '{hero.HeroName}'.");
+        GD.Print($"PlayerSystem: Loaded player '{hero.Name}'.");
     }
 }

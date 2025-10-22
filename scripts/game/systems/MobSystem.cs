@@ -2,6 +2,7 @@ namespace Game;
 using Godot;
 using Entities;
 using Game.Interface;
+using Core.Interface;
 using System.Collections.Generic;
 using Core;
 
@@ -13,6 +14,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     public PathFollow2D MobSpawner { get; set; }
     public HeroEntity PlayerInstance { get; set; }
     public LevelEntity LevelInstance { get; set; }
+    private readonly IClockService _clockService = CoreProvider.GetClockService();
     private List<(MobData mob, float weight)> _mobSpawnPool;
     private Dictionary<MobData, System.Action<MobEntity, MobData>> _aiHandlers;
     private List<MobEntity> _activeMobs = new();
@@ -21,23 +23,25 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     private float _maxTime = 600f;
     private float _grossMobWeight = 0f;
     private float _gameElapsedTime = 0f;
+    private PackedScene _genericMobScene;
     public override void _Ready()
     {
         GD.Print("MobSystem Present.");
         GetParent<GameManager>().OnLevelLoad += (sender, args) =>
         {
-            OnLevelLoad(args.LevelInstance, args.PlayerInstance);
+            OnLevelLoad(args.Templates, args.LevelInstance, args.PlayerInstance);
         };
     }
-    public void OnLevelLoad(LevelEntity levelInstance, HeroEntity playerInstance)
+    public void OnLevelLoad(EntityIndex templates, LevelEntity levelInstance, HeroEntity playerInstance)
     {
         if (IsInitialized) return;
         PlayerInstance = playerInstance;
         var levelData = levelInstance.Data as LevelData;
         _maxLevel = levelData.MaxLevel;
         _maxTime = levelData.MaxTime;
-        CoreProvider.GetClockService().MobSpawnTimeout += OnMobTimeout;
-        CoreProvider.GetClockService().GameTimeout += OnGameTimeout;
+        _genericMobScene = templates.MobTemplate;
+        _clockService.MobSpawnTimeout += OnMobTimeout;
+        _clockService.GameTimeout += OnGameTimeout;
         _aiHandlers = new Dictionary<MobData, System.Action<MobEntity, MobData>>();
         IsInitialized = true;
     }
@@ -89,7 +93,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         _mobSpawnPool = new();
         foreach (var mob in levelData.MobTable)
         {
-            MobEntity mobInstance = ResourceLoader.Load<PackedScene>(mob.Entity.ResourcePath).Instantiate<MobEntity>();
+            MobEntity mobInstance = DuplicateMobEntity(mob);
             float spawnWeight = CalculateSpawnWeight(mobInstance.Data as MobData);
             while(_mobSpawnPool.Find(x => x.mob == mob).weight == spawnWeight)
             {
@@ -119,5 +123,15 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         float levelBonus = Mathf.Pow(progression, 2f) * levelValue;
         float levelPenalty = (1f - progression) * (_maxLevel - levelValue);
         return levelBonus + levelPenalty + 0.1f;
+    }
+    private MobEntity DuplicateMobEntity(MobData mobData)
+    {
+        if (_genericMobScene == null)
+        {
+            _genericMobScene = GD.Load<PackedScene>("res://scripts/game/entities/mobs/MobEntity.tscn");
+        }
+        MobEntity mobInstance = _genericMobScene.Instantiate<MobEntity>();
+        mobInstance.InitializeEntity(mobData);
+        return mobInstance;
     }
 }

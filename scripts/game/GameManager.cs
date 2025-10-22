@@ -3,6 +3,7 @@ using Godot;
 using Core;
 using Entities;
 using System;
+using Core.Interface;
 /// <summary>
 /// GameManager is a Node that manages the core systems of the game, including chest, level, map, mob, and player systems. It integrates with core services for clock management, data handling, and level management, and ensures that these systems are updated appropriately during the game's lifecycle.
 /// </summary>
@@ -16,13 +17,23 @@ public partial class GameManager : Node2D
     public PlayerSystem CurrentPlayerSystem { get; private set; }
     public LevelData CurrentLevelData { get; private set; }
     public Camera2D Camera { get; private set; }
+    public EntityIndex Templates { get; private set; }
     public bool IsPaused => _isPaused;
-    private LevelEntity _levelEntity;
+    private HeroData _heroData;
+    private HeroEntity _heroInstance;
+    private LevelData _levelData;
+    private LevelEntity _levelInstance;
+    private readonly IClockService _clockService = CoreProvider.GetClockService();
+    private readonly IHeroService _heroService = CoreProvider.GetHeroService();
+    private readonly ILevelService _levelService = CoreProvider.GetLevelService();
     private bool _levelLoaded = false;
     private bool _isPaused = false;
     public override void _Ready()
     {
-        CoreProvider.GetClockService().PulseTimeout += OnPulseTimeout;
+        _clockService.PulseTimeout += OnPulseTimeout;
+        _clockService.SlowPulseTimeout += OnSlowPulseTimeout;
+        Camera = GetParent().GetNode<Camera2D>("MainCamera");
+        Templates = ResourceLoader.Load<EntityIndex>("res://assets/data/indices/EntityIndex.tres");
     }
     public override void _Process(double delta)
     {
@@ -63,21 +74,25 @@ public partial class GameManager : Node2D
             throw new InvalidOperationException("ERROR 300: Level already loaded in GameManager. Cannot load another level.");
         }
         // Load level data and instantiate level entity
-        CurrentLevelData = CoreProvider.GetLevelService().CurrentLevel;
-        _levelEntity = ResourceLoader.Load<PackedScene>(CurrentLevelData.Entity.ResourcePath).Instantiate<LevelEntity>();
-        AddChild(_levelEntity);
+        _levelData = _levelService.CurrentLevel;
+        _heroData = _heroService.CurrentHero;
+        _levelInstance = ResourceLoader.Load<PackedScene>(_levelData.Entity.ResourcePath).Instantiate<LevelEntity>();
+        AddChild(_levelInstance);
         // Initialize and add core systems
         CurrentChestSystem = new();
         CurrentMapSystem = new();
         CurrentMobSystem = new();
         CurrentPlayerSystem = new();
         // Add systems to level entity
-        _levelEntity.AddChild(CurrentChestSystem);
-        _levelEntity.AddChild(CurrentMapSystem);
-        _levelEntity.AddChild(CurrentMobSystem);
-        _levelEntity.AddChild(CurrentPlayerSystem);
+        _levelInstance.AddChild(CurrentChestSystem);
+        _levelInstance.AddChild(CurrentMapSystem);
+        _levelInstance.AddChild(CurrentMobSystem);
+        _levelInstance.AddChild(CurrentPlayerSystem);
+        // Create hero instance
+        CurrentPlayerSystem.LoadPlayer(_heroData);
+        _heroInstance = CurrentPlayerSystem.PlayerInstance;
         // All of our systems are ready, now initialize them by calling the load event.
-        OnLevelLoad?.Invoke(this, new LevelLoadArgs(this, CurrentPlayerSystem.PlayerInstance));
+        OnLevelLoad?.Invoke(this, new LevelLoadArgs(Templates, _levelInstance, _heroInstance));
         _levelLoaded = true;
     }
     /// <summary>
@@ -98,8 +113,8 @@ public partial class GameManager : Node2D
         CurrentMobSystem = null;
         CurrentPlayerSystem.QueueFree();
         CurrentPlayerSystem = null;
-        _levelEntity.QueueFree();
-        _levelEntity = null;
+        _levelInstance.QueueFree();
+        _levelData = null;
         _levelLoaded = false;
     }
     private void OnPulseTimeout()
@@ -119,11 +134,13 @@ public partial class GameManager : Node2D
     }
     public class LevelLoadArgs : EventArgs
     {
+        public EntityIndex Templates { get; set; }
         public LevelEntity LevelInstance { get; set; }
         public HeroEntity PlayerInstance { get; set; }
-        public LevelLoadArgs(GameManager sender, HeroEntity playerInstance)
+        public LevelLoadArgs(EntityIndex templates, LevelEntity levelInstance, HeroEntity playerInstance)
         {
-            LevelInstance = sender._levelEntity;
+            Templates = templates;
+            LevelInstance = levelInstance;
             PlayerInstance = playerInstance;
         }
     }
