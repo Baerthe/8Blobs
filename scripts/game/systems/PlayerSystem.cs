@@ -1,8 +1,10 @@
 namespace Game;
 
 using Godot;
+using Core;
 using Entities;
 using Game.Interface;
+using Core.Interface;
 /// <summary>
 /// The player is the main character that the user controls. This class handles movement, health, and collisions with mobs.
 /// </summary>
@@ -11,21 +13,17 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
     public bool IsInitialized { get; private set; } = false;
     public HeroEntity PlayerInstance { get; private set; }
     public LevelEntity LevelInstance { get; private set; }
-    private HeroData _currentHeroData = null;
     private PackedScene _playerScene = null;
     public override void _Ready()
     {
         GD.Print("PlayerSystem Present.");
-        GetParent<GameManager>().OnLevelLoad += (sender, args) =>
-        {
-            OnLevelLoad(args.Templates, args.LevelInstance, args.PlayerInstance);
-        };
+        GetParent<GameManager>().OnLevelLoad += (sender, args) => OnLevelLoad(args.Templates, args.LevelInstance, args.PlayerInstance);
+        LoadPlayer(CoreProvider.GetHeroService().CurrentHero);
     }
-    public void OnLevelLoad(EntityIndex _, LevelEntity levelInstance, HeroEntity playerInstance)
+    public void OnLevelLoad(EntityIndex _, LevelEntity levelInstance, HeroEntity __)
     {
         if (IsInitialized) return;
         LevelInstance = levelInstance;
-        LoadPlayer(_currentHeroData);
         PlayerInstance.SetProcess(true);
         PlayerInstance.SetPhysicsProcess(true);
         PlayerInstance.Show();
@@ -86,7 +84,7 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
         PlayerInstance.QueueFree();
         base._ExitTree();
     }
-    public void LoadPlayer(HeroData hero)
+    private void LoadPlayer(HeroData hero)
     {
         if (hero == null)
         {

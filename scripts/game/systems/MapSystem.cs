@@ -34,10 +34,7 @@ public sealed partial class MapSystem : Node2D, IGameSystem
     public override void _Ready()
     {
         GD.Print("MapSystem Present.");
-        GetParent<GameManager>().OnLevelLoad += (sender, args) =>
-        {
-            OnLevelLoad(args.Templates, args.LevelInstance, args.PlayerInstance);
-        };
+        GetParent<GameManager>().OnLevelLoad += (sender, args) => OnLevelLoad(args.Templates, args.LevelInstance, args.PlayerInstance);
     }
     public void OnLevelLoad(EntityIndex _, LevelEntity levelInstance, HeroEntity playerInstance)
 	{

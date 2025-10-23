@@ -17,12 +17,9 @@ public sealed partial class ChestSystem : Node2D, IGameSystem
     public override void _Ready()
     {
         GD.Print("ChestSystem Present.");
-        GetParent<GameManager>().OnLevelLoad += (sender, args) =>
-        {
-            OnLevelLoad(args.LevelInstance, args.PlayerInstance);
-        };
+        GetParent<GameManager>().OnLevelLoad += (sender, args) => OnLevelLoad(args.Templates, args.LevelInstance, args.PlayerInstance);
     }
-    public void OnLevelLoad(LevelEntity _, HeroEntity playerInstance)
+    public void OnLevelLoad(EntityIndex _, LevelEntity levelInstance, HeroEntity playerInstance)
     {
         if (IsInitialized) return;
         PlayerInstance = playerInstance;

@@ -27,10 +27,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     public override void _Ready()
     {
         GD.Print("MobSystem Present.");
-        GetParent<GameManager>().OnLevelLoad += (sender, args) =>
-        {
-            OnLevelLoad(args.Templates, args.LevelInstance, args.PlayerInstance);
-        };
+        GetParent<GameManager>().OnLevelLoad += (sender, args) => OnLevelLoad(args.Templates, args.LevelInstance, args.PlayerInstance);
     }
     public void OnLevelLoad(EntityIndex templates, LevelEntity levelInstance, HeroEntity playerInstance)
     {

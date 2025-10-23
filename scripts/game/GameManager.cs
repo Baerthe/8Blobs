@@ -19,12 +19,10 @@ public partial class GameManager : Node2D
     public Camera2D Camera { get; private set; }
     public EntityIndex Templates { get; private set; }
     public bool IsPaused => _isPaused;
-    private HeroData _heroData;
     private HeroEntity _heroInstance;
     private LevelData _levelData;
     private LevelEntity _levelInstance;
     private readonly IClockService _clockService = CoreProvider.GetClockService();
-    private readonly IHeroService _heroService = CoreProvider.GetHeroService();
     private readonly ILevelService _levelService = CoreProvider.GetLevelService();
     private bool _levelLoaded = false;
     private bool _isPaused = false;
@@ -75,7 +73,6 @@ public partial class GameManager : Node2D
         }
         // Load level data and instantiate level entity
         _levelData = _levelService.CurrentLevel;
-        _heroData = _heroService.CurrentHero;
         _levelInstance = ResourceLoader.Load<PackedScene>(_levelData.Entity.ResourcePath).Instantiate<LevelEntity>();
         AddChild(_levelInstance);
         // Initialize and add core systems
@@ -89,7 +86,6 @@ public partial class GameManager : Node2D
         _levelInstance.AddChild(CurrentMobSystem);
         _levelInstance.AddChild(CurrentPlayerSystem);
         // Create hero instance
-        CurrentPlayerSystem.LoadPlayer(_heroData);
         _heroInstance = CurrentPlayerSystem.PlayerInstance;
         // All of our systems are ready, now initialize them by calling the load event.
         OnLevelLoad?.Invoke(this, new LevelLoadArgs(Templates, _levelInstance, _heroInstance));
