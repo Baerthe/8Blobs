@@ -11,6 +11,8 @@ using Core.Interface;
 public partial class GameManager : Node2D
 {
     public event EventHandler<LevelLoadArgs> OnLevelLoad;
+    // TODO: Consider adding an OnLevelUnload event for better cleanup?
+    // TODO: Consider adding an EventSystem to manage events more effectively, especially between systems.
     public ChestSystem CurrentChestSystem { get; private set; }
     public MapSystem CurrentMapSystem { get; private set; }
     public MobSystem CurrentMobSystem { get; private set; }
