@@ -1,8 +1,12 @@
 namespace Core;
+
 using Godot;
 using System;
 using System.Collections.Generic;
 using Core.Interface;
+/// <summary>
+/// Service that manages game timing and timers. Provides various timed events for game logic.
+/// </summary>
 public sealed class ClockService : IClockService
 {
     public event Action PulseTimeout;
@@ -19,6 +23,13 @@ public sealed class ClockService : IClockService
     private Timer _ChestSpawnTimer;
     private Dictionary<byte, Timer> _timers = new();
     private bool _isInitialized = false;
+    // Timer Default Intervals
+    private const float PulseInterval = 0.05f;        // 20 hrz (~1200 per minute)
+    private const float SlowPulseInterval = 0.2f;     // 5 hrz (~300 per minute)
+    private const float MobSpawnInterval = 5f;       // 0.2 hrz (~12 per minute)
+    private const float ChestSpawnInterval = 10f;     // 0.1 hrz (~6 per minute)
+    private const float GameInterval = 60f;          // 0.016 hrz (~1 per minute)
+    private const float StartingInterval = 3f;       // OneShot (~3 seconds)
     public ClockService()
     {
         _isInitialized = false;
@@ -162,37 +173,37 @@ public sealed class ClockService : IClockService
     private void CreatePulseTimer()
     {
         if (_pulseTimer != null) return;
-        _pulseTimer = BuildTimer(0.05f, false, false, () => PulseTimeout?.Invoke(), this);
+        _pulseTimer = BuildTimer(PulseInterval, false, false, () => PulseTimeout?.Invoke(), this);
         GD.Print("Pulse Timer created with WaitTime 0.05f (20hrz), ~1200 per minute");
     }
     private void CreateSlowPulseTimer()
     {
         if (_slowPulseTimer != null) return;
-        _slowPulseTimer = BuildTimer(0.2f, false, false, () => SlowPulseTimeout?.Invoke(), this);
+        _slowPulseTimer = BuildTimer(SlowPulseInterval, false, false, () => SlowPulseTimeout?.Invoke(), this);
         GD.Print("Slow Pulse Timer created with WaitTime 0.2f (5hrz), ~300 per minute");
     }
     private void CreateMobSpawnTimer()
     {
         if (_mobSpawnTimer != null) return;
-        _mobSpawnTimer = BuildTimer(5f, false, false, () => MobSpawnTimeout?.Invoke(), this);
+        _mobSpawnTimer = BuildTimer(MobSpawnInterval, false, false, () => MobSpawnTimeout?.Invoke(), this);
         GD.Print("Mob Spawn Timer created with WaitTime 5f (0.2hrz), ~12 per minute");
     }
     private void CreateChestSpawnTimer()
     {
         if (_ChestSpawnTimer != null) return;
-        _ChestSpawnTimer = BuildTimer(10f, false, false, () => ChestSpawnTimeout?.Invoke(), this);
+        _ChestSpawnTimer = BuildTimer(ChestSpawnInterval, false, false, () => ChestSpawnTimeout?.Invoke(), this);
         GD.Print("Pickup Spawn Timer created with WaitTime 10f (0.1hrz), ~6 per minute");
     }
     private void CreateGameTimer()
     {
         if (_gameTimer != null) return;
-        _gameTimer = BuildTimer(60f, false, false, () => GameTimeout?.Invoke(), this);
+        _gameTimer = BuildTimer(GameInterval, false, false, () => GameTimeout?.Invoke(), this);
         GD.Print("Game Timer created with WaitTime 60f (0.016hrz), ~1 per minute");
     }
     private void CreateStartingTimer()
     {
         if (_startingTimer != null) return;
-        _startingTimer = BuildTimer(3f, true, false, () => StartingTimeout?.Invoke(), this);
+        _startingTimer = BuildTimer(StartingInterval, true, false, () => StartingTimeout?.Invoke(), this);
         GD.Print("Starting Timer created with WaitTime 3f (OneShot), ~3 seconds");
     }
 }
