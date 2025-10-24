@@ -1,50 +1,43 @@
 namespace Game;
+
 using Godot;
 using Entities;
 using Game.Interface;
-using Core.Interface;
 using System.Collections.Generic;
-using Core;
 
 public sealed partial class MobSystem : Node2D, IGameSystem
 {
     public bool IsInitialized { get; private set; } = false;
-    public Vector2 OffsetBetweenMobSpawnerAndPlayer { get; private set; }
-    public Path2D MobSpawnPath { get; set; }
-    public PathFollow2D MobSpawner { get; set; }
-    public HeroEntity PlayerInstance { get; set; }
-    public LevelEntity LevelInstance { get; set; }
-    private readonly IClockService _clockService = CoreProvider.ClockService();
     private List<(MobData mob, float weight)> _mobSpawnPool;
     private Dictionary<MobData, System.Action<MobEntity, MobData>> _aiHandlers;
-    private List<MobEntity> _activeMobs = new();
+    private HeroEntity _playerRef = null;
+    private LevelEntity _levelRef = null;
+    private Vector2 _offsetBetweenSpawnerAndPlayer;
+    private Path2D _mobSpawnPath;
+    private PathFollow2D _mobSpawner;
     private Vector2 _lastPlayerPosition;
-    private uint _maxLevel = 0;
-    private float _maxTime = 600f;
+    private PackedScene _genericMobScene;
     private float _grossMobWeight = 0f;
     private float _gameElapsedTime = 0f;
-    private PackedScene _genericMobScene;
     public override void _Ready()
     {
         GD.Print("MobSystem Present.");
-        GetParent<GameManager>().OnLevelLoad += (sender, args) => OnLevelLoad(args.Templates, args.LevelInstance, args.PlayerInstance);
+        Init();
     }
-    public void OnLevelLoad(EntityIndex templates, LevelEntity levelInstance, HeroEntity playerInstance)
+    public void Init()
     {
         if (IsInitialized) return;
-        PlayerInstance = playerInstance;
-        var levelData = levelInstance.Data as LevelData;
-        _maxLevel = levelData.MaxLevel;
-        _maxTime = levelData.MaxTime;
-        _genericMobScene = templates.MobTemplate;
-        _clockService.MobSpawnTimeout += OnMobTimeout;
-        _clockService.GameTimeout += OnGameTimeout;
+        _playerRef = GetTree().GetFirstNodeInGroup("player") as HeroEntity;
+        _levelRef = GetTree().GetFirstNodeInGroup("level") as LevelEntity;
+        var levelData = _levelRef.Data as LevelData;
+        //_genericMobScene = templates.MobTemplate;
         _aiHandlers = new Dictionary<MobData, System.Action<MobEntity, MobData>>();
         IsInitialized = true;
     }
     public void PauseMobs()
     {
-        foreach (var mob in _activeMobs)
+        var activeMobs = GetTree().GetNodesInGroup("mobs");
+        foreach (var mob in activeMobs)
         {
             mob.SetProcess(false);
             mob.SetPhysicsProcess(false);
@@ -52,7 +45,8 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     }
     public void ResumeMobs()
     {
-        foreach (var mob in _activeMobs)
+        var activeMobs = GetTree().GetNodesInGroup("mobs");
+        foreach (var mob in activeMobs)
         {
             mob.SetProcess(true);
             mob.SetPhysicsProcess(true);
@@ -60,8 +54,16 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     }
     public void Update()
     {
-        OffsetBetweenMobSpawnerAndPlayer = PlayerInstance.Position - MobSpawnPath.Position;
-        _lastPlayerPosition = PlayerInstance.Position;
+        if (!IsInitialized)
+        {
+            GD.PrintErr("MobSystem: Update called but system is not initialized.");
+            return;
+        }
+        _offsetBetweenSpawnerAndPlayer = _playerRef.Position - _mobSpawnPath.Position;
+        _lastPlayerPosition = _playerRef.Position;
+        // Mob AI Update
+        var activeMobs = GetTree().GetNodesInGroup("mobs");
+        //TODO
     }
     private void OnMobTimeout()
     {
@@ -81,20 +83,22 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     /// </summary>
     private void BuildMobPool()
     {
-        if (LevelInstance == null || LevelInstance.Data == null)
+        if (_levelRef == null || _levelRef.Data == null)
         {
             GD.PrintErr("MobSystem: BuildMobPool called but LevelInstance or LevelInstance.Data is null.");
             return;
         }
-        LevelData levelData = LevelInstance.Data as LevelData;
+        LevelData levelData = _levelRef.Data as LevelData;
+        RandomNumberGenerator rnd = new RandomNumberGenerator();
+        rnd.Randomize();
         _mobSpawnPool = new();
         foreach (var mob in levelData.MobTable)
         {
             MobEntity mobInstance = DuplicateMobEntity(mob);
-            float spawnWeight = CalculateSpawnWeight(mobInstance.Data as MobData);
-            while(_mobSpawnPool.Find(x => x.mob == mob).weight == spawnWeight)
+            float spawnWeight = CalculateSpawnWeight(mobInstance.Data);
+            if (_mobSpawnPool.Find(x => x.mob == mob).weight == spawnWeight)
             {
-                spawnWeight += 0.32f; // Ensure unique weights
+                spawnWeight += rnd.RandfRange(0.02f, 1.28f);
             }
             _mobSpawnPool.Add((mob, spawnWeight));
             mobInstance.SetProcess(false);
@@ -115,10 +119,11 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     }
     private float CalculateLevelCurve(MobLevel level, float gameTime)
     {
+        LevelData levelData = _levelRef.Data as LevelData;
         int levelValue = (int)level;
-        float progression = Mathf.Clamp(gameTime / _maxTime, 0f, 1f);
+        float progression = Mathf.Clamp(gameTime / levelData.MaxTime, 0f, 1f);
         float levelBonus = Mathf.Pow(progression, 2f) * levelValue;
-        float levelPenalty = (1f - progression) * (_maxLevel - levelValue);
+        float levelPenalty = (1f - progression) * (levelData.MaxLevel - levelValue);
         return levelBonus + levelPenalty + 0.1f;
     }
     private MobEntity DuplicateMobEntity(MobData mobData)

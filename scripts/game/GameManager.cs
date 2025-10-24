@@ -77,6 +77,7 @@ public partial class GameManager : Node2D
         _levelData = _levelService.CurrentLevel;
         _levelInstance = ResourceLoader.Load<PackedScene>(_levelData.Entity.ResourcePath).Instantiate<LevelEntity>();
         AddChild(_levelInstance);
+        _levelInstance.AddToGroup("level");
         // Initialize and add core systems
         CurrentChestSystem = new();
         CurrentMapSystem = new();
