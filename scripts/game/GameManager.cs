@@ -24,8 +24,8 @@ public partial class GameManager : Node2D
     private HeroEntity _heroInstance;
     private LevelData _levelData;
     private LevelEntity _levelInstance;
-    private readonly IClockService _clockService = CoreProvider.GetClockService();
-    private readonly ILevelService _levelService = CoreProvider.GetLevelService();
+    private readonly IClockService _clockService = CoreProvider.ClockService();
+    private readonly ILevelService _levelService = CoreProvider.LevelService();
     private bool _levelLoaded = false;
     private bool _isPaused = false;
     public override void _Ready()

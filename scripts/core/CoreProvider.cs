@@ -3,8 +3,8 @@ using Godot;
 using Core.Interface;
 /// <summary>
 /// Where the magic happens; builds our dependency injection containers for Core Services Injection. CoreProvider is a global static class that allows any other class to access core services via a simple container.
-/// In usage, call CoreProvider.Get[ServiceName]Service() to get the singleton instance of the service; it can be helpful to register the service instance to a local readonly variable for easier access.
-/// Example: private readonly IAudioService _audioService = CoreProvider.GetAudioService();
+/// In usage, call CoreProvider.[ServiceName]Service() to get the singleton instance of the service; it can be helpful to register the service instance to a local readonly variable for easier access.
+/// Example: private readonly IAudioService _audioService = CoreProvider.AudioService();
 /// </summary>
 public static class CoreProvider
 {
@@ -14,9 +14,9 @@ public static class CoreProvider
     {
         InitilizationCheck();
     }
+    public static IEventService EventService() => CoreContainer.Resolve<IEventService>(); // This must be first to ensure event subscriptions work
+    public static IClockService ClockService() => CoreContainer.Resolve<IClockService>(); // This must be second to ensure timers work
     public static IAudioService AudioService() => CoreContainer.Resolve<IAudioService>();
-    public static IClockService ClockService() => CoreContainer.Resolve<IClockService>();
-    public static IEventService EventService() => CoreContainer.Resolve<IEventService>();
     public static IHeroService HeroService() => CoreContainer.Resolve<IHeroService>();
     public static IPrefService PrefService() => CoreContainer.Resolve<IPrefService>();
     public static ILevelService LevelService() => CoreContainer.Resolve<ILevelService>();

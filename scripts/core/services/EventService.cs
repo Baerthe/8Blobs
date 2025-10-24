@@ -33,26 +33,31 @@ public sealed class EventService : IEventService
         _isInitialized = true;
         GD.PrintRich("[color=#00ff88]EventService initialized.[/color]");
     }
-    /// <summary>
-    /// Subscribes a handler to events of type T. Use a string event name for simple signals.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="handler"></param>
+    public void UnsubscribeAll()
+    {
+        _typedSubs.Clear();
+        _namedSubs.Clear();
+        GD.PrintRich("[color=#ff8800]EventService: All subscriptions cleared. They will be recreated on next call.[/color]");
+    }
     public void Subscribe<T>(Action<T> handler) where T : class
     {
         var type = typeof(T);
         if (!_typedSubs.ContainsKey(type))
         {
+            GD.PrintRich($"[color=#0088ff]EventService: Creating subscription list for event type {type.Name}.[/color]");
             _typedSubs[type] = new List<Delegate>();
         }
+        GD.PrintRich($"[color=#0044FF]EventService: Subscribing handler to event type {type.Name}.[/color]");
         _typedSubs[type].Add(handler);
     }
     public void Subscribe(string eventName, Action handler)
     {
         if (!_namedSubs.ContainsKey(eventName))
         {
+            GD.PrintRich($"[color=#0088ff]EventService: Creating subscription list for event name {eventName}.[/color]");
             _namedSubs[eventName] = new List<Action>();
         }
+        GD.PrintRich($"[color=#0044FF]EventService: Subscribing handler to event name {eventName}.[/color]");
         _namedSubs[eventName].Add(handler);
     }
     /// <summary>
@@ -66,6 +71,11 @@ public sealed class EventService : IEventService
         if (_typedSubs.ContainsKey(type))
         {
             _typedSubs[type].Remove(eventHandler);
+            GD.PrintRich($"[color=#FF4444]EventService: Unsubscribing handler from event type {type.Name}.[/color]");
+        } else
+        {
+            GD.PrintErr($"EventService: Attempted to unsubscribe from event type {type.Name} but no subscriptions exist.");
+            throw new KeyNotFoundException($"No subscriptions found for event type {type.Name}, you have a data leak!");
         }
     }
     public void Unsubscribe(string eventName, Action handler)
@@ -73,6 +83,10 @@ public sealed class EventService : IEventService
         if (_namedSubs.ContainsKey(eventName))
         {
             _namedSubs[eventName].Remove(handler);
+        } else
+        {
+            GD.PrintErr($"EventService: Attempted to unsubscribe from event name {eventName} but no subscriptions exist.");
+            throw new KeyNotFoundException($"No subscriptions found for event name {eventName}, you have a data leak!");
         }
     }
     /// <summary>
@@ -93,7 +107,12 @@ public sealed class EventService : IEventService
     public void Publish<T>(T eventData) where T : class
     {
         var type = typeof(T);
-        if (_typedSubs.ContainsKey(type))
+        if (!_typedSubs.ContainsKey(type))
+        {
+            GD.PrintErr($"EventService: Publish called for event type {type.Name} but no subscriptions exist. Did you forget to subscribe?");
+            return;
+        }
+        else
         {
             foreach (var handler in _typedSubs[type])
             {
@@ -103,7 +122,12 @@ public sealed class EventService : IEventService
     }
     public void Publish(string eventName)
     {
-        if (_namedSubs.ContainsKey(eventName))
+        if (!_namedSubs.ContainsKey(eventName))
+        {
+            GD.PrintErr($"EventService: Publish called for event name {eventName} but no subscriptions exist. Did you forget to subscribe?");
+            return;
+        }
+        else
         {
             foreach (var handler in _namedSubs[eventName])
             {

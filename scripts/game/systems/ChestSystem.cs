@@ -23,7 +23,7 @@ public sealed partial class ChestSystem : Node2D, IGameSystem
     {
         if (IsInitialized) return;
         PlayerInstance = playerInstance;
-        CoreProvider.GetClockService().ChestSpawnTimeout += OnChestSpawnTimeout;
+        CoreProvider.ClockService().ChestSpawnTimeout += OnChestSpawnTimeout;
         ChestPath = CreatePath();
         ChestSpawner = new PathFollow2D();
         ChestPath.AddChild(ChestSpawner);

@@ -14,7 +14,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     public PathFollow2D MobSpawner { get; set; }
     public HeroEntity PlayerInstance { get; set; }
     public LevelEntity LevelInstance { get; set; }
-    private readonly IClockService _clockService = CoreProvider.GetClockService();
+    private readonly IClockService _clockService = CoreProvider.ClockService();
     private List<(MobData mob, float weight)> _mobSpawnPool;
     private Dictionary<MobData, System.Action<MobEntity, MobData>> _aiHandlers;
     private List<MobEntity> _activeMobs = new();

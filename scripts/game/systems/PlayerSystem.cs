@@ -21,7 +21,7 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
     {
         GD.Print("PlayerSystem Present.");
         GetParent<GameManager>().OnLevelLoad += (sender, args) => OnLevelLoad(args.Templates, args.LevelInstance, args.PlayerInstance);
-        LoadPlayer(CoreProvider.GetHeroService().CurrentHero);
+        LoadPlayer(CoreProvider.HeroService().CurrentHero);
     }
     public override void _Process(double delta)
     {
