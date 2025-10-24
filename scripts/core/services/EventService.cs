@@ -5,8 +5,9 @@ using System;
 using Core.Interface;
 using System.Collections.Generic;
 /// <summary>
-/// Service that manages event publishing and subscribing within the game. A central hub for event-driven communication.
-/// Publish events to the service so that other parts of the game, like systems, can subscribe to them. It supports both custom typed events (say you need to send some data) and named events (just a simple signal with no data).
+/// Service that manages event publishing and subscribing within the game; Publish events to the service so that other parts of the game, like systems, can subscribe to them.
+/// It supports both custom typed events (say you need to send some data) and named events (just a simple signal with no data).
+/// These are not Godot Signals; these are delegates being managed.
 /// </summary>
 /// <remarks>
 /// The EventService allows different parts of the game to communicate without direct references, promoting loose coupling through the singleton core service provider.
@@ -32,20 +33,91 @@ public sealed class EventService : IEventService
         _isInitialized = true;
         GD.PrintRich("[color=#00ff88]EventService initialized.[/color]");
     }
+    /// <summary>
+    /// Subscribes a handler to events of type T. Use a string event name for simple signals.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="handler"></param>
     public void Subscribe<T>(Action<T> handler) where T : class
     {
-
+        var type = typeof(T);
+        if (!_typedSubs.ContainsKey(type))
+        {
+            _typedSubs[type] = new List<Delegate>();
+        }
+        _typedSubs[type].Add(handler);
     }
     public void Subscribe(string eventName, Action handler)
     {
-
+        if (!_namedSubs.ContainsKey(eventName))
+        {
+            _namedSubs[eventName] = new List<Action>();
+        }
+        _namedSubs[eventName].Add(handler);
     }
+    /// <summary>
+    /// Unsubscribes a handler from events of type T.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="eventHandler"></param>
     public void Unsubscribe<T>(Action<T> eventHandler) where T : class
     {
-
+        var type = typeof(T);
+        if (_typedSubs.ContainsKey(type))
+        {
+            _typedSubs[type].Remove(eventHandler);
+        }
     }
+    public void Unsubscribe(string eventName, Action handler)
+    {
+        if (_namedSubs.ContainsKey(eventName))
+        {
+            _namedSubs[eventName].Remove(handler);
+        }
+    }
+    /// <summary>
+    /// Publishes an event of type T to all subscribed handlers. There are two options for eventData:
+    /// 1. Define a custom class for the event data and use that as T.
+    ///     - This is type-safe and allows for structured data.
+    ///     - Example: CoreProvider.EventService().Publish(new ScoreEvent { Score = 100, Player = "John" });
+    /// 2. Use the DataEvent class for dynamic event data which is a dictionary container.
+    ///     - This is less type-safe but more flexible for ad-hoc events.
+    ///     - Example: CoreProvider.EventService().Publish(new DataEvent { Data = new Dictionary<string, object> { { "Score", 100 }, { "Player", "John" } } });
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="eventData"></param>
+    /// <remarks>
+    /// If you need to send simple signals without data needing to be passed, use the string event name overload.
+    ///     - Example: CoreProvider.EventService().Publish("PlayerDied");
+    /// </remarks>
     public void Publish<T>(T eventData) where T : class
     {
-
+        var type = typeof(T);
+        if (_typedSubs.ContainsKey(type))
+        {
+            foreach (var handler in _typedSubs[type])
+            {
+                ((Action<T>)handler)(eventData);
+            }
+        }
     }
+    public void Publish(string eventName)
+    {
+        if (_namedSubs.ContainsKey(eventName))
+        {
+            foreach (var handler in _namedSubs[eventName])
+            {
+                handler.Invoke();
+            }
+        }
+    }
+}
+/// <summary>
+/// Generic data event class for dynamic event data. This is not type safe but allows for flexible event data structures.
+/// This is mostly intended for events where the data structure is not known at compile time or for testing purposes.
+/// You should almost always prefer defining a custom class for your event data for type safety and clarity.
+/// </summary>
+public class DataEvent
+{
+    public Dictionary<string, object> Data { get; set; } = new();
 }

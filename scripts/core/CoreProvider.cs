@@ -14,12 +14,12 @@ public static class CoreProvider
     {
         InitilizationCheck();
     }
-    public static IAudioService GetAudioService() => CoreContainer.Resolve<IAudioService>();
-    public static IClockService GetClockService() => CoreContainer.Resolve<IClockService>();
-    public static IEventService GetEventService() => CoreContainer.Resolve<IEventService>();
-    public static IHeroService GetHeroService() => CoreContainer.Resolve<IHeroService>();
-    public static IPrefService GetPrefService() => CoreContainer.Resolve<IPrefService>();
-    public static ILevelService GetLevelService() => CoreContainer.Resolve<ILevelService>();
+    public static IAudioService AudioService() => CoreContainer.Resolve<IAudioService>();
+    public static IClockService ClockService() => CoreContainer.Resolve<IClockService>();
+    public static IEventService EventService() => CoreContainer.Resolve<IEventService>();
+    public static IHeroService HeroService() => CoreContainer.Resolve<IHeroService>();
+    public static IPrefService PrefService() => CoreContainer.Resolve<IPrefService>();
+    public static ILevelService LevelService() => CoreContainer.Resolve<ILevelService>();
     private static void InitilizationCheck()
     {
         if (_isBuilt)
