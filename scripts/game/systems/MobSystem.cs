@@ -128,7 +128,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
             _genericMobScene = GD.Load<PackedScene>("res://scripts/game/entities/mobs/MobEntity.tscn");
         }
         MobEntity mobInstance = _genericMobScene.Instantiate<MobEntity>();
-        mobInstance.InitializeEntity(mobData);
+        mobInstance.Inject(mobData);
         return mobInstance;
     }
 }

@@ -23,7 +23,7 @@ public partial class HeroEntity : CharacterBody2D, IEntity
         NullCheck();
         AddToGroup("players");
     }
-    public void InitializeEntity(IData data)
+    public void Inject(IData data)
     {
         if (Data != null)
         {

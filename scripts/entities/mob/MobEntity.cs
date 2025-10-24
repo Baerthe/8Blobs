@@ -21,14 +21,14 @@ public partial class MobEntity : RigidBody2D, IEntity
     {
         if (Data == null)
         {
-            GD.PrintErr($"MobEntity {Name} was not initialized with data before _Ready! Did you not call InitializeEntity() before adding to scene? Deleting instance.");
+            GD.PrintErr($"MobEntity {Name} was not initialized with data before _Ready! Did you not call Inject() before adding to scene? Deleting instance.");
             QueueFree();
             return;
         }
         NullCheck();
         AddToGroup("mobs");
     }
-    public void InitializeEntity(IData data)
+    public void Inject(IData data)
     {
         if (Data != null)
         {

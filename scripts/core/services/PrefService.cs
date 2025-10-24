@@ -8,13 +8,13 @@ public sealed class PrefService : IPrefService
     public PrefService()
     {
         _isInitialized = false;
-        Initilize();
+        Initialize();
     }
-    private void Initilize()
+    private void Initialize()
     {
         if (_isInitialized)
         {
-            GD.PrintErr("PrefService is already initialized. Initilize should only be called once per game session.");
+            GD.PrintErr("PrefService is already initialized. Initialize should only be called once per game session.");
             return;
         }
         _isInitialized = true;

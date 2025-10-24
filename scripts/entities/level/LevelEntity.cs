@@ -22,7 +22,7 @@ public partial class LevelEntity : Node2D, IEntity
         NullCheck();
         AddToGroup("levels");
     }
-    public void InitializeEntity(IData data)
+    public void Inject(IData data)
     {
         if (Data != null)
         {

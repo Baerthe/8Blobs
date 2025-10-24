@@ -15,7 +15,7 @@ public partial class ItemEntity : Node2D, IEntity
     {
         AddToGroup("items");
     }
-    public void InitializeEntity(IData data)
+    public void Inject(IData data)
     {
         if (Data != null)
         {

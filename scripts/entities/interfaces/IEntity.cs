@@ -6,6 +6,6 @@ using Entities;
 /// </summary>
 public interface IEntity
 {
-    public void InitializeEntity(IData data);
+    public void Inject(IData data);
     public void NullCheck();
 }

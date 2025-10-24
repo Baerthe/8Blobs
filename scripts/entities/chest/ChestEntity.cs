@@ -18,14 +18,14 @@ public partial class ChestEntity : Node2D, IEntity
     {
         if (Data == null)
         {
-            GD.PrintErr($"ChestEntity {Name} was not initialized with data before _Ready! Did you not call InitializeEntity() before adding to scene? Deleting instance.");
+            GD.PrintErr($"ChestEntity {Name} was not initialized with data before _Ready! Did you not call Inject() before adding to scene? Deleting instance.");
             QueueFree();
             return;
         }
         NullCheck();
         AddToGroup("chests");
     }
-    public void InitializeEntity(IData data)
+    public void Inject(IData data)
     {
         if (Data != null)
         {

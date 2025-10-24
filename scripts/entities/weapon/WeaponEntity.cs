@@ -33,7 +33,7 @@ public partial class WeaponEntity : Node2D, IEntity
         NullCheck();
         AddToGroup("weapons");
     }
-    public void InitializeEntity(IData data)
+    public void Inject(IData data)
     {
         if (Data != null)
         {

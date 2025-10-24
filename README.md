@@ -1,7 +1,8 @@
 # 8Blobs
 ### This does not currently function, it is a work in progress.
 A simple Survivors Style Game Template made with Godot Engine 4.5.
-This project is made to be a starting point for anyone wanting to make a game similar to the "Survivors" genre of indie games. It includes basic movement, shooting, enemy AI, and a simple UI. The project is structured to be easily expandable and modifiable. The project is open source and free to use for any purpose. It uses a sort of ECS (Entity Component System) style architecture, with a focus on modularity and separation of concerns.
+This project is made to be a starting point for anyone wanting to make a game similar to the "Survivors" genre of indie games. It includes basic movement, shooting, enemy AI, and a simple UI. The project is structured to be easily expandable and modifiable. The project is open source and free to use for any purpose.
+The project is using a "Component-Based Architecture with Data-Driven Design" approach, where game objects are composed of reusable components that define their behavior and properties. This allows for easy modification and extension of game objects without altering core logic.
 ## Architecture
 This project uses a service-oriented architecture, with a focus on modularity and separation of concerns. The main services are delivered via a CoreProvider singleton, which allows for easy access to services throughout the project. The services handle low-level operations, while game logic is managed by higher-level systems like GameManager, MapSystem, MobSystem, and PlayerSystem. The main scene consists of a main node with a handful of child manager nodes.
 ### Main Node Structure

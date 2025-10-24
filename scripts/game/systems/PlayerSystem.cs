@@ -157,7 +157,7 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
             PlayerInstance.QueueFree();
         }
         PlayerInstance = ResourceLoader.Load<PackedScene>(hero.Entity.ResourcePath).Instantiate<HeroEntity>();
-        PlayerInstance.InitializeEntity(hero);
+        PlayerInstance.Inject(hero);
         PlayerInstance.Position = LevelInstance.PlayerSpawn.Position;
         PlayerInstance.CurrentHealth = hero.Stats.Health;
         PlayerInstance.Hide();
