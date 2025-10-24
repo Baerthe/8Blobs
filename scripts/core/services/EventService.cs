@@ -70,12 +70,19 @@ public sealed class EventService : IEventService
         var type = typeof(T);
         if (_typedSubs.ContainsKey(type))
         {
-            _typedSubs[type].Remove(eventHandler);
-            GD.PrintRich($"[color=#FF4444]EventService: Unsubscribing handler from event type {type.Name}.[/color]");
-        } else
-        {
-            GD.PrintErr($"EventService: Attempted to unsubscribe from event type {type.Name} but no subscriptions exist.");
-            throw new KeyNotFoundException($"No subscriptions found for event type {type.Name}, you have a data leak!");
+            bool removed = _typedSubs[type].Remove(eventHandler);
+            if (removed)
+            {
+                GD.PrintRich($"[color=#FF4444]EventService: Unsubscribed handler from event type {type.Name}.[/color]");
+            }
+            else
+            {
+                GD.PrintErr($"EventService: Attempted to unsubscribe handler from event type {type.Name} but handler was not found. Never subbed or already unsubscribed?");
+            }
+            if (_typedSubs[type].Count == 0)
+            {
+                _typedSubs.Remove(type);
+            }
         }
     }
     public void Unsubscribe(string eventName, Action handler)
@@ -83,10 +90,14 @@ public sealed class EventService : IEventService
         if (_namedSubs.ContainsKey(eventName))
         {
             _namedSubs[eventName].Remove(handler);
-        } else
+        }
+        else
         {
-            GD.PrintErr($"EventService: Attempted to unsubscribe from event name {eventName} but no subscriptions exist.");
-            throw new KeyNotFoundException($"No subscriptions found for event name {eventName}, you have a data leak!");
+            GD.PrintErr($"EventService: Attempted to unsubscribe from event name {eventName} but no subscriptions exist. Misspelled? Already unsubscribed?");
+        }
+        if (_namedSubs[eventName].Count == 0)
+        {
+            _namedSubs.Remove(eventName);
         }
     }
     /// <summary>
