@@ -14,9 +14,8 @@ public static class CoreProvider
     {
         InitilizationCheck();
     }
-    public static IEventService EventService() => CoreContainer.Resolve<IEventService>(); // This must be first to ensure event subscriptions work
-    public static IClockService ClockService() => CoreContainer.Resolve<IClockService>(); // This must be second to ensure timers work
     public static IAudioService AudioService() => CoreContainer.Resolve<IAudioService>();
+    public static IEventService EventService() => CoreContainer.Resolve<IEventService>();
     public static IHeroService HeroService() => CoreContainer.Resolve<IHeroService>();
     public static IPrefService PrefService() => CoreContainer.Resolve<IPrefService>();
     public static ILevelService LevelService() => CoreContainer.Resolve<ILevelService>();
@@ -40,7 +39,6 @@ public static class CoreProvider
             return;
         GD.PrintRich("[color=#00ff00]Registering Cores to CoreBox...[/color]");
         CoreContainer.Register<IAudioService, AudioService>();
-        CoreContainer.Register<IClockService, ClockService>();
         CoreContainer.Register<IEventService, EventService>();
         CoreContainer.Register<IHeroService, HeroService>();
         CoreContainer.Register<IPrefService, PrefService>();

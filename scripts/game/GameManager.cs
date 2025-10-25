@@ -4,15 +4,10 @@ using Core;
 using Entities;
 using System;
 using Core.Interface;
-/// <summary>
-/// GameManager is a Node that manages the core systems of the game, including chest, level, map, mob, and player systems. It integrates with core services for clock management, data handling, and level management, and ensures that these systems are updated appropriately during the game's lifecycle.
-/// </summary>
+
 [GlobalClass]
 public partial class GameManager : Node2D
 {
-    public event EventHandler<LevelLoadArgs> OnLevelLoad;
-    // TODO: Consider adding an OnLevelUnload event for better cleanup?
-    // TODO: Consider adding an EventSystem to manage events more effectively, especially between systems.
     public ChestSystem CurrentChestSystem { get; private set; }
     public MapSystem CurrentMapSystem { get; private set; }
     public MobSystem CurrentMobSystem { get; private set; }
@@ -21,17 +16,22 @@ public partial class GameManager : Node2D
     public Camera2D Camera { get; private set; }
     public EntityIndex Templates { get; private set; }
     public bool IsPaused => _isPaused;
-    private HeroEntity _heroInstance;
-    private LevelData _levelData;
     private LevelEntity _levelInstance;
-    private readonly IClockService _clockService = CoreProvider.ClockService();
-    private readonly ILevelService _levelService = CoreProvider.LevelService();
+    private LevelData _levelData;
+    private IAudioService _audioService;
+    private IEventService _eventService;
+    private IHeroService _heroService;
+    private IPrefService _prefService;
+    private ILevelService _levelService;
     private bool _levelLoaded = false;
     private bool _isPaused = false;
     public override void _Ready()
     {
-        _clockService.PulseTimeout += OnPulseTimeout;
-        _clockService.SlowPulseTimeout += OnSlowPulseTimeout;
+        _audioService = CoreProvider.AudioService();
+        _eventService = CoreProvider.EventService();
+        _heroService = CoreProvider.HeroService();
+        _prefService = CoreProvider.PrefService();
+        _levelService = CoreProvider.LevelService();
         Camera = GetParent().GetNode<Camera2D>("MainCamera");
         Templates = ResourceLoader.Load<EntityIndex>("res://assets/data/indices/EntityIndex.tres");
     }
@@ -88,10 +88,6 @@ public partial class GameManager : Node2D
         _levelInstance.AddChild(CurrentMapSystem);
         _levelInstance.AddChild(CurrentMobSystem);
         _levelInstance.AddChild(CurrentPlayerSystem);
-        // Create hero instance
-        _heroInstance = CurrentPlayerSystem.PlayerInstance;
-        // All of our systems are ready, now initialize them by calling the load event.
-        OnLevelLoad?.Invoke(this, new LevelLoadArgs(Templates, _levelInstance, _heroInstance));
         _levelLoaded = true;
     }
     /// <summary>
@@ -115,32 +111,5 @@ public partial class GameManager : Node2D
         _levelInstance.QueueFree();
         _levelData = null;
         _levelLoaded = false;
-    }
-    private void OnPulseTimeout()
-    {
-        if (!_levelLoaded) return;
-        if (_isPaused) return;
-        CurrentPlayerSystem.Update();
-        CurrentMapSystem.Update();
-        CurrentMobSystem.Update();
-    }
-    private void OnSlowPulseTimeout()
-    {
-        if (!_levelLoaded) return;
-        if (_isPaused) return;
-        CurrentChestSystem.Update();
-        CurrentMapSystem.Update();
-    }
-    public class LevelLoadArgs : EventArgs
-    {
-        public EntityIndex Templates { get; set; }
-        public LevelEntity LevelInstance { get; set; }
-        public HeroEntity PlayerInstance { get; set; }
-        public LevelLoadArgs(EntityIndex templates, LevelEntity levelInstance, HeroEntity playerInstance)
-        {
-            Templates = templates;
-            LevelInstance = levelInstance;
-            PlayerInstance = playerInstance;
-        }
     }
 }

@@ -1,20 +1,17 @@
-namespace Core;
+namespace Game;
 
 using Godot;
+using Core;
 using System;
 using System.Collections.Generic;
 using Core.Interface;
+using Game.Interface;
 /// <summary>
-/// Service that manages game timing and timers. Provides various timed events for game logic.
+/// ClockSystem manages the game's timing mechanisms, including pulse, slow pulse, mob spawn, chest spawn, game, and starting timers. It integrates with the EventService to provide timed events that other game systems can subscribe to.
 /// </summary>
-public sealed class ClockService : IClockService
+public partial class ClockSystem : Node2D, IGameSystem
 {
-    public event Action PulseTimeout;
-    public event Action SlowPulseTimeout;
-    public event Action MobSpawnTimeout;
-    public event Action ChestSpawnTimeout;
-    public event Action GameTimeout;
-    public event Action StartingTimeout;
+    public bool IsInitialized { get; private set; } = false;
     private Timer _pulseTimer;
     private Timer _slowPulseTimer;
     private Timer _gameTimer;
@@ -22,7 +19,6 @@ public sealed class ClockService : IClockService
     private Timer _mobSpawnTimer;
     private Timer _ChestSpawnTimer;
     private Dictionary<byte, Timer> _timers = new();
-    private bool _isInitialized = false;
     // Timer Default Intervals
     private const float PulseInterval = 0.05f;        // 20 hrz (~1200 per minute)
     private const float SlowPulseInterval = 0.2f;     // 5 hrz (~300 per minute)
@@ -30,40 +26,24 @@ public sealed class ClockService : IClockService
     private const float ChestSpawnInterval = 10f;     // 0.1 hrz (~6 per minute)
     private const float GameInterval = 60f;          // 0.016 hrz (~1 per minute)
     private const float StartingInterval = 3f;       // OneShot (~3 seconds)
-    public ClockService()
+    // Dependency Services
+    private IEventService _eventService;
+    public void Init()
     {
-        _isInitialized = false;
-        GD.Print("ClockService created, early stage, init during main load.");
-    }
-    /// <summary>
-    /// Initializes the ClockService and starts all timers.
-    /// </summary>
-    /// <param name="parent"></param>
-    /// <exception cref="InvalidOperationException"></exception>
-    /// <remarks>
-    /// This method should be called once when the game starts from the main parent node; because it uses Godot Timers, not System.Timers.
-    /// </remarks>
-    public void InitGame(Node parent)
-    {
-        if (_isInitialized)
+        if (IsInitialized)
         {
             GD.PrintErr("ClockService is already initialized. InitGame should only be called once per game session.");
             return;
         }
-        if (parent == null)
-        {
-            GD.PrintErr("Parent node is null. Cannot initialize ClockService.");
-            throw new InvalidOperationException("ERROR 002: Parent node is null in ClockService. Timers cannot start.");
-        }
+        _eventService = CoreProvider.EventService();
         CreatePulseTimer();
         CreateSlowPulseTimer();
         CreateMobSpawnTimer();
         CreateChestSpawnTimer();
         CreateGameTimer();
         CreateStartingTimer();
-        StartTimers(parent);
         GD.PrintRich("[color=#00ff88]ClockService initialized, late stage, and timers started.[/color]");
-        _isInitialized = true;
+        IsInitialized = true;
     }
     public void ResetGame()
     {
@@ -109,18 +89,13 @@ public sealed class ClockService : IClockService
     /// <summary>
     /// Starts all timers. Used when initializing the game.
     /// </summary>
-    private void StartTimers(Node parent)
+    private void StartTimers()
     {
-        if (parent == null)
-        {
-            GD.PrintErr("Parent node is null. Cannot start timers.");
-            throw new InvalidOperationException("ERROR 002: Parent node is null in ClockService. Timers cannot start.");
-        }
         foreach (var timer in _timers.Values)
         {
             if (timer.GetParent() == null)
             {
-                parent.AddChild(timer);
+                AddChild(timer);
             }
             timer.Start();
         }
@@ -161,7 +136,7 @@ public sealed class ClockService : IClockService
             OneShot = oneShot,
             Autostart = autostart
         };
-        timer.Timeout += () => onTimeout?.Invoke();
+        timer.Timeout += () => onTimeout();
         if (timer == null)
         {
             GD.PrintErr("Timer is null after creation!");

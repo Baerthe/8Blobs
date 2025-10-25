@@ -3,12 +3,8 @@ using Godot;
 using System;
 using System.Collections.Generic;
 /// <summary>
-/// A container for core services, the Services; these are singletons that persist through scenes.
+/// CoreContainer is a simple dependency injection container for managing core services in the game. It allows registering and resolving services by their interface types.
 /// </summary>
-/// <remarks>
-/// Core services are not nodes; they are global helpers that manage the state and behavior of the application.
-/// These are the core dependencies that get injected.
-/// </remarks>
 public class CoreContainer
 {
     private Dictionary<Type, object> _cores = new();
