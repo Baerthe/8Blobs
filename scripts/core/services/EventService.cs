@@ -17,20 +17,8 @@ public sealed class EventService : IEventService
 {
     private Dictionary<Type, List<Delegate>> _typedSubs = new();
     private Dictionary<string, List<Action>> _namedSubs = new();
-    private bool _isInitialized = false;
     public EventService()
     {
-        _isInitialized = false;
-        Initialize();
-    }
-    private void Initialize()
-    {
-        if (_isInitialized)
-        {
-            GD.PrintErr("EventService already initialized!");
-            return;
-        }
-        _isInitialized = true;
         GD.PrintRich("[color=#00ff88]EventService initialized.[/color]");
     }
     public void UnsubscribeAll()
@@ -50,21 +38,16 @@ public sealed class EventService : IEventService
         GD.PrintRich($"[color=#0044FF]EventService: Subscribing handler to event type {type.Name}.[/color]");
         _typedSubs[type].Add(handler);
     }
-    public void Subscribe(string eventName, Action handler)
+    public void Subscribe(Action handler)
     {
-        if (!_namedSubs.ContainsKey(eventName))
+        if (!_namedSubs.ContainsKey(handler.Method.Name))
         {
-            GD.PrintRich($"[color=#0088ff]EventService: Creating subscription list for event name {eventName}.[/color]");
-            _namedSubs[eventName] = new List<Action>();
+            GD.PrintRich($"[color=#0088ff]EventService: Creating subscription list for event name {handler.Method.Name}.[/color]");
+            _namedSubs[handler.Method.Name] = new List<Action>();
         }
-        GD.PrintRich($"[color=#0044FF]EventService: Subscribing handler to event name {eventName}.[/color]");
-        _namedSubs[eventName].Add(handler);
+        GD.PrintRich($"[color=#0044FF]EventService: Subscribing handler to event name {handler.Method.Name}.[/color]");
+        _namedSubs[handler.Method.Name].Add(handler);
     }
-    /// <summary>
-    /// Unsubscribes a handler from events of type T.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="eventHandler"></param>
     public void Unsubscribe<T>(Action<T> eventHandler) where T : class
     {
         var type = typeof(T);
@@ -85,36 +68,23 @@ public sealed class EventService : IEventService
             }
         }
     }
-    public void Unsubscribe(string eventName, Action handler)
+    public void Unsubscribe(Action handler)
     {
-        if (_namedSubs.ContainsKey(eventName))
+        var name = handler.Method.Name;
+        if (!_namedSubs.ContainsKey(name))
         {
-            _namedSubs[eventName].Remove(handler);
+            GD.PrintErr($"EventService: Attempted to unsubscribe from event name {name} but no subscriptions exist. Misspelled? Already unsubscribed?");
+            return;
         }
-        else
+        foreach (var key in _namedSubs.Keys)
         {
-            GD.PrintErr($"EventService: Attempted to unsubscribe from event name {eventName} but no subscriptions exist. Misspelled? Already unsubscribed?");
+            _namedSubs[key].Remove(handler);
         }
-        if (_namedSubs[eventName].Count == 0)
+        if (_namedSubs[name].Count == 0)
         {
-            _namedSubs.Remove(eventName);
+            _namedSubs.Remove(name);
         }
     }
-    /// <summary>
-    /// Publishes an event of type T to all subscribed handlers. There are two options for eventData:
-    /// 1. Define a custom class for the event data and use that as T.
-    ///     - This is type-safe and allows for structured data.
-    ///     - Example: CoreProvider.EventService().Publish(new ScoreEvent { Score = 100, Player = "John" });
-    /// 2. Use the DataEvent class for dynamic event data which is a dictionary container.
-    ///     - This is less type-safe but more flexible for ad-hoc events.
-    ///     - Example: CoreProvider.EventService().Publish(new DataEvent { Data = new Dictionary<string, object> { { "Score", 100 }, { "Player", "John" } } });
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="eventData"></param>
-    /// <remarks>
-    /// If you need to send simple signals without data needing to be passed, use the string event name overload.
-    ///     - Example: CoreProvider.EventService().Publish("PlayerDied");
-    /// </remarks>
     public void Publish<T>(T eventData) where T : class
     {
         var type = typeof(T);

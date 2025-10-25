@@ -11,11 +11,9 @@ public sealed class LevelService : ILevelService
     public LevelData CurrentLevel { get; private set; }
     public Node ParentNode { get; private set; }
     public string LevelName { get; private set; }
-    private bool _isInitialized = false;
     public LevelService()
     {
-        _isInitialized = false;
-        Initialize();
+        GD.PrintRich("[color=#00ff88]LevelService initialized.[/color]");
     }
     /// <summary>
     /// Loads a level from a PackedScene and adds it to the specified parent node.
@@ -28,11 +26,6 @@ public sealed class LevelService : ILevelService
     /// </remarks>
     public void LoadLevel(LevelData levelData)
     {
-        if (!_isInitialized)
-        {
-            GD.PrintErr("LevelService is not initialized. Call Initilize before loading levels.");
-            return;
-        }
         if (levelData == null)
         {
             GD.PrintErr("LevelService: LoadLevel called with null levelData.");
@@ -53,15 +46,5 @@ public sealed class LevelService : ILevelService
         {
             GD.PrintErr("LevelService: No level is currently loaded to unload.");
         }
-    }
-    private void Initialize()
-    {
-        if (_isInitialized)
-        {
-            GD.PrintErr("LevelService is already initialized. Initialize should only be called once per game session.");
-            return;
-        }
-        _isInitialized = true;
-        GD.PrintRich("[color=#00ff88]LevelService initialized.[/color]");
     }
 }

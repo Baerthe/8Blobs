@@ -8,6 +8,7 @@ using Core.Interface;
 [GlobalClass]
 public partial class GameManager : Node2D
 {
+    public ClockSystem CurrentClockSystem { get; private set; }
     public ChestSystem CurrentChestSystem { get; private set; }
     public MapSystem CurrentMapSystem { get; private set; }
     public MobSystem CurrentMobSystem { get; private set; }
@@ -49,15 +50,13 @@ public partial class GameManager : Node2D
         if (_isPaused)
         {
             GetTree().Paused = true;
-            CurrentPlayerSystem.PlayerInstance?.SetProcess(false);
-            CurrentPlayerSystem.PlayerInstance?.SetPhysicsProcess(false);
+            CurrentClockSystem.PauseTimers();
             CurrentMobSystem.PauseMobs();
         }
         else
         {
             GetTree().Paused = false;
-            CurrentPlayerSystem.PlayerInstance?.SetProcess(true);
-            CurrentPlayerSystem.PlayerInstance?.SetPhysicsProcess(true);
+            CurrentClockSystem.ResumeTimers();
             CurrentMobSystem.ResumeMobs();
         }
     }
@@ -79,15 +78,19 @@ public partial class GameManager : Node2D
         AddChild(_levelInstance);
         _levelInstance.AddToGroup("level");
         // Initialize and add core systems
+        CurrentClockSystem = new();
         CurrentChestSystem = new();
         CurrentMapSystem = new();
         CurrentMobSystem = new();
         CurrentPlayerSystem = new();
         // Add systems to level entity
+        _levelInstance.AddChild(CurrentClockSystem);
         _levelInstance.AddChild(CurrentChestSystem);
         _levelInstance.AddChild(CurrentMapSystem);
         _levelInstance.AddChild(CurrentMobSystem);
         _levelInstance.AddChild(CurrentPlayerSystem);
+        // Initialize systems
+        _eventService.Publish("OnLevelPreLoad");
         _levelLoaded = true;
     }
     /// <summary>
@@ -100,6 +103,8 @@ public partial class GameManager : Node2D
             GD.PrintErr("No level loaded in GameManager to unload");
             return;
         }
+        CurrentClockSystem.QueueFree();
+        CurrentClockSystem = null;
         CurrentChestSystem.QueueFree();
         CurrentChestSystem = null;
         CurrentMapSystem.QueueFree();

@@ -1,41 +1,44 @@
 namespace Game;
 
 using Godot;
+using Core;
 using Entities;
 using Game.Interface;
-using Core;
+using Core.Interface;
 /// <summary>
 /// ChestSystem is responsible for managing chest spawning and interactions within the game. It implements the IGameSystem interface and utilizes a Path2D and PathFollow2D to determine chest spawn locations relative to the player.
 /// </summary>
 public sealed partial class ChestSystem : Node2D, IGameSystem
 {
     public bool IsInitialized { get; private set; } = false;
-    public Path2D ChestPath { get; private set; }
-    public PathFollow2D ChestSpawner { get; private set; }
-    public Vector2 OffsetBetweenChestAndPlayer { get; private set; }
-    public HeroEntity PlayerInstance { get; set; }
+    private Path2D _chestPath;
+    private PathFollow2D _chestSpawner;
+    private Vector2 _offsetBetweenChestAndPlayer;
+    private HeroEntity _playerRef;
+    // Dependency Services
+    private IEventService _eventService;
     public override void _Ready()
     {
         GD.Print("ChestSystem Present.");
-        GetParent<GameManager>().OnLevelLoad += (sender, args) => OnLevelLoad(args.Templates, args.LevelInstance, args.PlayerInstance);
     }
-    public void OnLevelLoad(EntityIndex _, LevelEntity levelInstance, HeroEntity playerInstance)
+    public void Init()
     {
         if (IsInitialized) return;
-        PlayerInstance = playerInstance;
-        CoreProvider.ClockService().ChestSpawnTimeout += OnChestSpawnTimeout;
-        ChestPath = CreatePath();
-        ChestSpawner = new PathFollow2D();
-        ChestPath.AddChild(ChestSpawner);
-        PlayerInstance.AddChild(ChestPath);
+        _eventService = CoreProvider.EventService();
+        _eventService.Subscribe(OnChestSpawnTimeout);
+        _playerRef = GetTree().GetFirstNodeInGroup("Player") as HeroEntity;
+        _chestPath = CreatePath();
+        _chestSpawner = new PathFollow2D();
+        _chestPath.AddChild(_chestSpawner);
+        _playerRef.AddChild(_chestPath);
         IsInitialized = true;
     }
     /// <summary>
     /// Updates the offset between the chest and the player instance.
     /// </summary>
-    public void Update()
+    public void OnPulseTimeOut()
     {
-        OffsetBetweenChestAndPlayer = PlayerInstance.Position - ChestPath.Position;
+        _offsetBetweenChestAndPlayer = _playerRef.Position - _chestPath.Position;
     }
     /// <summary>
     /// Creates a circular Path2D for chest spawning.
@@ -61,6 +64,6 @@ public sealed partial class ChestSystem : Node2D, IGameSystem
     private void OnChestSpawnTimeout()
     {
         if (!IsInitialized) return;
-        ChestSpawner.ProgressRatio = GD.Randf();
+        _chestSpawner.ProgressRatio = GD.Randf();
     }
 }

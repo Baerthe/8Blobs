@@ -4,6 +4,7 @@ using Godot;
 using Core;
 using Entities;
 using Game.Interface;
+using Core.Interface;
 using System.Collections.Generic;
 /// <summary>
 /// The player is the main character that the user controls. This class handles movement, health, and collisions with mobs.
@@ -11,102 +12,115 @@ using System.Collections.Generic;
 public sealed partial class PlayerSystem : Node2D, IGameSystem
 {
     public bool IsInitialized { get; private set; } = false;
-    public HeroEntity PlayerInstance { get; private set; }
-    public LevelEntity LevelInstance { get; private set; }
-    public List<ItemEntity> Items { get; private set; } = new();
-    public List<WeaponEntity> Weapons { get; private set; } = new();
-    private PackedScene _playerScene = null;
+    private HeroEntity _playerRef;
+    private LevelEntity _levelRef;
+    private List<ItemEntity> _items = new();
+    private List<WeaponEntity> _weapons = new();
+    private PackedScene _playerScene;
+    // Dependency Services
+    private IEventService _eventService;
+    private IHeroService _heroService;
     public override void _Ready()
     {
         GD.Print("PlayerSystem Present.");
-        GetParent<GameManager>().OnLevelLoad += (sender, args) => OnLevelLoad(args.Templates, args.LevelInstance, args.PlayerInstance);
-        LoadPlayer(CoreProvider.HeroService().CurrentHero);
+        _eventService = CoreProvider.EventService();
+        _heroService = CoreProvider.HeroService();
     }
     public override void _Process(double delta)
     {
         if (!IsInitialized) return;
-        if (PlayerInstance == null) return;
-        if (PlayerInstance.CurrentHealth <= 0)
+        if (_playerRef == null) return;
+        if (_playerRef.CurrentHealth <= 0)
         {
             GD.Print("Player has died.");
-            //TODO: Defeat();
+            Defeat();
+            return;
         }
-        switch (PlayerInstance.CurrentDirection)
+        switch (_playerRef.CurrentDirection)
         {
             case PlayerDirection.Up:
-                PlayerInstance.Sprite.Animation = "Up";
+                _playerRef.Sprite.Animation = "Up";
                 break;
             case PlayerDirection.Down:
-                PlayerInstance.Sprite.Animation = "Down";
+                _playerRef.Sprite.Animation = "Down";
                 break;
             case PlayerDirection.Diagonal:
-                PlayerInstance.Sprite.Animation = "Right";
+                _playerRef.Sprite.Animation = "Right";
                 break;
             case PlayerDirection.Left:
-                PlayerInstance.Sprite.FlipH = true;
-                PlayerInstance.Sprite.Animation = "Right";
+                _playerRef.Sprite.FlipH = true;
+                _playerRef.Sprite.Animation = "Right";
                 break;
             case PlayerDirection.Right:
-                PlayerInstance.Sprite.FlipH = false;
-                PlayerInstance.Sprite.Animation = "Right";
+                _playerRef.Sprite.FlipH = false;
+                _playerRef.Sprite.Animation = "Right";
                 break;
             default:
-                PlayerInstance.Sprite.Animation = "Idle";
+                _playerRef.Sprite.Animation = "Idle";
                 break;
         }
     }
     public override void _PhysicsProcess(double delta)
     {
         if (!IsInitialized) return;
-        if (PlayerInstance == null) return;
+        if (_playerRef == null) return;
         var velocity = Vector2.Zero;
         //What direction is the player going?
         if (Input.IsActionPressed("move_up"))
         {
             velocity.Y -= 1;
-            PlayerInstance.CurrentDirection = PlayerDirection.Up;
+            _playerRef.CurrentDirection = PlayerDirection.Up;
         }
         if (Input.IsActionPressed("move_down"))
         {
             velocity.Y += 1;
-            PlayerInstance.CurrentDirection = PlayerDirection.Down;
+            _playerRef.CurrentDirection = PlayerDirection.Down;
         }
         if (Input.IsActionPressed("move_left"))
         {
             velocity.X -= 1;
-            PlayerInstance.CurrentDirection = PlayerDirection.Left;
+            _playerRef.CurrentDirection = PlayerDirection.Left;
         }
         if (Input.IsActionPressed("move_right"))
         {
             velocity.X += 1;
-            PlayerInstance.CurrentDirection = PlayerDirection.Right;
+            _playerRef.CurrentDirection = PlayerDirection.Right;
         }
         if (velocity.Y != 0 && velocity.X != 0)
-            PlayerInstance.CurrentDirection = PlayerDirection.Diagonal;
+            _playerRef.CurrentDirection = PlayerDirection.Diagonal;
         if (velocity.Length() > 0)
         {
-            velocity = velocity.Normalized() * (PlayerInstance.Data as HeroData).Stats.Speed;
-            PlayerInstance.Sprite.Play();
+            velocity = velocity.Normalized() * (_playerRef.Data as HeroData).Stats.Speed;
+            _playerRef.Sprite.Play();
         }
         else
-            PlayerInstance.Sprite.Stop();
+            _playerRef.Sprite.Stop();
         // Move the player.
         Position += velocity * (float)delta;
-        PlayerInstance.Sprite.FlipV = false; // Make sure we never flip vertically
-        PlayerInstance.Sprite.FlipH = velocity.X < 0;
-        PlayerInstance.MoveAndSlide();
+        _playerRef.Sprite.FlipV = false; // Make sure we never flip vertically
+        _playerRef.Sprite.FlipH = velocity.X < 0;
+        _playerRef.MoveAndSlide();
         //ExecuteWeaponAttacks();
     }
     public override void _ExitTree()
     {
-        PlayerInstance.QueueFree();
-        GetParent<GameManager>().OnLevelLoad -= (sender, args) => OnLevelLoad(args.Templates, args.LevelInstance, args.PlayerInstance);
+        _playerRef.QueueFree();
+        _items.Clear();
+        _weapons.Clear();
+        IsInitialized = false;
     }
-    public void OnLevelLoad(EntityIndex _, LevelEntity levelInstance, HeroEntity __)
+    public void Init()
     {
-        if (IsInitialized) return;
-        LevelInstance = levelInstance;
-        PlayerInstance.Show();
+        if (IsInitialized)
+        {
+            GD.PrintErr("PlayerSystem is already initialized. Init should only be called once per level load.");
+            return;
+        }
+        GD.Print("PlayerSystem initialized.");
+        LoadPlayer(CoreProvider.HeroService().CurrentHero);
+        _levelRef = GetTree().GetFirstNodeInGroup("level") as LevelEntity;
+        _playerRef.Show();
+
         IsInitialized = true;
     }
     public void Update()
@@ -118,31 +132,32 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
     /// <param name="item"></param>
     public void AddItem(ItemEntity item)
     {
-        if (item == Items.Find(i => i.Data.Name == item.Data.Name))
+        if (item == _items.Find(i => i.Data.Name == item.Data.Name))
         {
             item.QueueFree();
-            item = Items[Items.IndexOf(item)];
+            item = _items[_items.IndexOf(item)];
             var itemData = item.Data as ItemData;
             item.CurrentStackSize += 1;
             if (item.CurrentStackSize > itemData.MaxStackSize)
                 item.CurrentStackSize = itemData.MaxStackSize;
             return;
         }
-        Items.Add(item);
+        _items.Add(item);
     }
     public void AddWeapon(WeaponEntity weapon)
     {
-        if (weapon == Weapons.Find(w => w.Data.Name == weapon.Data.Name))
+        if (weapon == _weapons.Find(w => w.Data.Name == weapon.Data.Name))
             return;
-        Weapons.Add(weapon);
+        _weapons.Add(weapon);
     }
     private void Defeat()
     {
         GD.Print("PlayerSystem: Defeat sequence triggered.");
+        _eventService.Publish("OnPlayerDefeat");
         IsInitialized = false;
-        PlayerInstance.Hide();
-        Items.Clear();
-        Weapons.Clear();
+        _playerRef.Hide();
+        _items.Clear();
+        _weapons.Clear();
     }
     private void LoadPlayer(HeroData hero)
     {
@@ -151,16 +166,16 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
             GD.PrintErr("PlayerSystem: LoadPlayer called with null hero data.");
             return;
         }
-        if (PlayerInstance != null)
+        if (_playerRef != null)
         {
-            PlayerInstance.QueueFree();
+            _playerRef.QueueFree();
         }
-        PlayerInstance = ResourceLoader.Load<PackedScene>(hero.Entity.ResourcePath).Instantiate<HeroEntity>();
-        PlayerInstance.Inject(hero);
-        PlayerInstance.Position = LevelInstance.PlayerSpawn.Position;
-        PlayerInstance.CurrentHealth = hero.Stats.Health;
-        PlayerInstance.Hide();
-        AddChild(PlayerInstance);
+        _playerRef = ResourceLoader.Load<PackedScene>(hero.Entity.ResourcePath).Instantiate<HeroEntity>();
+        _playerRef.Inject(hero);
+        _playerRef.Position = _levelRef.PlayerSpawn.Position;
+        _playerRef.CurrentHealth = hero.Stats.Health;
+        _playerRef.Hide();
+        AddChild(_playerRef);
         GD.Print($"PlayerSystem: Loaded player '{hero.Name}'.");
     }
 }

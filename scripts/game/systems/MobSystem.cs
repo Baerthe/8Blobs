@@ -1,8 +1,10 @@
 namespace Game;
 
 using Godot;
+using Core;
 using Entities;
 using Game.Interface;
+using Core.Interface;
 using System.Collections.Generic;
 
 public sealed partial class MobSystem : Node2D, IGameSystem
@@ -19,12 +21,23 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     private PackedScene _genericMobScene;
     private float _grossMobWeight = 0f;
     private float _gameElapsedTime = 0f;
+    // Dependency Services
+    private IEventService _eventService;
     public override void _Ready()
     {
         GD.Print("MobSystem Present.");
-        Init();
+        _eventService = CoreProvider.EventService();
+        _eventService.Subscribe(OnInit);
+        _eventService.Subscribe(OnMobTimeout);
+        _eventService.Subscribe(OnGameTimeout);
     }
-    public void Init()
+    public override void _ExitTree()
+    {
+        _eventService.Unsubscribe(OnInit);
+        _eventService.Unsubscribe(OnMobTimeout);
+        _eventService.Unsubscribe(OnGameTimeout);
+    }
+    public void OnInit()
     {
         if (IsInitialized) return;
         _playerRef = GetTree().GetFirstNodeInGroup("player") as HeroEntity;

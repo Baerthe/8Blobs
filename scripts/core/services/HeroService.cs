@@ -10,11 +10,9 @@ public sealed class HeroService : IHeroService
 {
     public HeroData CurrentHero { get; private set; }
     public Node ParentNode { get; private set; }
-    private bool _isInitialized = false;
     public HeroService()
     {
-        _isInitialized = false;
-        Initilize();
+        GD.PrintRich("[color=#00ff88]HeroService initialized.[/color]");
     }
     /// <summary>
     /// Loads a level from a PackedScene and adds it to the specified parent node.
@@ -27,11 +25,6 @@ public sealed class HeroService : IHeroService
     /// </remarks>
     public void LoadHero(HeroData heroData)
     {
-        if (!_isInitialized)
-        {
-            GD.PrintErr("HeroService is not initialized. Call Initilize before loading heroes.");
-            return;
-        }
         if (heroData == null)
         {
             GD.PrintErr("HeroService: LoadHero called with null heroData.");
@@ -50,15 +43,5 @@ public sealed class HeroService : IHeroService
         {
             GD.PrintErr("HeroService: No hero is currently loaded to unload.");
         }
-    }
-    private void Initilize()
-    {
-        if (_isInitialized)
-        {
-            GD.PrintErr("LevelService is already initialized. Initilize should only be called once per game session.");
-            return;
-        }
-        _isInitialized = true;
-        GD.PrintRich("[color=#00ff88]LevelService initialized.[/color]");
     }
 }
