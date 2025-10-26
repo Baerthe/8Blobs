@@ -27,7 +27,7 @@ public sealed class EventService : IEventService
         _namedSubs.Clear();
         GD.PrintRich("[color=#ff8800]EventService: All subscriptions cleared. They will be recreated on next call.[/color]");
     }
-    public void Subscribe<T>(Action<T> handler) where T : class
+    public void Subscribe<T>(Action<IEvent> handler)
     {
         var type = typeof(T);
         if (!_typedSubs.ContainsKey(type))
@@ -48,7 +48,7 @@ public sealed class EventService : IEventService
         GD.PrintRich($"[color=#0044FF]EventService: Subscribing handler to event name {handler.Method.Name}.[/color]");
         _namedSubs[handler.Method.Name].Add(handler);
     }
-    public void Unsubscribe<T>(Action<T> eventHandler) where T : class
+    public void Unsubscribe<T>(Action<IEvent> eventHandler)
     {
         var type = typeof(T);
         if (_typedSubs.ContainsKey(type))
@@ -85,7 +85,7 @@ public sealed class EventService : IEventService
             _namedSubs.Remove(name);
         }
     }
-    public void Publish<T>(T eventData) where T : class
+    public void Publish<T>(IEvent eventData)
     {
         var type = typeof(T);
         if (!_typedSubs.ContainsKey(type))
@@ -97,7 +97,7 @@ public sealed class EventService : IEventService
         {
             foreach (var handler in _typedSubs[type])
             {
-                ((Action<T>)handler)(eventData);
+                ((Action<IEvent>)handler)(eventData);
             }
         }
     }

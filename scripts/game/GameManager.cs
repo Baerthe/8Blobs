@@ -33,8 +33,8 @@ public partial class GameManager : Node2D
         _heroService = CoreProvider.HeroService();
         _prefService = CoreProvider.PrefService();
         _levelService = CoreProvider.LevelService();
+        _eventService.Subscribe<IndexEvent>(OnIndexEvent);
         Camera = GetParent().GetNode<Camera2D>("MainCamera");
-        Templates = ResourceLoader.Load<EntityIndex>("res://assets/data/indices/EntityIndex.tres");
     }
     public override void _Process(double delta)
     {
@@ -90,7 +90,7 @@ public partial class GameManager : Node2D
         _levelInstance.AddChild(CurrentMobSystem);
         _levelInstance.AddChild(CurrentPlayerSystem);
         // Initialize systems
-        _eventService.Publish("OnLevelPreLoad");
+        _eventService.Publish("OnInit");
         _levelLoaded = true;
     }
     /// <summary>
@@ -117,4 +117,5 @@ public partial class GameManager : Node2D
         _levelData = null;
         _levelLoaded = false;
     }
+    private void OnIndexEvent(IEvent eventData) => Templates = ((IndexEvent)eventData).Templates;
 }

@@ -30,7 +30,7 @@ UiManager = NodePath("UiManager")
 [node name="Camera2D" type="Camera2D" parent="."]
 top_level = true
 texture_filter = 1
-position = Vector2(128, 120)
+position = Vector2(960, 540)
 
 [node name="GameManager" type="Node2D" parent="."]
 script = ExtResource("3_3qypx")

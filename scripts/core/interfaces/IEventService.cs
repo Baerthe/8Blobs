@@ -7,22 +7,22 @@ using System;
 public interface IEventService
 {
     /// <summary>
-    /// Subscribes to an event of type T.
+    /// Subscribes to an event of type IEvent.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="IEvent"></typeparam>
     /// <param name="handler"></param>
-    void Subscribe<T>(Action<T> handler) where T : class;
+    void Subscribe<T>(Action<IEvent> handler);
     /// <summary>
     /// Subscribes to a general event without data.
     /// </summary>
     /// <param name="handler"></param>
     void Subscribe(Action handler);
     /// <summary>
-    /// Unsubscribes from an event of type T.
+    /// Unsubscribes from an event of type IEvent.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="IEvent"></typeparam>
     /// <param name="handler"></param>
-    void Unsubscribe<T>(Action<T> handler) where T : class;
+    void Unsubscribe<T>(Action<IEvent> handler);
     /// <summary>
     /// Unsubscribes from a general event without data.
     /// </summary>
@@ -34,9 +34,9 @@ public interface IEventService
     /// <summary>
     /// Publishes an event of type T to all subscribed handlers.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="IEvent"></typeparam>
     /// <param name="eventData"></param>
-    void Publish<T>(T eventData) where T : class;
+    void Publish<T>(IEvent eventData);
     /// <summary>
     /// Publishes a general event without data.
     /// </summary>
