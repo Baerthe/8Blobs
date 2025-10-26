@@ -32,8 +32,9 @@ public partial class ClockSystem : Node2D, IGameSystem
     {
         GD.Print("ClockSystem Present.");
         _eventService = CoreProvider.EventService();
+        _eventService.Subscribe(OnInit);
     }
-    public void Init()
+    public void OnInit()
     {
         if (IsInitialized)
         {

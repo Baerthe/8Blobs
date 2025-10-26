@@ -12,21 +12,13 @@ public static class CoreProvider
     private static bool _isBuilt = false;
     static CoreProvider()
     {
-        InitilizationCheck();
+        BuildCoreContainer();
     }
     public static IAudioService AudioService() => CoreContainer.Resolve<IAudioService>();
     public static IEventService EventService() => CoreContainer.Resolve<IEventService>();
     public static IHeroService HeroService() => CoreContainer.Resolve<IHeroService>();
     public static IPrefService PrefService() => CoreContainer.Resolve<IPrefService>();
     public static ILevelService LevelService() => CoreContainer.Resolve<ILevelService>();
-    private static void InitilizationCheck()
-    {
-        if (_isBuilt)
-            GD.PrintErr("How did you call this twice? Only one CoreProvider should exist.");
-        if (!_isBuilt)
-            BuildCoreContainer();
-        _isBuilt = true;
-    }
     /// <summary>
     /// Builds the core container with all core singletons.
     /// </summary>
@@ -44,5 +36,6 @@ public static class CoreProvider
         CoreContainer.Register<IPrefService, PrefService>();
         CoreContainer.Register<ILevelService, LevelService>();
         GD.PrintRich("[color=#00ff00]Cores Registered.[/color]");
+        _isBuilt = true;
     }
 }

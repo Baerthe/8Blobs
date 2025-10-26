@@ -1,17 +1,19 @@
 namespace Game;
+
 using Godot;
+using Core;
 using System.Collections.Generic;
 using Game.Interface;
+using Core.Interface;
 using Entities;
-
 /// <summary>
 /// A system for handling tiling of scene map elements.
 /// </summary>
 public sealed partial class MapSystem : Node2D, IGameSystem
 {
 	public bool IsInitialized { get; private set; } = false;
-	public LevelEntity LevelInstance { get; set; }
-    public HeroEntity PlayerInstance { get; set; }
+	private LevelEntity _levelRef;
+	private HeroEntity _playerRef;
 	private TileMapLayer _foregroundLayer;
 	private TileMapLayer _backgroundLayer;
 	private Rect2 _usedRect;
@@ -19,6 +21,8 @@ public sealed partial class MapSystem : Node2D, IGameSystem
 	private float _width;
 	private float _height;
 	private readonly Dictionary<string, (TileMapLayer background, TileMapLayer foreground)> _chunks = new();
+	// Dependency Services
+	private IEventService _eventService;
 	private enum Direction : byte
 	{
 		NorthWest,
@@ -34,13 +38,14 @@ public sealed partial class MapSystem : Node2D, IGameSystem
     public override void _Ready()
     {
         GD.Print("MapSystem Present.");
-        GetParent<GameManager>().OnLevelLoad += (sender, args) => OnLevelLoad(args.Templates, args.LevelInstance, args.PlayerInstance);
+        _eventService = CoreProvider.EventService();
+        _eventService.Subscribe(OnInit);
     }
-    public void OnLevelLoad(EntityIndex _, LevelEntity levelInstance, HeroEntity playerInstance)
+    public void OnInit()
 	{
 		if (IsInitialized) return;
-		LevelInstance = levelInstance;
-		PlayerInstance = playerInstance;
+        _playerRef = GetTree().GetFirstNodeInGroup("player") as HeroEntity;
+        _levelRef = GetTree().GetFirstNodeInGroup("level") as LevelEntity;
 		LoadTiles();
 		IsInitialized = true;
 	}
@@ -54,8 +59,8 @@ public sealed partial class MapSystem : Node2D, IGameSystem
 		if (_foregroundLayer == null || _backgroundLayer == null)
 		{
 			GD.PrintErr("ForegroundLayer or BackgroundLayer not set. Attempting to find in Tree.");
-			_foregroundLayer = LevelInstance.ForegroundLayer;
-			_backgroundLayer = LevelInstance.BackgroundLayer;
+			_foregroundLayer = _levelRef.ForegroundLayer;
+			_backgroundLayer = _levelRef.BackgroundLayer;
 			if (_foregroundLayer == null || _backgroundLayer == null)
 			{
 				GD.PrintErr("ForegroundLayer or BackgroundLayer not found in Tree.");
@@ -104,8 +109,8 @@ public sealed partial class MapSystem : Node2D, IGameSystem
 	}
 	private void HasPlayerCrossedBorder()
 	{
-		if (PlayerInstance == null || _worldRect.HasPoint(PlayerInstance.Position)) return;
-		Direction direction = GetBorderDirection(PlayerInstance.Position);
+		if (_playerRef == null || _worldRect.HasPoint(_playerRef.Position)) return;
+		Direction direction = GetBorderDirection(_playerRef.Position);
 		if (direction == Direction.OutOfBounds) return;
 		MoveLayers(direction);
 	}

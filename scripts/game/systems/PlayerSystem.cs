@@ -24,6 +24,7 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
     {
         GD.Print("PlayerSystem Present.");
         _eventService = CoreProvider.EventService();
+        _eventService.Subscribe(OnInit);
         _heroService = CoreProvider.HeroService();
     }
     public override void _Process(double delta)
@@ -109,7 +110,7 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
         _weapons.Clear();
         IsInitialized = false;
     }
-    public void Init()
+    public void OnInit()
     {
         if (IsInitialized)
         {

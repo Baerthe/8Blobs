@@ -20,12 +20,13 @@ public sealed partial class ChestSystem : Node2D, IGameSystem
     public override void _Ready()
     {
         GD.Print("ChestSystem Present.");
+        _eventService = CoreProvider.EventService();
+        _eventService.Subscribe(OnInit);
+        _eventService.Subscribe(OnChestSpawnTimeout);
     }
-    public void Init()
+    public void OnInit()
     {
         if (IsInitialized) return;
-        _eventService = CoreProvider.EventService();
-        _eventService.Subscribe(OnChestSpawnTimeout);
         _playerRef = GetTree().GetFirstNodeInGroup("Player") as HeroEntity;
         _chestPath = CreatePath();
         _chestSpawner = new PathFollow2D();
