@@ -1,7 +1,8 @@
-[gd_scene load_steps=11 format=4 uid="uid://ddn3j7obdlhp4"]
+[gd_scene load_steps=12 format=4 uid="uid://ddn3j7obdlhp4"]
 
 [ext_resource type="Script" uid="uid://mevgk8q6vius" path="res://scripts/Main.cs" id="1_r150o"]
 [ext_resource type="Texture2D" uid="uid://ixp5qafsrmt8" path="res://assets/tilesets/PixelPackTOPDOWN8BIT.png" id="2_idj7w"]
+[ext_resource type="Script" uid="uid://cs8m506hclj1o" path="res://scripts/game/GameManager.cs" id="3_3qypx"]
 [ext_resource type="PackedScene" uid="uid://wnqc80wplhnk" path="res://assets/scenes/Player.tscn" id="3_jw32o"]
 [ext_resource type="LabelSettings" uid="uid://dae0ujns4cmco" path="res://assets/data/Main.tres" id="4_jw32o"]
 [ext_resource type="TileSet" uid="uid://c1okyqiwq2m7e" path="res://assets/tilesets/Tileset.tres" id="7_jw32o"]
@@ -524,10 +525,11 @@ texture = ExtResource("2_idj7w")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_50glp")
 
-[node name="Main" type="Node2D" node_paths=PackedStringArray("Menu")]
+[node name="Main" type="Node2D" node_paths=PackedStringArray("MainCamera", "GameManagerInstance")]
 texture_filter = 1
 script = ExtResource("1_r150o")
-Menu = NodePath("Menu")
+MainCamera = NodePath("Player/Camera2D")
+GameManagerInstance = NodePath("GameManager")
 
 [node name="BackgroundLayer" type="TileMapLayer" parent="."]
 show_behind_parent = true
@@ -541,6 +543,10 @@ rendering_quadrant_size = 8
 collision_enabled = false
 physics_quadrant_size = 8
 navigation_enabled = false
+
+[node name="GameManager" type="Node2D" parent="."]
+script = ExtResource("3_3qypx")
+metadata/_custom_type_script = "uid://cs8m506hclj1o"
 
 [node name="Player" parent="." instance=ExtResource("3_jw32o")]
 texture_filter = 1
@@ -616,24 +622,6 @@ label_settings = ExtResource("4_jw32o")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Timers" type="Node" parent="."]
-
-[node name="MobTimer" type="Timer" parent="Timers"]
-wait_time = 0.5
-
-[node name="PickUpTimer" type="Timer" parent="Timers"]
-
-[node name="ScoreTimer" type="Timer" parent="Timers"]
-
-[node name="StartingTimer" type="Timer" parent="Timers"]
-wait_time = 2.0
-one_shot = true
-
-[node name="MessageTimer" type="Timer" parent="Timers"]
-editor_description = "How long messages are shown on screen before they fade."
-wait_time = 3.0
-one_shot = true
-
 [node name="StartingPosition" type="Marker2D" parent="."]
 editor_description = "Starting point for the player."
 texture_filter = 1
@@ -676,8 +664,3 @@ position = Vector2(207.99997, 207.99997)
 scale = Vector2(0.99999994, 0.99999994)
 tile_map_data = PackedByteArray("AAD//xEAAAAAAAQAAAAAABIAAAAAAAQAAAD//xIAAAAAAAQAAAAAABEAAAAAAAQAAAAPABEAAAAAAAQAAAAOABEAAAAAAAQAAAAOABIAAAAAAAQAAAAPABIAAAAAAAQAAAD9/w8AAAAAAAQAAAD9/w4AAAAAAAQAAAD8/w4AAAAAAAQAAAD8/w8AAAAAAAQAAAARAA8AAAAAAAQAAAASAA8AAAAAAAQAAAASAA4AAAAAAAQAAAARAA4AAAAAAAQAAAD9////AAAAAAQAAAD8////AAAAAAQAAAD8/wAAAAAAAAQAAAD9/wAAAAAAAAQAAAD///3/AAAAAAQAAAD///z/AAAAAAQAAAAAAPz/AAAAAAQAAAAAAP3/AAAAAAQAAAAPAP3/AAAAAAQAAAAOAP3/AAAAAAQAAAAOAPz/AAAAAAQAAAAPAPz/AAAAAAQAAAARAP//AAAAAAQAAAASAP//AAAAAAQAAAASAAAAAAAAAAQAAAARAAAAAAAAAAQAAAA=")
 tile_set = SubResource("TileSet_vy5pj")
-
-[connection signal="timeout" from="Timers/MobTimer" to="." method="OnMobTimerTimeout"]
-[connection signal="timeout" from="Timers/PickUpTimer" to="." method="OnPickupTimerTimeout"]
-[connection signal="timeout" from="Timers/ScoreTimer" to="." method="OnScoreTimerTimeout"]
-[connection signal="timeout" from="Timers/StartingTimer" to="." method="OnStartTimerTimeout"]
