@@ -11,9 +11,9 @@ public partial class Main : Node2D
 	[ExportGroup("Main Nodes")]
 	[ExportSubgroup("Core")]
 	[Export] public Camera2D MainCamera { get; private set; }
-	[Export] public GameManager GameManagerInstance { get; private set; }
-	[Export] public MenuManager MenuManagerInstance { get; private set; }
-	[Export] public UiManager HudManagerInstance { get; private set; }
+	[Export] public GameManager GameManager { get; private set; }
+	[Export] public MenuManager MenuManager { get; private set; }
+	[Export] public UiManager UiManager { get; private set; }
 	// State
 	public static State CurrentState { get; set; } = State.Menu;
 	private State _priorState;
@@ -27,7 +27,7 @@ public partial class Main : Node2D
 		Menu,
 		LevelSelect,
 		Paused,
-		Playing,
+			Playing,
 		GameOver
 	}
 	// Engine Callbacks
@@ -46,7 +46,7 @@ public partial class Main : Node2D
     /// <exception cref="InvalidOperationException"></exception>
 	private void NullCheck()
 	{
-		if (HudManagerInstance == null)
+		if (UiManager == null)
 		{
 			GD.PrintErr("HUD node not set in Main");
 			throw new InvalidOperationException("ERROR 201: HUD node not set in Main. Game cannot load.");
@@ -56,12 +56,12 @@ public partial class Main : Node2D
 			GD.PrintErr("Camera node not set in Main");
 			throw new InvalidOperationException("ERROR 202: Camera node not set in Main. Game cannot load.");
 		}
-		if (MenuManagerInstance == null)
+		if (MenuManager == null)
 		{
 			GD.PrintErr("Menu node not set in Main");
 			throw new InvalidOperationException("ERROR 203: Menu node not set in Main. Game cannot load.");
 		}
-		if (GameManagerInstance == null)
+		if (GameManager == null)
 		{
 			GD.PrintErr("Game node not set in Main");
 			throw new InvalidOperationException("ERROR 204: Game node not set in Main. Game cannot load.");
@@ -91,31 +91,31 @@ public partial class Main : Node2D
 		{
 			case State.Menu:
 				// Waiting for player to start game
-				MenuManagerInstance.Show();
+				MenuManager.Show();
 				break;
 			case State.LevelSelect:
 				// Waiting for player to select level
 				break;
 			case State.Paused:
 				// Game is paused; waiting for player to unpause
-				GameManagerInstance.TogglePause();
+				GameManager.TogglePause();
 				break;
 			case State.Playing:
-				if (GameManagerInstance.IsPaused)
+				if (GameManager.IsPaused)
 				{
-					GameManagerInstance.TogglePause();
+					GameManager.TogglePause();
 				}
 				if (!_isGameStarted)
 				{
-					GameManagerInstance.PrepareLevel();
-					MenuManagerInstance.Hide();
-					HudManagerInstance.Show();
+					GameManager.PrepareLevel();
+					MenuManager.Hide();
+					UiManager.Show();
 					_isGameStarted = true;
 				}
 				break;
 			case State.GameOver:
 				// Game over; waiting for player to return to menu or restart
-				GameManagerInstance.UnloadLevel();
+				GameManager.UnloadLevel();
 				_levelService.UnloadLevel();
 				break;
 			default:

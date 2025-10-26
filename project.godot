@@ -31,6 +31,9 @@ project/assembly_name="8Blobs"
 [global_group]
 
 mobs="Global group for mobs."
+player="Global group for the player."
+level="Global group for the loaded level."
+chests="Global group for chests in the level."
 
 [input]
 
