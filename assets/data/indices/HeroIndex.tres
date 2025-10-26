@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="HeroIndex" load_steps=3 format=3 uid="uid://1ddfje3y85jr"]
-
-[ext_resource type="Script" uid="uid://cuqmhptfeddix" path="res://scripts/entities/indices/HeroIndex.cs" id="1_7dica"]
-[ext_resource type="PackedScene" uid="uid://d1gacjhqd2475" path="res://assets/scenes/heros/TestHero.tscn" id="1_slggc"]
-
-[resource]
-script = ExtResource("1_7dica")
-HeroScenes = Array[PackedScene]([ExtResource("1_slggc")])
-metadata/_custom_type_script = "uid://cuqmhptfeddix"

@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="MobTable" load_steps=3 format=3 uid="uid://e6whgd3hh62m"]
+
+[ext_resource type="Script" uid="uid://dpgpmcasmtktm" path="res://scripts/entities/indices/MobTable.cs" id="1_035f2"]
+[ext_resource type="Resource" uid="uid://cmwjmdh4rq0c2" path="res://assets/data/mobs/BasicMob.tres" id="1_ds7cd"]
+
+[resource]
+script = ExtResource("1_035f2")
+Mobs = Array[Object]([ExtResource("1_ds7cd")])
+metadata/_custom_type_script = "uid://dpgpmcasmtktm"

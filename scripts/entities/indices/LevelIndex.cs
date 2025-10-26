@@ -2,11 +2,11 @@ namespace Entities;
 
 using Godot;
 /// <summary>
-/// Holds references to level scenes for easy access.
+/// Holds references to all level data for easy access.
 /// </summary>
 [GlobalClass]
 public sealed partial class LevelIndex : Resource
 {
-    [ExportCategory("Level Scenes")]
-    [Export] public PackedScene[] LevelScenes { get; private set; }
+    [ExportCategory("Level Data")]
+    [Export] public LevelData[] AllLevels { get; private set; }
 }
