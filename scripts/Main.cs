@@ -17,10 +17,8 @@ public partial class Main : Node2D
 	// State
 	public static State CurrentState { get; set; } = State.Menu;
 	private State _priorState;
-	// Core Orchestration Variables
-	private readonly IAudioService _audioService = CoreProvider.AudioService();
-	private readonly ILevelService _levelService = CoreProvider.LevelService();
-	private readonly IClockService _clockService = CoreProvider.ClockService();
+	// Services
+	private ILevelService _levelService;
 	// Flags
 	private bool _isGameStarted = false;
 	// State Enum
@@ -36,8 +34,8 @@ public partial class Main : Node2D
 	public override void _Ready()
 	{
 		NullCheck();
-		Subscribe();
 		GD.PrintRich("[color=#000][bgcolor=#00ff00]Main node ready. Initializing game...[/bgcolor][/color]");
+		_levelService = CoreProvider.LevelService();
 		GD.PrintRich("[color=#000][bgcolor=#00ff00]Game Initialized.[/bgcolor][/color]");
 		CurrentState = State.Menu;
 		_priorState = CurrentState;
@@ -69,17 +67,6 @@ public partial class Main : Node2D
 			throw new InvalidOperationException("ERROR 204: Game node not set in Main. Game cannot load.");
 		}
 		GD.Print("We got all of our nodes! NullCheck Complete");
-	}
-	/// <summary>
-    /// Subscribes to ClockService events for pulse and slow pulse ticks. This is where we drive the main game loop by processing game state changes on each tick.
-    /// </summary>
-	private void Subscribe()
-	{
-		GD.Print("Subscribing to ClockService events...");
-		_clockService.PulseTimeout += OnPulseTimeout;
-		_clockService.SlowPulseTimeout += OnSlowPulseTimeout;
-		GD.PrintRich("[color=green]ClockService subscription complete.");
-		GD.PrintRich("[color=green]Global Player reference set.");
 	}
 	/// <summary>
     /// Handles regular pulse ticks from the ClockService to update game state.
@@ -120,7 +107,6 @@ public partial class Main : Node2D
 				}
 				if (!_isGameStarted)
 				{
-					_clockService.InitGame(this);
 					GameManagerInstance.PrepareLevel();
 					MenuManagerInstance.Hide();
 					HudManagerInstance.Show();
@@ -131,7 +117,6 @@ public partial class Main : Node2D
 				// Game over; waiting for player to return to menu or restart
 				GameManagerInstance.UnloadLevel();
 				_levelService.UnloadLevel();
-				_clockService.ResetGame();
 				break;
 			default:
 				GD.PrintErr("Unknown game state!");

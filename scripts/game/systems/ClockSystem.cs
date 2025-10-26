@@ -33,21 +33,28 @@ public partial class ClockSystem : Node2D, IGameSystem
         GD.Print("ClockSystem Present.");
         _eventService = CoreProvider.EventService();
         _eventService.Subscribe(OnInit);
-    }
-    public void OnInit()
-    {
-        if (IsInitialized)
-        {
-            GD.PrintErr("ClockService is already initialized. InitGame should only be called once per game session.");
-            return;
-        }
+        _eventService.Subscribe(OnPulseTimeout);
+        _eventService.Subscribe(OnSlowPulseTimeout);
+        _eventService.Subscribe(OnMobSpawnTimeout);
+        _eventService.Subscribe(OnChestSpawnTimeout);
+        _eventService.Subscribe(OnGameTimeout);
+        _eventService.Subscribe(OnStartingTimeout);
         CreatePulseTimer();
         CreateSlowPulseTimer();
         CreateMobSpawnTimer();
         CreateChestSpawnTimer();
         CreateGameTimer();
         CreateStartingTimer();
-        GD.PrintRich("[color=#00ff88]ClockService initialized, late stage, and timers started.[/color]");
+    }
+    public void OnInit()
+    {
+        if (IsInitialized)
+        {
+            GD.PrintErr("ClockService is already initialized. OnInit should only be called once per game session.");
+            return;
+        }
+        StartTimers();
+        GD.PrintRich("[color=#00ff88]ClockService initialized, late stage, and timers loaded.[/color]");
         IsInitialized = true;
     }
     public void ResetGame()
@@ -67,6 +74,30 @@ public partial class ClockSystem : Node2D, IGameSystem
         {
             timer.Paused = false;
         }
+    }
+    private void OnChestSpawnTimeout()
+    {
+        GD.PrintRich("[color=#afdd00]Chest Spawn Timeout triggered.");
+    }
+    private void OnSlowPulseTimeout()
+    {
+        GD.PrintRich("[color=#afdd00]Slow Pulse Tick processing...");
+    }
+    private void OnMobSpawnTimeout()
+    {
+        GD.PrintRich("[color=#afdd00]Mob Spawn Timeout triggered.");
+    }
+    private void OnGameTimeout()
+    {
+        GD.PrintRich("[color=#afdd00]Game Timeout triggered.");
+    }
+    private void OnPulseTimeout()
+    {
+        GD.PrintRich("[color=#afdd00]Pulse Tick processing...");
+    }
+    private void OnStartingTimeout()
+    {
+        GD.PrintRich("[color=#afdd00]Starting Timeout triggered.");
     }
     /// <summary>
     /// Starts all timers. Used when initializing the game.
