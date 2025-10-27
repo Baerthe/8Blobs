@@ -11,8 +11,8 @@ public partial class ItemData : Resource, IData
     [ExportCategory("Stats")]
     [ExportGroup("Info")]
     [Export] public CommonInfo Info { get; private set; } = new CommonInfo();
+    [Export] public CommonData MetaData { get; private set; } = new CommonData();
     [Export] public int MaxStackSize { get; set; } = 64;
-    [Export] public Texture2D Icon { get; set; }
-    [ExportGroup("Scene")]
-    [Export] public PackedScene Entity { get; private set; }
+    [ExportGroup("Assets")]
+    [Export] public SpriteFrames Sprite { get; set; }
 }

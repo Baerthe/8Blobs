@@ -11,8 +11,8 @@ public partial class ChestData : Resource, IData
     [ExportCategory("Stats")]
     [ExportGroup("Info")]
     [Export] public CommonInfo Info { get; private set; } = new CommonInfo();
+    [Export] public CommonData MetaData { get; private set; } = new CommonData();
     [Export] public ChestType Type { get; private set; } = ChestType.Item;
-    [Export] public RarityType Rarity { get; private set; } = RarityType.Common;
     [ExportGroup("Assets")]
-    [Export] public Texture2D Sprite { get; set; }
+    [Export] public SpriteFrames Sprite { get; set; }
 }

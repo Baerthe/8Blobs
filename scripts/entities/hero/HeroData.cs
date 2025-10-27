@@ -11,6 +11,7 @@ public partial class HeroData : Resource, IData
     [ExportCategory("Stats")]
     [ExportGroup("Info")]
     [Export] public CommonInfo Info { get; private set; } = new CommonInfo();
+    [Export] public CommonData MetaData { get; private set; } = new CommonData();
     [ExportGroup("Attributes")]
     [Export] public HeroStats Stats { get; private set; } = new HeroStats();
     [ExportGroup("Modifiers")]

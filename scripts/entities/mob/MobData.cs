@@ -11,9 +11,9 @@ public partial class MobData : Resource, IData
     [ExportCategory("Stats")]
     [ExportGroup("Info")]
     [Export] public CommonInfo Info { get; private set; } = new CommonInfo();
+    [Export] public CommonData MetaData { get; private set; } = new CommonData();
     [ExportGroup("Attributes")]
     [Export] public MobTribe Tribe { get; private set; }
-    [Export] public RarityType Rarity { get; private set; } = RarityType.Basic;
     [Export] public MobLevel Level { get; private set; } = MobLevel.Basic;
     [Export] public MobStats Stats { get; private set; } = new MobStats();
     [ExportGroup("Behavior")]

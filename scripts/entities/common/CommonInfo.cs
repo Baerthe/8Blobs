@@ -10,6 +10,4 @@ public partial class CommonInfo : Resource
     [Export] public string Name { get; private set; } = "";
     [Export] public string Description { get; private set; } = "";
     [Export] public string Lore { get; private set; } = "";
-    [Export] public bool Unlocked { get; private set; } = false;
-    public void Unlock() => Unlocked = true;
 }
