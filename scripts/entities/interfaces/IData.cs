@@ -6,7 +6,5 @@ using Godot;
 /// </summary>
 public interface IData
 {
-    public string Name { get; }
-    public string Description { get; }
-    public string Lore { get; }
+    public CommonInfo Info { get; }
 }

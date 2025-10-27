@@ -10,9 +10,7 @@ public partial class MobData : Resource, IData
 {
     [ExportCategory("Stats")]
     [ExportGroup("Info")]
-    [Export] public string Name { get; private set; } = "";
-    [Export] public string Description { get; private set; } = "";
-    [Export] public string Lore { get; private set; } = "";
+    [Export] public CommonInfo Info { get; private set; } = new CommonInfo();
     [ExportGroup("Attributes")]
     [Export] public MobTribe Tribe { get; private set; }
     [Export] public RarityType Rarity { get; private set; } = RarityType.Basic;
@@ -28,10 +26,5 @@ public partial class MobData : Resource, IData
     [Export] public AudioStream DeathSound { get; set; }
     [Export] public Color TintColor { get; set; } = Colors.White;
     [Export] public Shape2D CollisionShape { get; set; }
-    private static readonly Shader _defaultAnimationShader;
-    [Export] public Shader AnimationShader { get; set; } = _defaultAnimationShader;
-    static MobData()
-    {
-        _defaultAnimationShader = ResourceLoader.Load<Shader>("res://data/shaders/mobs/BasicMobMovement.gdshader");
-    }
+    [Export] public Shader AnimationShader { get; set; } = ResourceLoader.Load<Shader>("res://data/shaders/mobs/BasicMobMovement.gdshader");
 }

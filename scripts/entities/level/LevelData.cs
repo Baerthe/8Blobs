@@ -11,9 +11,7 @@ public partial class LevelData : Resource, IData
 {
     [ExportCategory("Stats")]
     [ExportGroup("Info")]
-    [Export] public string Name { get; private set; } = "";
-    [Export] public string Description { get; private set; } = "";
-    [Export] public string Lore { get; private set; } = "";
+    [Export] public CommonInfo Info { get; private set; } = new CommonInfo();
     [Export] public LevelType Type { get; set; }
     [Export] public LevelTier Tier { get; set; }
     [Export] public uint MaxLevel { get; set; } = 1;
