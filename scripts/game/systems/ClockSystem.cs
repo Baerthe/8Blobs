@@ -27,11 +27,14 @@ public partial class ClockSystem : Node2D, IGameSystem
     private const float GameInterval = 60f;          // 0.016 hrz (~1 per minute)
     private const float StartingInterval = 3f;       // OneShot (~3 seconds)
     // Dependency Services
-    private IEventService _eventService;
+    private readonly IEventService _eventService;
+    public ClockSystem()
+    {
+        _eventService = CoreProvider.EventService();
+    }
     public override void _Ready()
     {
         GD.Print("ClockSystem Present.");
-        _eventService = CoreProvider.EventService();
         _eventService.Subscribe(OnInit);
         _eventService.Subscribe(OnPulseTimeout);
         _eventService.Subscribe(OnSlowPulseTimeout);
@@ -45,6 +48,16 @@ public partial class ClockSystem : Node2D, IGameSystem
         CreateChestSpawnTimer();
         CreateGameTimer();
         CreateStartingTimer();
+    }
+    public override void _ExitTree()
+    {
+        _eventService.Unsubscribe(OnInit);
+        _eventService.Unsubscribe(OnPulseTimeout);
+        _eventService.Unsubscribe(OnSlowPulseTimeout);
+        _eventService.Unsubscribe(OnMobSpawnTimeout);
+        _eventService.Unsubscribe(OnChestSpawnTimeout);
+        _eventService.Unsubscribe(OnGameTimeout);
+        _eventService.Unsubscribe(OnStartingTimeout);
     }
     public void OnInit()
     {

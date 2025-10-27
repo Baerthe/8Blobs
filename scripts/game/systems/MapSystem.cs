@@ -22,7 +22,7 @@ public sealed partial class MapSystem : Node2D, IGameSystem
 	private float _height;
 	private readonly Dictionary<string, (TileMapLayer background, TileMapLayer foreground)> _chunks = new();
 	// Dependency Services
-	private IEventService _eventService;
+	private readonly IEventService _eventService;
 	private enum Direction : byte
 	{
 		NorthWest,
@@ -35,11 +35,19 @@ public sealed partial class MapSystem : Node2D, IGameSystem
 		SouthEast,
 		OutOfBounds
 	}
-    public override void _Ready()
+	public MapSystem()
+	{
+		GD.Print("MapSystem: Initializing...");
+		_eventService = CoreProvider.EventService();
+	}
+	public override void _Ready()
+	{
+		_eventService.Subscribe(OnInit);
+		GD.Print("MapSystem Ready.");
+	}
+	public override void _ExitTree()
     {
-        GD.Print("MapSystem Present.");
-        _eventService = CoreProvider.EventService();
-        _eventService.Subscribe(OnInit);
+        _eventService.Unsubscribe(OnInit);
     }
     public void OnInit()
 	{

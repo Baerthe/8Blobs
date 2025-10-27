@@ -17,17 +17,25 @@ public sealed partial class ChestSystem : Node2D, IGameSystem
     private Vector2 _offsetBetweenChestAndPlayer;
     private PackedScene _chestTemplate;
     // Dependency Services
-    private IEventService _eventService;
+    private readonly IAudioService _audioService;
+    private readonly IEventService _eventService;
     public ChestSystem(PackedScene chestTemplate)
     {
+        GD.Print("ChestSystem: Initializing...");
         _chestTemplate = chestTemplate;
+        _audioService = CoreProvider.AudioService();
+        _eventService = CoreProvider.EventService();
     }
     public override void _Ready()
     {
-        GD.Print("ChestSystem Present.");
-        _eventService = CoreProvider.EventService();
         _eventService.Subscribe(OnInit);
         _eventService.Subscribe(OnChestSpawnTimeout);
+        GD.Print("ChestSystem Ready.");
+    }
+    public override void _ExitTree()
+    {
+        _eventService.Unsubscribe(OnInit);
+        _eventService.Unsubscribe(OnChestSpawnTimeout);
     }
     public void OnInit()
     {

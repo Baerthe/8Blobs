@@ -18,24 +18,27 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
     private List<WeaponEntity> _weapons = new();
     private PackedScene _heroTemplate;
     // Dependency Services
-    private IEventService _eventService;
-    private IHeroService _heroService;
+    private readonly IAudioService _audioService;
+    private readonly IEventService _eventService;
+    private readonly IHeroService _heroService;
     public PlayerSystem(PackedScene heroTemplate)
     {
+        GD.Print("PlayerSystem: Initializing...");
+        _audioService = CoreProvider.AudioService();
+        _eventService = CoreProvider.EventService();
+        _heroService = CoreProvider.HeroService();
         _heroTemplate = heroTemplate;
     }
     public override void _Ready()
     {
-        GD.Print("PlayerSystem Present.");
-        _eventService = CoreProvider.EventService();
         _eventService.Subscribe(OnInit);
-        _heroService = CoreProvider.HeroService();
+        GD.Print("PlayerSystem Ready.");
     }
     public override void _Process(double delta)
     {
         if (!IsInitialized) return;
         if (_playerRef == null) return;
-        if (_playerRef.CurrentHealth <= 0)
+        if (_playerRef.Attributes.CurrentHealth <= 0)
         {
             GD.Print("Player has died.");
             Defeat();
@@ -109,6 +112,7 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
     }
     public override void _ExitTree()
     {
+        _eventService.Unsubscribe(OnInit);
         _playerRef.QueueFree();
         _items.Clear();
         _weapons.Clear();
@@ -137,7 +141,7 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
     /// <param name="item"></param>
     public void AddItem(ItemEntity item)
     {
-        if (item == _items.Find(i => i.Data.Name == item.Data.Name))
+        if (item == _items.Find(i => i.Data.Info.Name == item.Data.Info.Name))
         {
             item.QueueFree();
             item = _items[_items.IndexOf(item)];
@@ -151,11 +155,10 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
     }
     public void AddWeapon(WeaponEntity weapon)
     {
-        if (weapon == _weapons.Find(w => w.Data.Name == weapon.Data.Name))
+        if (weapon == _weapons.Find(w => w.Data.Info.Name == weapon.Data.Info.Name))
             return;
         _weapons.Add(weapon);
     }
-    
     private void Defeat()
     {
         GD.Print("PlayerSystem: Defeat sequence triggered.");
@@ -179,9 +182,9 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
         _playerRef = _heroTemplate.Instantiate<HeroEntity>();
         _playerRef.Inject(hero);
         _playerRef.Position = _levelRef.PlayerSpawn.Position;
-        _playerRef.CurrentHealth = hero.Stats.Health;
+        _playerRef.Attributes.CurrentHealth = hero.Stats.MaxHealth;
         _playerRef.Hide();
         AddChild(_playerRef);
-        GD.Print($"PlayerSystem: Loaded player '{hero.Name}'.");
+        GD.Print($"PlayerSystem: Loaded player '{hero.Info.Name}'.");
     }
 }

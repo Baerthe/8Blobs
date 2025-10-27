@@ -22,18 +22,21 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     private float _grossMobWeight = 0f;
     private float _gameElapsedTime = 0f;
     // Dependency Services
-    private IEventService _eventService;
+    private readonly IAudioService _audioService;
+    private readonly IEventService _eventService;
     public MobSystem(PackedScene mobTemplate)
     {
+        GD.Print("MobSystem: Initializing...");
+        _audioService = CoreProvider.AudioService();
+        _eventService = CoreProvider.EventService();
         _mobTemplate = mobTemplate;
     }
     public override void _Ready()
     {
-        GD.Print("MobSystem Present.");
-        _eventService = CoreProvider.EventService();
         _eventService.Subscribe(OnInit);
         _eventService.Subscribe(OnMobTimeout);
         _eventService.Subscribe(OnGameTimeout);
+        GD.Print("MobSystem Ready.");
     }
     public override void _ExitTree()
     {
@@ -76,9 +79,17 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         }
         _offsetBetweenSpawnerAndPlayer = _playerRef.Position - _mobSpawnPath.Position;
         _lastPlayerPosition = _playerRef.Position;
-        // Mob AI Update
         var activeMobs = GetTree().GetNodesInGroup("mobs");
-        //TODO
+        // Clean up dead mobs
+        foreach (var mob in activeMobs)
+        {
+            MobEntity mobEntity = mob as MobEntity;
+            if (mobEntity.Attributes.CurrentHealth == 0)
+            {
+                //TODO: play mob death shader/effects/sound here
+                mobEntity.QueueFree();
+            }
+        }
     }
     private void OnMobTimeout()
     {
