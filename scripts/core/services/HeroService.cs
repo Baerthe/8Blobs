@@ -9,7 +9,6 @@ using Godot;
 public sealed class HeroService : IHeroService
 {
     public HeroData CurrentHero { get; private set; }
-    public Node ParentNode { get; private set; }
     public HeroService()
     {
         GD.PrintRich("[color=#00ff88]HeroService initialized.[/color]");

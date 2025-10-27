@@ -9,7 +9,6 @@ using Godot;
 public sealed class LevelService : ILevelService
 {
     public LevelData CurrentLevel { get; private set; }
-    public Node ParentNode { get; private set; }
     public string LevelName { get; private set; }
     public LevelService()
     {

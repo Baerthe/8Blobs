@@ -8,7 +8,6 @@ using Godot;
 public interface IHeroService
 {
     HeroData CurrentHero { get; }
-    Node ParentNode { get; }
     void LoadHero(HeroData heroData);
     void UnloadHero();
 }

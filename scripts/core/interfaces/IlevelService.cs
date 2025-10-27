@@ -8,7 +8,6 @@ using Godot;
 public interface ILevelService
 {
     LevelData CurrentLevel { get; }
-    Node ParentNode { get; }
     void LoadLevel(LevelData levelData);
     void UnloadLevel();
 }
