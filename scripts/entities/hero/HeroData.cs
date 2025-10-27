@@ -22,6 +22,10 @@ public partial class HeroData : Resource, IData
     [Export] public uint AbilityStrength { get; private set; }
     [Export] public HeroMovement Movement { get; private set; } = HeroMovement.Walk;
     [ExportGroup("Assets")]
-    [Export] public PackedScene Entity { get; set; }
+    [Export] public SpriteFrames Sprite { get; private set; }
+    [Export] public AudioStream HitSound { get; set; }
+    [Export] public AudioStream DeathSound { get; set; }
+    [Export] public Shape2D CollisionShape { get; set; }
+    [Export] public Color TintColor { get; set; } = Colors.White;
     public void Unlock() => Unlocked = true;
 }

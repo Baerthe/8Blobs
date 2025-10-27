@@ -11,12 +11,11 @@ public partial class MobEntity : RigidBody2D, IEntity
 {
     [ExportGroup("Node References")]
     [Export] public CollisionObject2D Hitbox { get; private set; }
-    [Export] public Sprite2D Sprite { get; private set; }
+    [Export] public AnimatedSprite2D Sprite { get; private set; }
     [Export] public VisibleOnScreenNotifier2D Notifier2D { get; private set; }
     public MobData Data { get; private set; }
     public Vector2 CurrentVelocity { get; set; }
     public uint CurrentHealth { get; set; }
-    private CollisionShape2D _collisionShape;
     public override void _Ready()
     {
         if (Data == null)
@@ -37,9 +36,11 @@ public partial class MobEntity : RigidBody2D, IEntity
         }
         Data = (MobData)data ?? throw new ArgumentNullException(nameof(data));
         CurrentHealth = Data.Stats.Health;
-        Sprite.Texture = Data.Sprite;
+        Sprite.SpriteFrames = Data.Sprite;
         Sprite.Modulate = Data.TintColor;
-        _collisionShape.Shape = Data.CollisionShape;
+        CollisionShape2D shape = new CollisionShape2D();
+        shape.Shape = Data.CollisionShape;
+        Hitbox.AddChild(shape);
     }
     public void NullCheck()
     {

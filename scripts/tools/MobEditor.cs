@@ -38,7 +38,7 @@ public partial class MobDataEditorPanel : Control
         _currentMobData = mobData;
         if (mobData.Sprite != null)
         {
-            _spritePreview.Texture = mobData.Sprite;
+            //_spritePreview.Texture = mobData.Sprite;
             _spritePreview.Show();
         }
         else

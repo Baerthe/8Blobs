@@ -21,8 +21,6 @@ public partial class Main : Node2D
 	[Export] public ItemIndex Items { get; private set; }
 	[Export] public LevelIndex Levels { get; private set; }
 	[Export] public WeaponIndex Weapons { get; private set; }
-	// Events
-	private IEvent _indexEvent;
 	// State
 	public static State CurrentState { get; set; } = State.Menu;
 	private State _priorState;
@@ -44,7 +42,7 @@ public partial class Main : Node2D
 		_eventService = CoreProvider.EventService();
 		_levelService = CoreProvider.LevelService();
 		GD.PrintRich("[color=#000][bgcolor=#00ff00]Game Initialized.[/bgcolor][/color]");
-		_indexEvent = new IndexEvent(Heroes, Templates, Items, Levels, Weapons);
+		_eventService.Publish<IndexEvent>(new IndexEvent(Heroes, Templates, Items, Levels, Weapons));
 		CurrentState = State.Menu;
 		_priorState = CurrentState;
 	}
@@ -94,7 +92,6 @@ public partial class Main : Node2D
 				if (!_isGameStarted)
 				{
 					GameManager.PrepareLevel();
-					_eventService.Publish<IEvent>(_indexEvent);
 					MenuManager.Hide();
 					UiManager.Show();
 					_isGameStarted = true;

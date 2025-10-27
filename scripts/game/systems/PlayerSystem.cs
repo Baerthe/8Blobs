@@ -16,10 +16,14 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
     private LevelEntity _levelRef;
     private List<ItemEntity> _items = new();
     private List<WeaponEntity> _weapons = new();
-    private PackedScene _playerScene;
+    private PackedScene _heroTemplate;
     // Dependency Services
     private IEventService _eventService;
     private IHeroService _heroService;
+    public PlayerSystem(PackedScene heroTemplate)
+    {
+        _heroTemplate = heroTemplate;
+    }
     public override void _Ready()
     {
         GD.Print("PlayerSystem Present.");
@@ -151,6 +155,7 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
             return;
         _weapons.Add(weapon);
     }
+    
     private void Defeat()
     {
         GD.Print("PlayerSystem: Defeat sequence triggered.");
@@ -171,7 +176,7 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
         {
             _playerRef.QueueFree();
         }
-        _playerRef = ResourceLoader.Load<PackedScene>(hero.Entity.ResourcePath).Instantiate<HeroEntity>();
+        _playerRef = _heroTemplate.Instantiate<HeroEntity>();
         _playerRef.Inject(hero);
         _playerRef.Position = _levelRef.PlayerSpawn.Position;
         _playerRef.CurrentHealth = hero.Stats.Health;

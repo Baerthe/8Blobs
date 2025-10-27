@@ -23,7 +23,7 @@ public partial class MobData : Resource, IData
     [Export] public uint AbilityStrength { get; private set; }
     [Export] public MobMovement Movement { get; private set; } = MobMovement.PlayerAttracted;
     [ExportGroup("Assets")]
-    [Export] public Texture2D Sprite { get; set; }
+    [Export] public SpriteFrames Sprite { get; set; }
     [Export] public AudioStream HitSound { get; set; }
     [Export] public AudioStream DeathSound { get; set; }
     [Export] public Color TintColor { get; set; } = Colors.White;

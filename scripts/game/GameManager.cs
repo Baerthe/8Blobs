@@ -16,7 +16,8 @@ public partial class GameManager : Node2D
     public LevelData CurrentLevelData { get; private set; }
     public Camera2D Camera { get; private set; }
     public EntityIndex Templates { get; private set; }
-    public bool IsPaused => _isPaused;
+    public bool IsPaused { get; private set; } = false;
+    public bool IsLevelLoaded { get; private set; } = false;
     private LevelEntity _levelInstance;
     private LevelData _levelData;
     private IAudioService _audioService;
@@ -24,8 +25,6 @@ public partial class GameManager : Node2D
     private IHeroService _heroService;
     private IPrefService _prefService;
     private ILevelService _levelService;
-    private bool _levelLoaded = false;
-    private bool _isPaused = false;
     public override void _Ready()
     {
         _audioService = CoreProvider.AudioService();
@@ -38,16 +37,16 @@ public partial class GameManager : Node2D
     }
     public override void _Process(double delta)
     {
-        if (!_levelLoaded) return;
-        if (_isPaused) return;
+        if (!IsLevelLoaded) return;
+        if (IsPaused) return;
     }
     /// <summary>
     /// Toggles the paused state of the game. When paused, it stops processing for the player and mob systems.
     /// </summary>
     public void TogglePause()
     {
-        _isPaused = !_isPaused;
-        if (_isPaused)
+        IsPaused = !IsPaused;
+        if (IsPaused)
         {
             GetTree().Paused = true;
             CurrentClockSystem.PauseTimers();
@@ -67,7 +66,7 @@ public partial class GameManager : Node2D
     /// <exception cref="InvalidOperationException"></exception>
     public void PrepareLevel()
     {
-        if (_levelLoaded)
+        if (IsLevelLoaded)
         {
             GD.PrintErr("Level already loaded in GameManager");
             throw new InvalidOperationException("ERROR 300: Level already loaded in GameManager. Cannot load another level.");
@@ -79,10 +78,10 @@ public partial class GameManager : Node2D
         _levelInstance.AddToGroup("level");
         // Initialize and add core systems
         CurrentClockSystem = new();
-        CurrentChestSystem = new();
+        CurrentChestSystem = new(ResourceLoader.Load<PackedScene>(Templates.ChestTemplate.ResourcePath));
         CurrentMapSystem = new();
-        CurrentMobSystem = new();
-        CurrentPlayerSystem = new();
+        CurrentMobSystem = new(ResourceLoader.Load<PackedScene>(Templates.MobTemplate.ResourcePath));
+        CurrentPlayerSystem = new(ResourceLoader.Load<PackedScene>(Templates.HeroTemplate.ResourcePath));
         // Add systems to level entity
         _levelInstance.AddChild(CurrentClockSystem);
         _levelInstance.AddChild(CurrentChestSystem);
@@ -91,14 +90,14 @@ public partial class GameManager : Node2D
         _levelInstance.AddChild(CurrentPlayerSystem);
         // Initialize systems
         _eventService.Publish("OnInit");
-        _levelLoaded = true;
+        IsLevelLoaded = true;
     }
     /// <summary>
     /// Unloads the current level by freeing all core systems and resetting the level loaded state.
     /// </summary>
     public void UnloadLevel()
     {
-        if (!_levelLoaded)
+        if (!IsLevelLoaded)
         {
             GD.PrintErr("No level loaded in GameManager to unload");
             return;
@@ -115,7 +114,7 @@ public partial class GameManager : Node2D
         CurrentPlayerSystem = null;
         _levelInstance.QueueFree();
         _levelData = null;
-        _levelLoaded = false;
+        IsLevelLoaded = false;
     }
     private void OnIndexEvent(IEvent eventData) => Templates = ((IndexEvent)eventData).Templates;
 }

@@ -11,12 +11,17 @@ using Core.Interface;
 public sealed partial class ChestSystem : Node2D, IGameSystem
 {
     public bool IsInitialized { get; private set; } = false;
+    private HeroEntity _playerRef;
     private Path2D _chestPath;
     private PathFollow2D _chestSpawner;
     private Vector2 _offsetBetweenChestAndPlayer;
-    private HeroEntity _playerRef;
+    private PackedScene _chestTemplate;
     // Dependency Services
     private IEventService _eventService;
+    public ChestSystem(PackedScene chestTemplate)
+    {
+        _chestTemplate = chestTemplate;
+    }
     public override void _Ready()
     {
         GD.Print("ChestSystem Present.");

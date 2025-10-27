@@ -18,11 +18,15 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     private Path2D _mobSpawnPath;
     private PathFollow2D _mobSpawner;
     private Vector2 _lastPlayerPosition;
-    private PackedScene _genericMobScene;
+    private PackedScene _mobTemplate;
     private float _grossMobWeight = 0f;
     private float _gameElapsedTime = 0f;
     // Dependency Services
     private IEventService _eventService;
+    public MobSystem(PackedScene mobTemplate)
+    {
+        _mobTemplate = mobTemplate;
+    }
     public override void _Ready()
     {
         GD.Print("MobSystem Present.");
@@ -42,8 +46,6 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         if (IsInitialized) return;
         _playerRef = GetTree().GetFirstNodeInGroup("player") as HeroEntity;
         _levelRef = GetTree().GetFirstNodeInGroup("level") as LevelEntity;
-        var levelData = _levelRef.Data as LevelData;
-        //_genericMobScene = templates.MobTemplate;
         _aiHandlers = new Dictionary<MobData, System.Action<MobEntity, MobData>>();
         IsInitialized = true;
     }
@@ -141,11 +143,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     }
     private MobEntity DuplicateMobEntity(MobData mobData)
     {
-        if (_genericMobScene == null)
-        {
-            _genericMobScene = GD.Load<PackedScene>("res://scripts/game/entities/mobs/MobEntity.tscn");
-        }
-        MobEntity mobInstance = _genericMobScene.Instantiate<MobEntity>();
+        MobEntity mobInstance = _mobTemplate.Instantiate<MobEntity>();
         mobInstance.Inject(mobData);
         return mobInstance;
     }
