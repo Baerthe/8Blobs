@@ -10,8 +10,8 @@ public partial class ItemData : Resource, IData
 {
     [ExportCategory("Stats")]
     [ExportGroup("Info")]
-    [Export] public CommonInfo Info { get; private set; } = new CommonInfo();
-    [Export] public CommonData MetaData { get; private set; } = new CommonData();
+    [Export] public Info Info { get; private set; } = new Info();
+    [Export] public Metadata MetaData { get; private set; } = new Metadata();
     [Export] public int MaxStackSize { get; set; } = 64;
     [ExportGroup("Assets")]
     [Export] public SpriteFrames Sprite { get; set; }

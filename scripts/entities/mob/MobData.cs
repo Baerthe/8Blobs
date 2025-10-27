@@ -10,8 +10,8 @@ public partial class MobData : Resource, IData
 {
     [ExportCategory("Stats")]
     [ExportGroup("Info")]
-    [Export] public CommonInfo Info { get; private set; } = new CommonInfo();
-    [Export] public CommonData MetaData { get; private set; } = new CommonData();
+    [Export] public Info Info { get; private set; } = new Info();
+    [Export] public Metadata MetaData { get; private set; } = new Metadata();
     [ExportGroup("Attributes")]
     [Export] public MobTribe Tribe { get; private set; }
     [Export] public MobLevel Level { get; private set; } = MobLevel.Basic;
@@ -19,7 +19,7 @@ public partial class MobData : Resource, IData
     [ExportGroup("Behavior")]
     [Export] public MobAbility Ability { get; private set; } = MobAbility.None;
     [Export] public uint AbilityStrength { get; private set; }
-    [Export] public MobMovement Movement { get; private set; } = MobMovement.PlayerAttracted;
+    [Export] public MobMovement MovementType { get; private set; } = MobMovement.PlayerAttracted;
     [ExportGroup("Assets")]
     [Export] public SpriteFrames Sprite { get; set; }
     [Export] public AudioStream HitSound { get; set; }

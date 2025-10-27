@@ -5,7 +5,7 @@ using Godot;
 public partial class HeroStats : Resource
 {
     [Export] public HeroLevel Level { get; private set; } = HeroLevel.Basic;
-    [Export] public uint Health { get; private set; } = 100;
+    [Export] public uint MaxHealth { get; private set; } = 100;
     [Export] public uint DamageBonus { get; private set; } = 0;
     [Export] public uint ElementDamageBonus { get; private set; } = 0;
     [Export] public ElementType ElementBonus { get; private set; } = ElementType.None;

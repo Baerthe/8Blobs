@@ -107,7 +107,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         RandomNumberGenerator rnd = new RandomNumberGenerator();
         rnd.Randomize();
         _mobSpawnPool = new();
-        foreach (var mob in levelData.MobTable)
+        foreach (var mob in levelData.MobTable.Mobs)
         {
             MobEntity mobInstance = DuplicateMobEntity(mob);
             float spawnWeight = CalculateSpawnWeight(mobInstance.Data);
@@ -127,7 +127,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     }
     private float CalculateSpawnWeight(MobData mobData)
     {
-        float baseWeight = ((float)mobData.Rarity + 1f) * 100f;
+        float baseWeight = ((float)mobData.MetaData.Rarity + 1f) * 100f;
         float modWeight = baseWeight / 255f;
         float levelMultiplier = 1f + ((float)mobData.Level) * 0.2f;
         return modWeight * levelMultiplier;

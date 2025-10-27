@@ -31,7 +31,7 @@ public sealed class LevelService : ILevelService
             return;
         }
         CurrentLevel = levelData;
-        LevelName = levelData.Name;
+        LevelName = levelData.Info.Name;
     }
     public void UnloadLevel()
     {

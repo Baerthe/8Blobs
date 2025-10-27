@@ -2,10 +2,9 @@ namespace Entities;
 
 using Godot;
 /// <summary>
-/// CommonData is a Resource that holds common data attributes shared across various entities in the game.
+/// Metadata is a Resource that holds common data attributes shared across various entities in the game.
 /// </summary>
-[GlobalClass]
-public partial class CommonData : Resource
+public partial class Metadata : Resource
 {
     [Export] public Texture2D Icon { get; private set; }
     [Export] public RarityType Rarity { get; private set; } = RarityType.Common;

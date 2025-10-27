@@ -10,8 +10,8 @@ public partial class HeroData : Resource, IData
 {
     [ExportCategory("Stats")]
     [ExportGroup("Info")]
-    [Export] public CommonInfo Info { get; private set; } = new CommonInfo();
-    [Export] public CommonData MetaData { get; private set; } = new CommonData();
+    [Export] public Info Info { get; private set; } = new Info();
+    [Export] public Metadata MetaData { get; private set; } = new Metadata();
     [ExportGroup("Attributes")]
     [Export] public HeroStats Stats { get; private set; } = new HeroStats();
     [ExportGroup("Modifiers")]
