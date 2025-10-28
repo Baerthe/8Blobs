@@ -35,7 +35,6 @@ public partial class MobEntity : RigidBody2D, IEntity
         }
         Data = (MobData)data ?? throw new ArgumentNullException(nameof(data));
         Attributes.CurrentHealth = Data.Stats.MaxHealth;
-        Attributes.CurrentVelocity = 0;
         Sprite.SpriteFrames = Data.Sprite;
         Sprite.Modulate = Data.TintColor;
         CollisionShape2D shape = new CollisionShape2D();

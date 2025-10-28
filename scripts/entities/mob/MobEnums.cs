@@ -34,5 +34,6 @@ public enum MobMovement : byte
     PlayerAttracted = 8,
     RandomDirection = 12,
     Stationary = 16,
-    ZigZagSway = 20
+    ZigZagSway = 20,
+    CircleStrafe = 24
 }

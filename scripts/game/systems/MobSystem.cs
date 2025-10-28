@@ -6,12 +6,16 @@ using Entities;
 using Game.Interface;
 using Core.Interface;
 using System.Collections.Generic;
-
+/// <summary>
+/// MobSystem is responsible for managing all mobile entities (mobs) within the game.
+/// It handles their initialization, spawning, AI behavior, and updates during the game loop.
+/// The system maintains a pool of mobs based on the current level's data and processes their actions based on predefined AI movement types.
+/// </summary>
 public sealed partial class MobSystem : Node2D, IGameSystem
 {
     public bool IsInitialized { get; private set; } = false;
     private List<(MobData mob, float weight)> _mobSpawnPool;
-    private Dictionary<MobData, System.Action<MobEntity, MobData>> _aiHandlers;
+    private Dictionary<MobMovement, System.Action<MobEntity>> _aiHandlers;
     private HeroEntity _playerRef = null;
     private LevelEntity _levelRef = null;
     private Vector2 _offsetBetweenSpawnerAndPlayer;
@@ -21,6 +25,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     private PackedScene _mobTemplate;
     private float _grossMobWeight = 0f;
     private float _gameElapsedTime = 0f;
+    private double _deltaTime = 0.0;
     // Dependency Services
     private readonly IAudioService _audioService;
     private readonly IEventService _eventService;
@@ -44,12 +49,15 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         _eventService.Unsubscribe(OnMobTimeout);
         _eventService.Unsubscribe(OnGameTimeout);
     }
+    public override void _Process(double delta)
+    {
+        _deltaTime = delta;
+    }
     public void OnInit()
     {
         if (IsInitialized) return;
         _playerRef = GetTree().GetFirstNodeInGroup("player") as HeroEntity;
         _levelRef = GetTree().GetFirstNodeInGroup("level") as LevelEntity;
-        _aiHandlers = new Dictionary<MobData, System.Action<MobEntity, MobData>>();
         IsInitialized = true;
     }
     public void PauseMobs()
@@ -80,17 +88,30 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         _offsetBetweenSpawnerAndPlayer = _playerRef.Position - _mobSpawnPath.Position;
         _lastPlayerPosition = _playerRef.Position;
         var activeMobs = GetTree().GetNodesInGroup("mobs");
-        // Clean up dead mobs
         foreach (var mob in activeMobs)
         {
             MobEntity mobEntity = mob as MobEntity;
             if (mobEntity.Attributes.CurrentHealth == 0)
             {
-                //TODO: play mob death shader/effects/sound here
+                //TODO: play mob death shader/effects/sound here, death queue etc.
+                // Temporarily just free the mob
                 mobEntity.QueueFree();
+                continue;
             }
+            // Slow down processing for off-screen mobs
+            if (!mobEntity.Notifier2D.IsOnScreen())
+            {
+                mobEntity.Attributes.FrameSkipCounter++;
+                if (mobEntity.Attributes.FrameSkipCounter > 5)
+                {
+                    mobEntity.Attributes.FrameSkipCounter = 0;
+                } else
+                    continue;
+            }
+            _aiHandlers[mobEntity.Data.MovementType](mobEntity);
         }
     }
+    // Event Handlers
     private void OnMobTimeout()
     {
         if (_mobSpawnPool == null || _mobSpawnPool.Count == 0)
@@ -157,5 +178,70 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         MobEntity mobInstance = _mobTemplate.Instantiate<MobEntity>();
         mobInstance.Inject(mobData);
         return mobInstance;
+    }
+    // AI Handlers and Behaviors
+    private void RegisterAIHandlers()
+    {
+        _aiHandlers = new()
+        {
+            { MobMovement.Stationary, HandleIdleAI },
+            { MobMovement.CurvedDirection, HandleCurvedAI },
+            { MobMovement.DashDirection, HandleDashAI },
+            { MobMovement.PlayerAttracted, HandleAttractedAI },
+            { MobMovement.RandomDirection, HandleRandomAI },
+            { MobMovement.ZigZagSway, HandleZigZagAI },
+            { MobMovement.CircleStrafe, HandleCircleStrafeAI }
+        };
+    }
+    private void HandleIdleAI(MobEntity mobEntity)
+    {
+        mobEntity.Position += Vector2.Zero;
+    }
+    private void HandleCurvedAI(MobEntity mobEntity)
+    {
+        Vector2 directionToPlayer = (_playerRef.Position - mobEntity.Position).Normalized();
+        directionToPlayer = directionToPlayer.Rotated((float)GD.RandRange(-0.05, 0.05));
+        mobEntity.LinearVelocity = mobEntity.LinearVelocity * 0.95f + directionToPlayer * mobEntity.Data.Stats.Speed * 0.05f;
+    }
+    private void HandleDashAI(MobEntity mobEntity)
+    {
+        if (mobEntity.LinearVelocity >= Vector2.Zero)
+            mobEntity.LinearVelocity -= mobEntity.LinearVelocity * 0.1f;
+        Vector2 directionToPlayer = (_playerRef.Position - mobEntity.Position).Normalized();
+        mobEntity.LinearVelocity = directionToPlayer * mobEntity.Data.Stats.Speed * 1.5f;
+    }
+    private void HandleAttractedAI(MobEntity mobEntity)
+    {
+        Vector2 directionToPlayer = (_playerRef.Position - mobEntity.Position).Normalized();
+        mobEntity.LinearVelocity = directionToPlayer * mobEntity.Data.Stats.Speed;
+    }
+    private void HandleRandomAI(MobEntity mobEntity)
+    {
+        if (mobEntity.LinearVelocity.Length() < 1f)
+        {
+            float angle = (float)GD.RandRange(0, Mathf.Pi * 2);
+            Vector2 randomDirection = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+            mobEntity.LinearVelocity = randomDirection * mobEntity.Data.Stats.Speed;
+        }
+        else
+        {
+            mobEntity.LinearVelocity -= mobEntity.LinearVelocity * 0.05f;
+        }
+    }
+    private void HandleZigZagAI(MobEntity mobEntity)
+    {
+        Vector2 directionToPlayer = (_playerRef.Position - mobEntity.Position).Normalized();
+        float zigZagOffset = Mathf.Sin(_gameElapsedTime * 5f) * 0.25f + (float)GD.RandRange(-0.3f, 0.3f);
+        Vector2 perpendicular = new Vector2(-directionToPlayer.Y, directionToPlayer.X);
+        Vector2 zigZagDirection = (directionToPlayer + perpendicular * zigZagOffset).Normalized();
+        mobEntity.LinearVelocity = zigZagDirection * mobEntity.Data.Stats.Speed;
+    }
+    private void HandleCircleStrafeAI(MobEntity mobEntity)
+    {
+        Vector2 directionToPlayer = (_playerRef.Position - mobEntity.Position).Normalized();
+        Vector2 perpendicular = new Vector2(-directionToPlayer.Y, directionToPlayer.X);
+        float circleOffset = Mathf.Sin(_gameElapsedTime * 3f) * 0.5f;
+        Vector2 strafeDirection = (directionToPlayer + perpendicular * circleOffset).Normalized();
+        mobEntity.LinearVelocity = strafeDirection * mobEntity.Data.Stats.Speed;
     }
 }

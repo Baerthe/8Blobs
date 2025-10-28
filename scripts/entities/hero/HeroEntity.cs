@@ -30,7 +30,6 @@ public partial class HeroEntity : CharacterBody2D, IEntity
         }
         Data = (HeroData)data ?? throw new ArgumentNullException(nameof(data));
         Attributes.CurrentHealth = Data.Stats.MaxHealth;
-        Attributes.CurrentVelocity = 0;
         Sprite.SpriteFrames = Data.Sprite;
         Sprite.Modulate = Data.TintColor;
         CollisionShape2D shape = new CollisionShape2D();

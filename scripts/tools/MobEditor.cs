@@ -47,10 +47,10 @@ public partial class MobDataEditorPanel : Control
         }
         // Display stats preview
         _statsLabel.Text = $@"
-        Name: {mobData.Name ?? "Unnamed"}
+        Name: {mobData.Info.Name ?? "Unnamed"}
         Tribe: {mobData.Tribe}
         Level: {mobData.Level}
-        Health: {mobData.Stats?.Health ?? 0}
+        Health: {mobData.Stats?.MaxHealth ?? 0}
         Damage: {mobData.Stats?.Damage ?? 0}
         Speed: {mobData.Stats?.Speed ?? 0}
         ";
