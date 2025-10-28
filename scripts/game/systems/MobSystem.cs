@@ -38,14 +38,14 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     }
     public override void _Ready()
     {
-        _eventService.Subscribe(OnInit);
+        _eventService.Subscribe<Init>(OnInit);
         _eventService.Subscribe(OnMobTimeout);
         _eventService.Subscribe(OnGameTimeout);
         GD.Print("MobSystem Ready.");
     }
     public override void _ExitTree()
     {
-        _eventService.Unsubscribe(OnInit);
+        _eventService.Unsubscribe<Init>(OnInit);
         _eventService.Unsubscribe(OnMobTimeout);
         _eventService.Unsubscribe(OnGameTimeout);
     }

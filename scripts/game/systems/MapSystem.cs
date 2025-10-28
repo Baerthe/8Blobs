@@ -42,12 +42,12 @@ public sealed partial class MapSystem : Node2D, IGameSystem
 	}
 	public override void _Ready()
 	{
-		_eventService.Subscribe(OnInit);
+		_eventService.Subscribe<Init>(OnInit);
 		GD.Print("MapSystem Ready.");
 	}
 	public override void _ExitTree()
     {
-        _eventService.Unsubscribe(OnInit);
+        _eventService.Unsubscribe<Init>(OnInit);
     }
     public void OnInit()
 	{

@@ -3,9 +3,9 @@ namespace Core;
 using Entities;
 using Core.Interface;
 /// <summary>
-/// Event struct containing all game indices for easy access to pass to game systems.
+/// Event class containing all game indices for easy access to pass to game systems.
 /// </summary>
-public struct IndexEvent : IEvent
+public sealed class IndexEvent : IEvent
 {
     public HeroIndex Heroes { get; private set; }
 	public EntityIndex Templates { get; private set; }

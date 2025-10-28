@@ -71,6 +71,7 @@ public partial class GameManager : Node2D
             GD.PrintErr("Level already loaded in GameManager");
             throw new InvalidOperationException("ERROR 300: Level already loaded in GameManager. Cannot load another level.");
         }
+        //TODO: We need to replace these resource loads with proper preloading via loadthreading; IE add a loading screen lol.
         // Load level data and instantiate level entity
         _levelData = _levelService.CurrentLevel;
         _levelInstance = ResourceLoader.Load<PackedScene>(_levelData.Entity.ResourcePath).Instantiate<LevelEntity>();
@@ -89,7 +90,7 @@ public partial class GameManager : Node2D
         _levelInstance.AddChild(CurrentMobSystem);
         _levelInstance.AddChild(CurrentPlayerSystem);
         // Initialize systems
-        _eventService.Publish("OnInit");
+        _eventService.Publish<Init>(new Init());
         IsLevelLoaded = true;
     }
     /// <summary>

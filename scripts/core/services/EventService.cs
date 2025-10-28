@@ -15,45 +15,44 @@ using System.Collections.Generic;
 /// </remarks>
 public sealed class EventService : IEventService
 {
-    private Dictionary<Type, List<Delegate>> _typedSubs = new();
-    private Dictionary<string, List<Action>> _namedSubs = new();
+    private Dictionary<Type, List<Delegate>> _subs = new();
     public EventService()
     {
         GD.PrintRich("[color=#00ff88]EventService initialized.[/color]");
     }
     public void UnsubscribeAll()
     {
-        _typedSubs.Clear();
-        _namedSubs.Clear();
+        _subs.Clear();
         GD.PrintRich("[color=#ff8800]EventService: All subscriptions cleared. They will be recreated on next call.[/color]");
     }
     public void Subscribe<T>(Action<IEvent> handler)
     {
         var type = typeof(T);
-        if (!_typedSubs.ContainsKey(type))
+        if (!_subs.ContainsKey(type))
         {
             GD.PrintRich($"[color=#0088ff]EventService: Creating subscription list for event type {type.Name}.[/color]");
-            _typedSubs[type] = new List<Delegate>();
+            _subs[type] = new List<Delegate>();
         }
         GD.PrintRich($"[color=#0044FF]EventService: Subscribing handler to event type {type.Name}.[/color]");
-        _typedSubs[type].Add(handler);
+        _subs[type].Add(handler);
     }
-    public void Subscribe(Action handler)
+    public void Subscribe<T>(Action handler)
     {
-        if (!_namedSubs.ContainsKey(handler.Method.Name))
+        var type = typeof(T);
+        if (!_subs.ContainsKey(type))
         {
-            GD.PrintRich($"[color=#0088ff]EventService: Creating subscription list for event name {handler.Method.Name}.[/color]");
-            _namedSubs[handler.Method.Name] = new List<Action>();
+            GD.PrintRich($"[color=#0088ff]EventService: Creating subscription list for event type {type.Name}.[/color]");
+            _subs[type] = new List<Delegate>();
         }
-        GD.PrintRich($"[color=#0044FF]EventService: Subscribing handler to event name {handler.Method.Name}.[/color]");
-        _namedSubs[handler.Method.Name].Add(handler);
+        GD.PrintRich($"[color=#0044FF]EventService: Subscribing handler to event type {type.Name}.[/color]");
+        _subs[type].Add(handler);
     }
     public void Unsubscribe<T>(Action<IEvent> eventHandler)
     {
         var type = typeof(T);
-        if (_typedSubs.ContainsKey(type))
+        if (_subs.ContainsKey(type))
         {
-            bool removed = _typedSubs[type].Remove(eventHandler);
+            bool removed = _subs[type].Remove(eventHandler);
             if (removed)
             {
                 GD.PrintRich($"[color=#FF4444]EventService: Unsubscribed handler from event type {type.Name}.[/color]");
@@ -62,67 +61,62 @@ public sealed class EventService : IEventService
             {
                 GD.PrintErr($"EventService: Attempted to unsubscribe handler from event type {type.Name} but handler was not found. Never subbed or already unsubscribed?");
             }
-            if (_typedSubs[type].Count == 0)
+            if (_subs[type].Count == 0)
             {
-                _typedSubs.Remove(type);
+                _subs.Remove(type);
             }
         }
     }
-    public void Unsubscribe(Action handler)
+    public void Unsubscribe<T>(Action eventHandler)
     {
-        var name = handler.Method.Name;
-        if (!_namedSubs.ContainsKey(name))
+        var type = typeof(T);
+        if (_subs.ContainsKey(type))
         {
-            GD.PrintErr($"EventService: Attempted to unsubscribe from event name {name} but no subscriptions exist. Misspelled? Already unsubscribed?");
-            return;
-        }
-        foreach (var key in _namedSubs.Keys)
-        {
-            _namedSubs[key].Remove(handler);
-        }
-        if (_namedSubs[name].Count == 0)
-        {
-            _namedSubs.Remove(name);
+            bool removed = _subs[type].Remove(eventHandler);
+            if (removed)
+            {
+                GD.PrintRich($"[color=#FF4444]EventService: Unsubscribed handler from event type {type.Name}.[/color]");
+            }
+            else
+            {
+                GD.PrintErr($"EventService: Attempted to unsubscribe handler from event type {type.Name} but handler was not found. Never subbed or already unsubscribed?");
+            }
+            if (_subs[type].Count == 0)
+            {
+                _subs.Remove(type);
+            }
         }
     }
     public void Publish<T>(IEvent eventData)
     {
         var type = typeof(T);
-        if (!_typedSubs.ContainsKey(type))
+        if (!_subs.ContainsKey(type))
         {
             GD.PrintErr($"EventService: Publish called for event type {type.Name} but no subscriptions exist. Did you forget to subscribe?");
             return;
         }
         else
         {
-            foreach (var handler in _typedSubs[type])
+            foreach (var handler in _subs[type])
             {
                 ((Action<IEvent>)handler)(eventData);
             }
         }
     }
-    public void Publish(string eventName)
+    public void Publish<T>()
     {
-        if (!_namedSubs.ContainsKey(eventName))
+        var type = typeof(T);
+        if (!_subs.ContainsKey(type))
         {
-            GD.PrintErr($"EventService: Publish called for event name {eventName} but no subscriptions exist. Did you forget to subscribe?");
+            GD.PrintErr($"EventService: Publish called for event type {type.Name} but no subscriptions exist. Did you forget to subscribe?");
             return;
         }
         else
         {
-            foreach (var handler in _namedSubs[eventName])
+            foreach (var handler in _subs[type])
             {
-                handler.Invoke();
+                ((Action)handler)();
             }
         }
     }
-}
-/// <summary>
-/// Generic data event class for dynamic event data. This is not type safe but allows for flexible event data structures.
-/// This is mostly intended for events where the data structure is not known at compile time or for testing purposes.
-/// You should almost always prefer defining a custom class for your event data for type safety and clarity.
-/// </summary>
-public class DataEvent
-{
-    public Dictionary<string, object> Data { get; set; } = new();
 }
