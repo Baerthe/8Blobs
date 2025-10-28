@@ -29,13 +29,13 @@ public sealed partial class ChestSystem : Node2D, IGameSystem
     public override void _Ready()
     {
         _eventService.Subscribe<Init>(OnInit);
-        _eventService.Subscribe(OnChestSpawnTimeout);
+        _eventService.Subscribe<ChestSpawnTimeout>(OnChestSpawnTimeout);
         GD.Print("ChestSystem Ready.");
     }
     public override void _ExitTree()
     {
         _eventService.Unsubscribe<Init>(OnInit);
-        _eventService.Unsubscribe(OnChestSpawnTimeout);
+        _eventService.Unsubscribe<ChestSpawnTimeout>(OnChestSpawnTimeout);
     }
     public void OnInit()
     {
@@ -79,5 +79,6 @@ public sealed partial class ChestSystem : Node2D, IGameSystem
     {
         if (!IsInitialized) return;
         _chestSpawner.ProgressRatio = GD.Randf();
+        // TODO: Add logic to check for existing chests and limit the number of active chests.
     }
 }

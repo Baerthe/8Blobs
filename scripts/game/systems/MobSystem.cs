@@ -39,15 +39,15 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     public override void _Ready()
     {
         _eventService.Subscribe<Init>(OnInit);
-        _eventService.Subscribe(OnMobTimeout);
-        _eventService.Subscribe(OnGameTimeout);
+        _eventService.Subscribe<MobSpawnTimeout>(OnMobTimeout);
+        _eventService.Subscribe<GameTimeout>(OnGameTimeout);
         GD.Print("MobSystem Ready.");
     }
     public override void _ExitTree()
     {
         _eventService.Unsubscribe<Init>(OnInit);
-        _eventService.Unsubscribe(OnMobTimeout);
-        _eventService.Unsubscribe(OnGameTimeout);
+        _eventService.Unsubscribe<MobSpawnTimeout>(OnMobTimeout);
+        _eventService.Unsubscribe<GameTimeout>(OnGameTimeout);
     }
     public override void _Process(double delta)
     {
@@ -141,7 +141,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         _mobSpawnPool = new();
         foreach (var mob in levelData.MobTable.Mobs)
         {
-            MobEntity mobInstance = DuplicateMobEntity(mob);
+            MobEntity mobInstance = CreateMobEntity(mob);
             float spawnWeight = CalculateSpawnWeight(mobInstance.Data);
             if (_mobSpawnPool.Find(x => x.mob == mob).weight == spawnWeight)
             {
@@ -173,7 +173,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         float levelPenalty = (1f - progression) * (levelData.MaxLevel - levelValue);
         return levelBonus + levelPenalty + 0.1f;
     }
-    private MobEntity DuplicateMobEntity(MobData mobData)
+    private MobEntity CreateMobEntity(MobData mobData)
     {
         MobEntity mobInstance = _mobTemplate.Instantiate<MobEntity>();
         mobInstance.Inject(mobData);
