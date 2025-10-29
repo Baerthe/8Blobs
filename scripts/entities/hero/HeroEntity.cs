@@ -12,6 +12,7 @@ public partial class HeroEntity : CharacterBody2D, IEntity
     [ExportCategory("Stats")]
     [ExportGroup("Components")]
     [Export] public CollisionObject2D Hitbox { get; private set; }
+    [Export] public CollisionObject2D PickupHitbox { get; private set; }
     [Export] public AnimatedSprite2D Sprite { get; private set; }
     public HeroData Data { get; private set; }
     public uint CurrentHealth { get; set; }

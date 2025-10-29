@@ -6,6 +6,8 @@ using Entities;
 using Game.Interface;
 using Core.Interface;
 using System.Collections.Generic;
+using System.IO;
+
 /// <summary>
 /// MobSystem is responsible for managing all mobile entities (mobs) within the game.
 /// It handles their initialization, spawning, AI behavior, and updates during the game loop.
@@ -20,10 +22,8 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     private List<MobEntity> _activeMobs = new();
     private HeroEntity _playerRef = null;
     private LevelEntity _levelRef = null;
-    private Vector2 _offsetBetweenSpawnerAndPlayer;
-    private Path2D _mobSpawnPath; // TODO: We should have multiple spawn paths for more dynamic spawning and move these to a subclass
-    private PathFollow2D _mobSpawner;
-    private Vector2 _lastPlayerPosition;
+    private Path2D[] _mobSpawnPaths;
+    private PathFollow2D[] _mobSpawners;
     private PackedScene _mobTemplate;
     private float _grossMobWeight = 0f;
     private float _gameElapsedTime = 0f;
@@ -62,8 +62,8 @@ public sealed partial class MobSystem : Node2D, IGameSystem
             GD.PrintErr("MobSystem: Update called but system is not initialized.");
             return;
         }
-        _offsetBetweenSpawnerAndPlayer = _playerRef.Position - _mobSpawnPath.Position;
-        _lastPlayerPosition = _playerRef.Position;
+        // Center mob spawners around player
+        _mobSpawnPaths[0].Position = _playerRef.Position - new Vector2(150f, 150f);
         foreach (var mob in _activeMobs)
         {
             MobEntity mobEntity = mob;
@@ -96,6 +96,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         _levelRef = GetTree().GetFirstNodeInGroup("level") as LevelEntity;
         BuildMobTable();
         BuildMobPool();
+        BuildMobPaths();
         RegisterAIHandlers();
         IsInitialized = true;
     }
@@ -113,6 +114,84 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         _gameElapsedTime += 1f; // Increment game time by 1 second, which should be the timeout of this event.
     }
     // Initialization Methods
+    private void BuildMobPaths()
+    {
+        _mobSpawnPaths = new Path2D[5];
+        _mobSpawners = new PathFollow2D[5];
+        for (int i = 0; i < _mobSpawnPaths.Length; i++)
+        {
+            Path2D mobPath = new Path2D();
+            PathFollow2D mobSpawner = new PathFollow2D();
+            Curve2D curve = new Curve2D();
+            mobPath.AddToGroup("mob_paths");
+            _mobSpawnPaths[i] = mobPath;
+            _mobSpawners[i] = mobSpawner;
+            mobSpawner.Loop = true;
+            mobPath.AddChild(mobSpawner);
+            _levelRef.AddChild(mobPath);
+        }
+        // Small Circle
+        _mobSpawnPaths[0].Curve = BuildCurve("circle", 300f);
+        _mobSpawnPaths[0].Position = _playerRef.Position - new Vector2(150f, 150f);
+        // Large Circle
+        _mobSpawnPaths[1].Curve = BuildCurve("circle", 500f);
+        _mobSpawnPaths[1].Position = _playerRef.Position - new Vector2(250f, 250f);
+        // Hexagon
+        _mobSpawnPaths[2].Curve = BuildCurve("hexagon", 400f);
+        _mobSpawnPaths[2].Position = _playerRef.Position - new Vector2(200f, 200f);
+        // Diamond
+        _mobSpawnPaths[3].Curve = BuildCurve("diamond", 350f);
+        _mobSpawnPaths[3].Position = _playerRef.Position - new Vector2(175f, 175f);
+        // Star
+        _mobSpawnPaths[4].Curve = BuildCurve("star", 400f);
+        _mobSpawnPaths[4].Position = _playerRef.Position - new Vector2(200f, 200f);
+        GD.Print("MobSystem: Built mob spawn paths.");
+    }
+    private Curve2D BuildCurve(string shape, float size)
+    {
+        Curve2D curve = new Curve2D();
+        switch (shape)
+        {
+            case "circle":
+                int points = 20;
+                for (int i = 0; i < points; i++)
+                {
+                    float angle = (Mathf.Pi * 2 / points) * i;
+                    Vector2 point = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * size;
+                    curve.AddPoint(point);
+                }
+                break;
+            case "hexagon":
+                for (int i = 0; i < 6; i++)
+                {
+                    float angle = (Mathf.Pi * 2 / 6) * i;
+                    Vector2 point = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * size;
+                    curve.AddPoint(point);
+                }
+                break;
+            case "diamond":
+                curve.AddPoint(new Vector2(0, -size));
+                curve.AddPoint(new Vector2(size, 0));
+                curve.AddPoint(new Vector2(0, size));
+                curve.AddPoint(new Vector2(-size, 0));
+                break;
+            case "star":
+                for (int i = 0; i < 5; i++)
+                {
+                    float outerAngle = (Mathf.Pi * 2 / 5) * i;
+                    float innerAngle = outerAngle + (Mathf.Pi / 5);
+                    Vector2 outerPoint = new Vector2(Mathf.Cos(outerAngle), Mathf.Sin(outerAngle)) * size;
+                    Vector2 innerPoint = new Vector2(Mathf.Cos(innerAngle), Mathf.Sin(innerAngle)) * (size / 2);
+                    curve.AddPoint(outerPoint);
+                    curve.AddPoint(innerPoint);
+                }
+                break;
+            default:
+                GD.PrintErr($"MobSystem: BuildCurve called with unknown shape '{shape}'.");
+                break;
+        }
+        return curve;
+    }
     private void BuildMobPool()
     {
         if (_mobTable == null || _mobTable.Count == 0)
