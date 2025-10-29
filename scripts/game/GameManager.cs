@@ -50,13 +50,11 @@ public partial class GameManager : Node2D
         {
             GetTree().Paused = true;
             CurrentClockSystem.PauseTimers();
-            CurrentMobSystem.PauseMobs();
         }
         else
         {
             GetTree().Paused = false;
             CurrentClockSystem.ResumeTimers();
-            CurrentMobSystem.ResumeMobs();
         }
     }
     /// <summary>
@@ -78,11 +76,11 @@ public partial class GameManager : Node2D
         AddChild(_levelInstance);
         _levelInstance.AddToGroup("level");
         // Initialize and add core systems
-        CurrentClockSystem = new();
-        CurrentChestSystem = new(ResourceLoader.Load<PackedScene>(Templates.ChestTemplate.ResourcePath));
-        CurrentMapSystem = new();
-        CurrentMobSystem = new(ResourceLoader.Load<PackedScene>(Templates.MobTemplate.ResourcePath));
-        CurrentPlayerSystem = new(ResourceLoader.Load<PackedScene>(Templates.HeroTemplate.ResourcePath));
+        CurrentClockSystem = new(_eventService);
+        CurrentChestSystem = new(ResourceLoader.Load<PackedScene>(Templates.ChestTemplate.ResourcePath), _audioService, _eventService);
+        CurrentMapSystem = new(_eventService);
+        CurrentMobSystem = new(ResourceLoader.Load<PackedScene>(Templates.MobTemplate.ResourcePath), _audioService, _eventService);
+        CurrentPlayerSystem = new(ResourceLoader.Load<PackedScene>(Templates.HeroTemplate.ResourcePath), _audioService, _eventService, _heroService);
         // Add systems to level entity
         _levelInstance.AddChild(CurrentClockSystem);
         _levelInstance.AddChild(CurrentChestSystem);
