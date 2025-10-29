@@ -7,6 +7,7 @@ using Game.Interface;
 using Core.Interface;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
 /// <summary>
 /// MobSystem is responsible for managing all mobile entities (mobs) within the game.
@@ -26,6 +27,8 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     private PathFollow2D[] _mobSpawners;
     private PackedScene _mobTemplate;
     private float _grossMobWeight = 0f;
+    private float _grossMobWeightMax = 1200f;
+    private float _grossMobWeightNormalized = 0f;
     private float _gameElapsedTime = 0f;
     private double _deltaTime = 0.0;
     // Dependency Services
@@ -107,11 +110,13 @@ public sealed partial class MobSystem : Node2D, IGameSystem
             GD.PrintErr("MobSystem: OnMobTimeout called but mob data lookup is empty.");
             return;
         }
+        int timeAdjustment = (int)Math.Floor(_gameElapsedTime / 60f) * 5;
+        byte scale = (byte)((_grossMobWeightNormalized + timeAdjustment) * 255f);
         //TODO: Implement spawning logic based on weights and game time
     }
     private void OnGameTimeout()
     {
-        _gameElapsedTime += 1f; // Increment game time by 1 second, which should be the timeout of this event.
+        _gameElapsedTime += 1f;
     }
     // Initialization Methods
     private void BuildMobPaths()
@@ -211,6 +216,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
                 _pooledMobs.Add(mobInstance);
             }
         }
+        _grossMobWeightNormalized = Mathf.Clamp(_grossMobWeight / _grossMobWeightMax, 0f, 1f);
         GD.Print($"MobSystem: Built mob pool with {_pooledMobs.Count} total mobs.");
     }
     private void BuildMobTable()
@@ -240,7 +246,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     private float CalculateSpawnWeight(MobData mobData)
     {
         float baseWeight = ((float)mobData.MetaData.Rarity + 1f) * 10f;
-        float levelMultiplier = 10f * ((float)mobData.Level);
+        float levelMultiplier = 10f * ((float)mobData.Level +1f);
         return (baseWeight * levelMultiplier) / 255f;
     }
     private MobEntity CreateMobEntity(MobData mobData)
@@ -248,16 +254,6 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         MobEntity mobInstance = _mobTemplate.Instantiate<MobEntity>();
         mobInstance.Inject(mobData);
         return mobInstance;
-    }
-    // Mob Spawning
-    private float CalculateLevelCurve(MobLevel level, float gameTime)
-    {
-        LevelData levelData = _levelRef.Data as LevelData;
-        int levelValue = (int)level;
-        float progression = Mathf.Clamp(gameTime / levelData.MaxTime, 0f, 1f);
-        float levelBonus = Mathf.Pow(progression, 2f) * levelValue;
-        float levelPenalty = (1f - progression) * (levelData.MaxLevel - levelValue);
-        return levelBonus + levelPenalty;
     }
     // AI Handlers and Behaviors
     private void RegisterAIHandlers()
@@ -304,9 +300,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
             mobEntity.LinearVelocity = randomDirection * mobEntity.Data.Stats.Speed;
         }
         else
-        {
             mobEntity.LinearVelocity -= mobEntity.LinearVelocity * 0.05f;
-        }
     }
     private void HandleZigZagAI(MobEntity mobEntity)
     {
