@@ -132,9 +132,6 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
 
         IsInitialized = true;
     }
-    public void Update()
-    {
-    }
     /// <summary>
     /// Adds an item to the player's inventory. If the item already exists and is stackable, it increases the stack size.
     /// </summary>

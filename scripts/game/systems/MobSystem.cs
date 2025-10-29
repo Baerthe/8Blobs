@@ -82,9 +82,9 @@ public sealed partial class MobSystem : Node2D, IGameSystem
                 {
                     mobEntity.Attributes.FrameSkipCounter = 0;
                 }
-                else
-                    continue;
+                else continue;
             }
+            mobEntity.Sprite.Play("Move");
             _aiHandlers[mobEntity.Data.MovementType](mobEntity);
         }
     }
@@ -94,6 +94,9 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         if (IsInitialized) return;
         _playerRef = GetTree().GetFirstNodeInGroup("player") as HeroEntity;
         _levelRef = GetTree().GetFirstNodeInGroup("level") as LevelEntity;
+        BuildMobTable();
+        BuildMobPool();
+        RegisterAIHandlers();
         IsInitialized = true;
     }
     private void OnMobTimeout()

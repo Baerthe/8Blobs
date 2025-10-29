@@ -16,7 +16,7 @@ public partial class GameManager : Node2D
     public LevelData CurrentLevelData { get; private set; }
     public Camera2D Camera { get; private set; }
     public EntityIndex Templates { get; private set; }
-    public bool IsPaused { get; private set; } = false;
+    public bool IsPlaying { get; private set; } = false;
     public bool IsLevelLoaded { get; private set; } = false;
     private LevelEntity _levelInstance;
     private LevelData _levelData;
@@ -25,6 +25,7 @@ public partial class GameManager : Node2D
     private IHeroService _heroService;
     private IPrefService _prefService;
     private ILevelService _levelService;
+    // Godot Methods
     public override void _Ready()
     {
         _audioService = CoreProvider.AudioService();
@@ -33,30 +34,20 @@ public partial class GameManager : Node2D
         _prefService = CoreProvider.PrefService();
         _levelService = CoreProvider.LevelService();
         _eventService.Subscribe<IndexEvent>(OnIndexEvent);
+        _eventService.Subscribe<PulseTimeout>(OnPulseTimeout);
+        _eventService.Subscribe<SlowPulseTimeout>(OnSlowPulseTimeout);
         Camera = GetParent().GetNode<Camera2D>("MainCamera");
+    }
+    public override void _ExitTree()
+    {
+        _eventService.Unsubscribe<IndexEvent>(OnIndexEvent);
     }
     public override void _Process(double delta)
     {
         if (!IsLevelLoaded) return;
-        if (IsPaused) return;
+        if (!IsPlaying) return;
     }
-    /// <summary>
-    /// Toggles the paused state of the game. When paused, it stops processing for the player and mob systems.
-    /// </summary>
-    public void TogglePause()
-    {
-        IsPaused = !IsPaused;
-        if (IsPaused)
-        {
-            GetTree().Paused = true;
-            CurrentClockSystem.PauseTimers();
-        }
-        else
-        {
-            GetTree().Paused = false;
-            CurrentClockSystem.ResumeTimers();
-        }
-    }
+    // GameManager Methods
     /// <summary>
     /// Prepares the level by initializing and adding the core systems to the provided level node.
     /// </summary>
@@ -88,8 +79,25 @@ public partial class GameManager : Node2D
         _levelInstance.AddChild(CurrentMobSystem);
         _levelInstance.AddChild(CurrentPlayerSystem);
         // Initialize systems
-        _eventService.Publish<Init>(new Init());
+        _eventService.Publish<Init>();
         IsLevelLoaded = true;
+    }
+    /// <summary>
+    /// Toggles the paused state of the game. When paused, it stops processing for the player and mob systems.
+    /// </summary>
+    public void TogglePause()
+    {
+        IsPlaying = !IsPlaying;
+        if (!IsPlaying)
+        {
+            GetTree().Paused = true;
+            CurrentClockSystem.PauseTimers();
+        }
+        else
+        {
+            GetTree().Paused = false;
+            CurrentClockSystem.ResumeTimers();
+        }
     }
     /// <summary>
     /// Unloads the current level by freeing all core systems and resetting the level loaded state.
@@ -115,5 +123,18 @@ public partial class GameManager : Node2D
         _levelData = null;
         IsLevelLoaded = false;
     }
+    // Event Handlers
     private void OnIndexEvent(IEvent eventData) => Templates = ((IndexEvent)eventData).Templates;
+    private void OnPulseTimeout(IEvent eventData)
+    {
+        if (!IsLevelLoaded) return;
+        if (!IsPlaying) return;
+        CurrentMapSystem.Update();
+        CurrentMobSystem.Update();
+    }
+    private void OnSlowPulseTimeout(IEvent eventData)
+    {
+        if (!IsLevelLoaded) return;
+        if (!IsPlaying) return;
+    }
 }
