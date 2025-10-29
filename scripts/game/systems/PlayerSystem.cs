@@ -21,12 +21,12 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
     private readonly IAudioService _audioService;
     private readonly IEventService _eventService;
     private readonly IHeroService _heroService;
-    public PlayerSystem(PackedScene heroTemplate)
+    public PlayerSystem(PackedScene heroTemplate, IAudioService audioService, IEventService eventService, IHeroService heroService)
     {
         GD.Print("PlayerSystem: Initializing...");
-        _audioService = CoreProvider.AudioService();
-        _eventService = CoreProvider.EventService();
-        _heroService = CoreProvider.HeroService();
+        _audioService = audioService;
+        _eventService = eventService;
+        _heroService = heroService;
         _heroTemplate = heroTemplate;
     }
     public override void _Ready()
@@ -162,7 +162,7 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
     private void Defeat()
     {
         GD.Print("PlayerSystem: Defeat sequence triggered.");
-        _eventService.Publish("OnPlayerDefeat");
+        _eventService.Publish<PlayerDefeat>();
         IsInitialized = false;
         _playerRef.Hide();
         _items.Clear();

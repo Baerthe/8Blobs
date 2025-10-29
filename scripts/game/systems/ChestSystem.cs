@@ -19,12 +19,12 @@ public sealed partial class ChestSystem : Node2D, IGameSystem
     // Dependency Services
     private readonly IAudioService _audioService;
     private readonly IEventService _eventService;
-    public ChestSystem(PackedScene chestTemplate)
+    public ChestSystem(PackedScene chestTemplate, IAudioService audioService, IEventService eventService)
     {
         GD.Print("ChestSystem: Initializing...");
         _chestTemplate = chestTemplate;
-        _audioService = CoreProvider.AudioService();
-        _eventService = CoreProvider.EventService();
+        _audioService = audioService;
+        _eventService = eventService;
     }
     public override void _Ready()
     {

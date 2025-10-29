@@ -29,11 +29,11 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     // Dependency Services
     private readonly IAudioService _audioService;
     private readonly IEventService _eventService;
-    public MobSystem(PackedScene mobTemplate)
+    public MobSystem(PackedScene mobTemplate, IAudioService audioService, IEventService eventService)
     {
         GD.Print("MobSystem: Initializing...");
-        _audioService = CoreProvider.AudioService();
-        _eventService = CoreProvider.EventService();
+        _audioService = audioService;
+        _eventService = eventService;
         _mobTemplate = mobTemplate;
     }
     public override void _Ready()

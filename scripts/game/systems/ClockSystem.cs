@@ -28,9 +28,9 @@ public partial class ClockSystem : Node2D, IGameSystem
     private const float StartingInterval = 3f;       // OneShot (~3 seconds)
     // Dependency Services
     private readonly IEventService _eventService;
-    public ClockSystem()
+    public ClockSystem(IEventService eventService)
     {
-        _eventService = CoreProvider.EventService();
+        _eventService = eventService;
     }
     public override void _Ready()
     {
@@ -154,7 +154,7 @@ public partial class ClockSystem : Node2D, IGameSystem
     /// <param name="sender"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException">Thrown if the Timer fails to initialize. Lists which createTimer method was called.</exception>
-    private Timer BuildTimer<T>(float waitTime, bool oneShot, bool autostart, T onTimeout, object sender) where T : IEvent
+    private Timer BuildTimer(float waitTime, bool oneShot, bool autostart)
     {
         Timer timer = new Timer
         {
@@ -162,11 +162,10 @@ public partial class ClockSystem : Node2D, IGameSystem
             OneShot = oneShot,
             Autostart = autostart
         };
-        timer.Timeout += () => _eventService.Publish<T>(onTimeout);
         if (timer == null)
         {
             GD.PrintErr("Timer is null after creation!");
-            throw new InvalidOperationException($"ERROR 001: Timer failed to initialize in ClockService. Sender: {sender}");
+            throw new InvalidOperationException($"ERROR 001: Timer failed to initialize in ClockService.");
         }
         _timers.Add((byte)timer.GetHashCode(), timer);
         return timer;
@@ -174,37 +173,43 @@ public partial class ClockSystem : Node2D, IGameSystem
     private void CreatePulseTimer()
     {
         if (_pulseTimer != null) return;
-        _pulseTimer = BuildTimer(PulseInterval, false, false, new PulseTimeout(), this);
+        _pulseTimer = BuildTimer(PulseInterval, false, false);
+        _pulseTimer.Timeout += _eventService.Publish<PulseTimeout>;
         GD.Print("Pulse Timer created with WaitTime 0.05f (20hrz), ~1200 per minute");
     }
     private void CreateSlowPulseTimer()
     {
         if (_slowPulseTimer != null) return;
-        _slowPulseTimer = BuildTimer(SlowPulseInterval, false, false, new SlowPulseTimeout(), this);
+        _slowPulseTimer = BuildTimer(SlowPulseInterval, false, false);
+        _slowPulseTimer.Timeout += _eventService.Publish<SlowPulseTimeout>;
         GD.Print("Slow Pulse Timer created with WaitTime 0.2f (5hrz), ~300 per minute");
     }
     private void CreateMobSpawnTimer()
     {
         if (_mobSpawnTimer != null) return;
-        _mobSpawnTimer = BuildTimer(MobSpawnInterval, false, false, new MobSpawnTimeout(), this);
+        _mobSpawnTimer = BuildTimer(MobSpawnInterval, false, false);
+        _mobSpawnTimer.Timeout += _eventService.Publish<MobSpawnTimeout>;
         GD.Print("Mob Spawn Timer created with WaitTime 5f (0.2hrz), ~12 per minute");
     }
     private void CreateChestSpawnTimer()
     {
         if (_ChestSpawnTimer != null) return;
-        _ChestSpawnTimer = BuildTimer(ChestSpawnInterval, false, false, new ChestSpawnTimeout(), this);
+        _ChestSpawnTimer = BuildTimer(ChestSpawnInterval, false, false);
+        _ChestSpawnTimer.Timeout += _eventService.Publish<ChestSpawnTimeout>;
         GD.Print("Pickup Spawn Timer created with WaitTime 10f (0.1hrz), ~6 per minute");
     }
     private void CreateGameTimer()
     {
         if (_gameTimer != null) return;
-        _gameTimer = BuildTimer(GameInterval, false, false, new GameTimeout(), this);
+        _gameTimer = BuildTimer(GameInterval, false, false);
+        _gameTimer.Timeout += _eventService.Publish<GameTimeout>;
         GD.Print("Game Timer created with WaitTime 60f (0.016hrz), ~1 per minute");
     }
     private void CreateStartingTimer()
     {
         if (_startingTimer != null) return;
-        _startingTimer = BuildTimer(StartingInterval, true, false, new StartingTimeout(), this);
+        _startingTimer = BuildTimer(StartingInterval, true, false);
+        _startingTimer.Timeout += _eventService.Publish<StartingTimeout>;
         GD.Print("Starting Timer created with WaitTime 3f (OneShot), ~3 seconds");
     }
 }

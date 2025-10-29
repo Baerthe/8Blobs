@@ -35,10 +35,10 @@ public sealed partial class MapSystem : Node2D, IGameSystem
 		SouthEast,
 		OutOfBounds
 	}
-	public MapSystem()
+	public MapSystem(IEventService eventService)
 	{
 		GD.Print("MapSystem: Initializing...");
-		_eventService = CoreProvider.EventService();
+		_eventService = eventService;
 	}
 	public override void _Ready()
 	{
