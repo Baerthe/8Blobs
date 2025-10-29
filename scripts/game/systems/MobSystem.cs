@@ -67,7 +67,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         foreach (var mob in _activeMobs)
         {
             MobEntity mobEntity = mob;
-            if (mobEntity.Attributes.CurrentHealth == 0)
+            if (mobEntity.CurrentHealth == 0)
             {
                 //TODO: play mob death shader/effects/sound here, death queue etc.
                 // Temporarily just free the mob
@@ -77,10 +77,10 @@ public sealed partial class MobSystem : Node2D, IGameSystem
             // Slow down processing for off-screen mobs
             if (!mobEntity.Notifier2D.IsOnScreen())
             {
-                mobEntity.Attributes.FrameSkipCounter++;
-                if (mobEntity.Attributes.FrameSkipCounter > 5)
+                mobEntity.FrameSkipCounter++;
+                if (mobEntity.FrameSkipCounter > 5)
                 {
-                    mobEntity.Attributes.FrameSkipCounter = 0;
+                    mobEntity.FrameSkipCounter = 0;
                 }
                 else continue;
             }

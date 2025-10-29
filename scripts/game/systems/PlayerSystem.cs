@@ -38,7 +38,7 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
     {
         if (!IsInitialized) return;
         if (_playerRef == null) return;
-        if (_playerRef.Attributes.CurrentHealth <= 0)
+        if (_playerRef.CurrentHealth <= 0)
         {
             GD.Print("Player has died.");
             Defeat();
@@ -179,7 +179,7 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
         _playerRef = _heroTemplate.Instantiate<HeroEntity>();
         _playerRef.Inject(hero);
         _playerRef.Position = _levelRef.PlayerSpawn.Position;
-        _playerRef.Attributes.CurrentHealth = hero.Stats.MaxHealth;
+        _playerRef.CurrentHealth = hero.Stats.MaxHealth;
         _playerRef.Hide();
         AddChild(_playerRef);
         GD.Print($"PlayerSystem: Loaded player '{hero.Info.Name}'.");

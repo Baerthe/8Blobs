@@ -14,7 +14,7 @@ public partial class HeroEntity : CharacterBody2D, IEntity
     [Export] public CollisionObject2D Hitbox { get; private set; }
     [Export] public AnimatedSprite2D Sprite { get; private set; }
     public HeroData Data { get; private set; }
-    public Attributes Attributes;
+    public uint CurrentHealth { get; set; }
     public PlayerDirection CurrentDirection { get; set; }
     public override void _Ready()
     {
@@ -29,7 +29,7 @@ public partial class HeroEntity : CharacterBody2D, IEntity
             return;
         }
         Data = (HeroData)data ?? throw new ArgumentNullException(nameof(data));
-        Attributes.CurrentHealth = Data.Stats.MaxHealth;
+        CurrentHealth = Data.Stats.MaxHealth;
         Sprite.SpriteFrames = Data.Sprite;
         Sprite.Modulate = Data.TintColor;
         CollisionShape2D shape = new CollisionShape2D();

@@ -14,7 +14,8 @@ public partial class MobEntity : RigidBody2D, IEntity
     [Export] public AnimatedSprite2D Sprite { get; private set; }
     [Export] public VisibleOnScreenNotifier2D Notifier2D { get; private set; }
     public MobData Data { get; private set; }
-    public Attributes Attributes;
+    public uint CurrentHealth { get; set; }
+    public byte FrameSkipCounter { get; set; }
     public override void _Ready()
     {
         if (Data == null)
@@ -34,7 +35,7 @@ public partial class MobEntity : RigidBody2D, IEntity
             return;
         }
         Data = (MobData)data ?? throw new ArgumentNullException(nameof(data));
-        Attributes.CurrentHealth = Data.Stats.MaxHealth;
+        CurrentHealth = Data.Stats.MaxHealth;
         Sprite.SpriteFrames = Data.Sprite;
         Sprite.Modulate = Data.TintColor;
         CollisionShape2D shape = new CollisionShape2D();
