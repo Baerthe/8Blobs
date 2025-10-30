@@ -70,9 +70,12 @@ public sealed partial class MobSystem : Node2D, IGameSystem
             MobEntity mobEntity = mob;
             if (mobEntity.CurrentHealth == 0)
             {
-                //TODO: play mob death shader/effects/sound here, death queue etc.
-                // Temporarily just free the mob
-                mobEntity.QueueFree();
+                mobEntity.Hide();
+                _activeMobs.Remove(mobEntity);
+                mobEntity.Position = Vector2.Zero;
+                mobEntity.LinearVelocity = Vector2.Zero;
+                mobEntity.FrameSkipCounter = 0;
+                mobEntity.CurrentHealth = mobEntity.Data.Stats.MaxHealth;
                 continue;
             }
             // Slow down processing for off-screen mobs
@@ -156,19 +159,19 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         }
         // Small Circle
         _mobSpawnPaths[0].Curve = BuildCurve("circle", 300f);
-        _mobSpawnPaths[0].Position = _playerRef.Position - new Vector2(150f, 150f);
+        _mobSpawnPaths[0].Position = _playerRef.GlobalPosition - new Vector2(150f, 150f);
         // Large Circle
         _mobSpawnPaths[1].Curve = BuildCurve("circle", 500f);
-        _mobSpawnPaths[1].Position = _playerRef.Position - new Vector2(250f, 250f);
+        _mobSpawnPaths[1].Position = _playerRef.GlobalPosition - new Vector2(250f, 250f);
         // Hexagon
         _mobSpawnPaths[2].Curve = BuildCurve("hexagon", 400f);
-        _mobSpawnPaths[2].Position = _playerRef.Position - new Vector2(200f, 200f);
+        _mobSpawnPaths[2].Position = _playerRef.GlobalPosition - new Vector2(200f, 200f);
         // Diamond
         _mobSpawnPaths[3].Curve = BuildCurve("diamond", 350f);
-        _mobSpawnPaths[3].Position = _playerRef.Position - new Vector2(175f, 175f);
+        _mobSpawnPaths[3].Position = _playerRef.GlobalPosition - new Vector2(175f, 175f);
         // Star
         _mobSpawnPaths[4].Curve = BuildCurve("star", 400f);
-        _mobSpawnPaths[4].Position = _playerRef.Position - new Vector2(200f, 200f);
+        _mobSpawnPaths[4].Position = _playerRef.GlobalPosition - new Vector2(200f, 200f);
         GD.Print("MobSystem: Built mob spawn paths.");
     }
     private Curve2D BuildCurve(string shape, float size)
@@ -226,7 +229,8 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         _pooledMobs.Clear();
         foreach (var (mob, weight) in _mobTable)
         {
-            float poolSize = Mathf.CeilToInt(weight * 10f);
+            // Create instances inversely proportional to their spawn weight, this is to make rarer mobs less common in the pool
+            int poolSize = Mathf.CeilToInt(400f / weight);
             for (int i = 0; i < poolSize; i++)
             {
                 MobEntity mobInstance = CreateMobEntity(mob);
@@ -295,19 +299,19 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     {
         Vector2 directionToPlayer = (_playerRef.Position - mobEntity.Position).Normalized();
         directionToPlayer = directionToPlayer.Rotated((float)GD.RandRange(-0.05, 0.05));
-        mobEntity.LinearVelocity = mobEntity.LinearVelocity * 0.95f + directionToPlayer * mobEntity.Data.Stats.Speed * 0.05f;
+        mobEntity.LinearVelocity = (mobEntity.LinearVelocity * 0.95f + directionToPlayer * mobEntity.Data.Stats.Speed * 0.05f) * (float)_deltaTime;
     }
     private void HandleDashAI(MobEntity mobEntity)
     {
         if (mobEntity.LinearVelocity >= Vector2.Zero)
             mobEntity.LinearVelocity -= mobEntity.LinearVelocity * 0.1f;
         Vector2 directionToPlayer = (_playerRef.Position - mobEntity.Position).Normalized();
-        mobEntity.LinearVelocity = directionToPlayer * mobEntity.Data.Stats.Speed * 1.5f;
+        mobEntity.LinearVelocity = (directionToPlayer * mobEntity.Data.Stats.Speed * 1.5f) * (float)_deltaTime;
     }
     private void HandleAttractedAI(MobEntity mobEntity)
     {
         Vector2 directionToPlayer = (_playerRef.Position - mobEntity.Position).Normalized();
-        mobEntity.LinearVelocity = directionToPlayer * mobEntity.Data.Stats.Speed;
+        mobEntity.LinearVelocity = (directionToPlayer * mobEntity.Data.Stats.Speed) * (float)_deltaTime;
     }
     private void HandleRandomAI(MobEntity mobEntity)
     {
@@ -315,7 +319,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         {
             float angle = (float)GD.RandRange(0, Mathf.Pi * 2);
             Vector2 randomDirection = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-            mobEntity.LinearVelocity = randomDirection * mobEntity.Data.Stats.Speed;
+            mobEntity.LinearVelocity = (randomDirection * mobEntity.Data.Stats.Speed) * (float)_deltaTime;
         }
         else
             mobEntity.LinearVelocity -= mobEntity.LinearVelocity * 0.05f;
@@ -326,7 +330,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         float zigZagOffset = Mathf.Sin(_gameElapsedTime * 5f) * 0.25f + (float)GD.RandRange(-0.3f, 0.3f);
         Vector2 perpendicular = new Vector2(-directionToPlayer.Y, directionToPlayer.X);
         Vector2 zigZagDirection = (directionToPlayer + perpendicular * zigZagOffset).Normalized();
-        mobEntity.LinearVelocity = zigZagDirection * mobEntity.Data.Stats.Speed;
+        mobEntity.LinearVelocity = (zigZagDirection * mobEntity.Data.Stats.Speed) * (float)_deltaTime;
     }
     private void HandleCircleStrafeAI(MobEntity mobEntity)
     {
@@ -334,6 +338,6 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         Vector2 perpendicular = new Vector2(-directionToPlayer.Y, directionToPlayer.X);
         float circleOffset = Mathf.Sin(_gameElapsedTime * 3f) * 0.5f;
         Vector2 strafeDirection = (directionToPlayer + perpendicular * circleOffset).Normalized();
-        mobEntity.LinearVelocity = strafeDirection * mobEntity.Data.Stats.Speed;
+        mobEntity.LinearVelocity = (strafeDirection * mobEntity.Data.Stats.Speed) * (float)_deltaTime;
     }
 }
