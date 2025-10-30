@@ -103,6 +103,12 @@ public partial class ClockSystem : Node2D, IGameSystem
     private void OnGameTimeout()
     {
         GD.PrintRich("[color=#afdd00]Game Timeout triggered.");
+        _mobSpawnTimer.WaitTime -= 0.25f;
+        _ChestSpawnTimer.WaitTime -= 0.5f;
+        if (_mobSpawnTimer.WaitTime < 0.5f)
+            _mobSpawnTimer.WaitTime = 0.5f;
+        if (_ChestSpawnTimer.WaitTime < 1f)
+            _ChestSpawnTimer.WaitTime = 1f;
     }
     private void OnPulseTimeout()
     {

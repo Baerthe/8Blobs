@@ -6,7 +6,6 @@ using Entities;
 using Game.Interface;
 using Core.Interface;
 using System.Collections.Generic;
-using System.IO;
 using System;
 
 /// <summary>
@@ -26,11 +25,10 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     private Path2D[] _mobSpawnPaths;
     private PathFollow2D[] _mobSpawners;
     private PackedScene _mobTemplate;
-    private float _grossMobWeight = 0f;
-    private float _grossMobWeightMax = 1200f;
-    private float _grossMobWeightNormalized = 0f;
+    private float _mobWeights = 0f;
     private float _gameElapsedTime = 0f;
     private double _deltaTime = 0.0;
+    private RandomNumberGenerator _random = new RandomNumberGenerator();
     // Dependency Services
     private readonly IAudioService _audioService;
     private readonly IEventService _eventService;
@@ -110,9 +108,30 @@ public sealed partial class MobSystem : Node2D, IGameSystem
             GD.PrintErr("MobSystem: OnMobTimeout called but mob data lookup is empty.");
             return;
         }
-        int timeAdjustment = (int)Math.Floor(_gameElapsedTime / 60f) * 5;
-        byte scale = (byte)((_grossMobWeightNormalized + timeAdjustment) * 255f);
-        //TODO: Implement spawning logic based on weights and game time
+        float floor = (float)Math.Clamp(MathF.Floor(_gameElapsedTime / 60f), 0, _mobWeights - 5f);
+        float spawnPick = _random.RandfRange(floor, _mobWeights);
+        float cumulativeWeight = 0f;
+        MobEntity mobInstance = null;
+        foreach (var (mob, weight) in _mobTable)
+        {
+            cumulativeWeight += weight;
+            if (spawnPick <= cumulativeWeight)
+            {
+                foreach (var pooledMob in _pooledMobs)
+                {
+                    if (!pooledMob.Visible && pooledMob.Data == mob)
+                    {
+                        mobInstance = pooledMob;
+                        break;
+                    }
+                }
+            }
+        }
+        byte pathIndex = (byte)_random.RandiRange(0, _mobSpawners.Length - 1);
+        mobInstance.Position = _mobSpawners[pathIndex].GlobalPosition;
+        mobInstance.Show();
+        _activeMobs.Add(mobInstance);
+        GD.Print($"MobSystem: Spawned mob '{mobInstance.Data.Info.Name}' at path {pathIndex}.");
     }
     private void OnGameTimeout()
     {
@@ -216,7 +235,6 @@ public sealed partial class MobSystem : Node2D, IGameSystem
                 _pooledMobs.Add(mobInstance);
             }
         }
-        _grossMobWeightNormalized = Mathf.Clamp(_grossMobWeight / _grossMobWeightMax, 0f, 1f);
         GD.Print($"MobSystem: Built mob pool with {_pooledMobs.Count} total mobs.");
     }
     private void BuildMobTable()
@@ -238,7 +256,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
                 spawnWeight += rnd.RandfRange(0.01f, 0.99f);
             }
             _mobTable.Add((mob, spawnWeight));
-            _grossMobWeight += spawnWeight;
+            _mobWeights += spawnWeight;
         }
         _mobTable.Sort((a, b) => b.weight.CompareTo(a.weight));
         GD.Print($"MobSystem: Built mob table with {_mobTable.Count} possible mobs for level");
