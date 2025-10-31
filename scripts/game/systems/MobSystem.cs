@@ -229,8 +229,8 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         _pooledMobs.Clear();
         foreach (var (mob, weight) in _mobTable)
         {
-            // TODO FIX: Create instances inversely proportional to their spawn weight, this is to make rarer mobs less common in the pool
-            //int poolSize = Mathf.CeilToInt(400f / weight);
+            float weightInverse = 1f / weight;
+            int poolSize = Math.Clamp(Mathf.CeilToInt(400f * weightInverse), 2, 400);
             for (int i = 0; i < poolSize; i++)
             {
                 MobEntity mobInstance = CreateMobEntity(mob);
