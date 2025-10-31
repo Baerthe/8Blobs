@@ -18,8 +18,8 @@ public partial class GameManager : Node2D
     public EntityIndex Templates { get; private set; }
     public bool IsPlaying { get; private set; } = false;
     public bool IsLevelLoaded { get; private set; } = false;
+    public byte LoadingProgress { get; private set; } = 0;
     private LevelEntity _levelInstance;
-    private LevelData _levelData;
     private IAudioService _audioService;
     private IEventService _eventService;
     private IHeroService _heroService;
@@ -53,34 +53,44 @@ public partial class GameManager : Node2D
     /// </summary>
     /// <param name="Level"></param>
     /// <exception cref="InvalidOperationException"></exception>
-    public void PrepareLevel()
+    public void LoadLevel()
     {
         if (IsLevelLoaded)
         {
             GD.PrintErr("Level already loaded in GameManager");
             throw new InvalidOperationException("ERROR 300: Level already loaded in GameManager. Cannot load another level.");
         }
-        //TODO: We need to replace these resource loads with proper preloading via loadthreading; IE add a loading screen lol.
-        // Load level data and instantiate level entity
-        _levelData = _levelService.CurrentLevel;
-        _levelInstance = ResourceLoader.Load<PackedScene>(_levelData.Entity.ResourcePath).Instantiate<LevelEntity>();
+        // Start loading systems and scenes
+        CurrentLevelData = _levelService.CurrentLevel;
+        LoadingProgress = 10;
+        var levelload = ResourceLoader.Load<PackedScene>(CurrentLevelData.Entity.ResourcePath);
+        var chestLoad = ResourceLoader.Load<PackedScene>(Templates.ChestTemplate.ResourcePath);
+        var mobLoad = ResourceLoader.Load<PackedScene>(Templates.MobTemplate.ResourcePath);
+        var heroLoad = ResourceLoader.Load<PackedScene>(Templates.HeroTemplate.ResourcePath);
+        LoadingProgress = 50;
+        // Instantiate level entity
+        _levelInstance = levelload.Instantiate<LevelEntity>();
         AddChild(_levelInstance);
         _levelInstance.AddToGroup("level");
+        LoadingProgress = 70;
         // Initialize and add core systems
         CurrentClockSystem = new(_eventService);
-        CurrentChestSystem = new(ResourceLoader.Load<PackedScene>(Templates.ChestTemplate.ResourcePath), _audioService, _eventService);
+        CurrentChestSystem = new(chestLoad, _audioService, _eventService);
         CurrentMapSystem = new(_eventService);
-        CurrentMobSystem = new(ResourceLoader.Load<PackedScene>(Templates.MobTemplate.ResourcePath), _audioService, _eventService);
-        CurrentPlayerSystem = new(ResourceLoader.Load<PackedScene>(Templates.HeroTemplate.ResourcePath), _audioService, _eventService, _heroService);
+        CurrentMobSystem = new(mobLoad, _audioService, _eventService);
+        CurrentPlayerSystem = new(heroLoad, _audioService, _eventService, _heroService);
+        LoadingProgress = 90;
         // Add systems to level entity
         _levelInstance.AddChild(CurrentClockSystem);
         _levelInstance.AddChild(CurrentChestSystem);
         _levelInstance.AddChild(CurrentMapSystem);
         _levelInstance.AddChild(CurrentMobSystem);
         _levelInstance.AddChild(CurrentPlayerSystem);
+        LoadingProgress = 100;
         // Initialize systems
         _eventService.Publish<Init>();
         IsLevelLoaded = true;
+        GD.PrintRich("[color=#00ff88]GameManager: Level loaded and systems initialized.[/color]");
     }
     /// <summary>
     /// Toggles the paused state of the game. When paused, it stops processing for the player and mob systems.
@@ -120,7 +130,7 @@ public partial class GameManager : Node2D
         CurrentPlayerSystem.QueueFree();
         CurrentPlayerSystem = null;
         _levelInstance.QueueFree();
-        _levelData = null;
+        CurrentLevelData = null;
         IsLevelLoaded = false;
     }
     // Event Handlers

@@ -91,7 +91,7 @@ public partial class Main : Node2D
 			case State.Playing:
 				if (!_isGameStarted)
 				{
-					GameManager.PrepareLevel();
+					GameManager.LoadLevel();
 					MenuManager.Hide();
 					UiManager.Show();
 					_isGameStarted = true;

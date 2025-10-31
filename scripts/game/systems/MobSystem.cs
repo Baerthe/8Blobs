@@ -9,9 +9,8 @@ using System.Collections.Generic;
 using System;
 
 /// <summary>
-/// MobSystem is responsible for managing all mobile entities (mobs) within the game.
-/// It handles their initialization, spawning, AI behavior, and updates during the game loop.
-/// The system maintains a pool of mobs based on the current level's data and processes their actions based on predefined AI movement types.
+/// MobSystem manages the spawning, pooling, and AI behavior of mobs within the game.
+/// It utilizes a weighted random selection mechanism to spawn mobs based on their rarity and level, and implements various AI movement patterns.
 /// </summary>
 public sealed partial class MobSystem : Node2D, IGameSystem
 {
@@ -20,6 +19,8 @@ public sealed partial class MobSystem : Node2D, IGameSystem
     private Dictionary<MobMovement, System.Action<MobEntity>> _aiHandlers;
     private List<MobEntity> _pooledMobs = new();
     private List<MobEntity> _activeMobs = new();
+    private Queue<MobEntity> _spawnQueue = new();
+    private Queue<MobEntity> _deathQueue = new();
     private HeroEntity _playerRef = null;
     private LevelEntity _levelRef = null;
     private Path2D[] _mobSpawnPaths;
@@ -70,12 +71,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
             MobEntity mobEntity = mob;
             if (mobEntity.CurrentHealth == 0)
             {
-                mobEntity.Hide();
-                _activeMobs.Remove(mobEntity);
-                mobEntity.Position = Vector2.Zero;
-                mobEntity.LinearVelocity = Vector2.Zero;
-                mobEntity.FrameSkipCounter = 0;
-                mobEntity.CurrentHealth = mobEntity.Data.Stats.MaxHealth;
+                _deathQueue.Enqueue(mobEntity);
                 continue;
             }
             // Slow down processing for off-screen mobs
@@ -90,6 +86,35 @@ public sealed partial class MobSystem : Node2D, IGameSystem
             }
             mobEntity.Sprite.Play("Move");
             _aiHandlers[mobEntity.Data.MovementType](mobEntity);
+        }
+        EmptySpawnQueue();
+        EmptyDeathQueue();
+    }
+    private void EmptySpawnQueue()
+    {
+        foreach (var mob in _spawnQueue)
+        {
+            byte pathIndex = (byte)_random.RandiRange(0, _mobSpawners.Length - 1);
+            mob.Position = _mobSpawners[pathIndex].GlobalPosition;
+            mob.Show();
+            _activeMobs.Add(mob);
+            _spawnQueue.Dequeue();
+            GD.Print($"MobSystem: Spawned mob '{mob.Data.Info.Name}' at path {pathIndex}.");
+        }
+    }
+    private void EmptyDeathQueue()
+    {
+        foreach (var mob in _deathQueue)
+        {
+            _activeMobs.Remove(mob);
+            mob.Hide();
+            mob.GlobalPosition = Vector2.Zero;
+            mob.LinearVelocity = Vector2.Zero;
+            mob.FrameSkipCounter = 0;
+            mob.CurrentHealth = mob.Data.Stats.MaxHealth;
+            _pooledMobs.Add(mob);
+            _deathQueue.Dequeue();
+            GD.Print($"MobSystem: Mob '{mob.Data.Info.Name}' has died and returned to pool.");
         }
     }
     // Event Handlers
@@ -130,11 +155,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
                 }
             }
         }
-        byte pathIndex = (byte)_random.RandiRange(0, _mobSpawners.Length - 1);
-        mobInstance.Position = _mobSpawners[pathIndex].GlobalPosition;
-        mobInstance.Show();
-        _activeMobs.Add(mobInstance);
-        GD.Print($"MobSystem: Spawned mob '{mobInstance.Data.Info.Name}' at path {pathIndex}.");
+    _spawnQueue.Enqueue(mobInstance);
     }
     private void OnGameTimeout()
     {
