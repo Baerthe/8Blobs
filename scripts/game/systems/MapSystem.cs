@@ -67,8 +67,8 @@ public sealed partial class MapSystem : Node2D, IGameSystem
 		if (_foregroundLayer == null || _backgroundLayer == null)
 		{
 			GD.PrintErr("ForegroundLayer or BackgroundLayer not set. Attempting to find in Tree.");
-			_foregroundLayer = _levelRef.ForegroundLayer;
-			_backgroundLayer = _levelRef.BackgroundLayer;
+			_foregroundLayer = _levelRef.Map.ForegroundLayer;
+			_backgroundLayer = _levelRef.Map.BackgroundLayer;
 			if (_foregroundLayer == null || _backgroundLayer == null)
 			{
 				GD.PrintErr("ForegroundLayer or BackgroundLayer not found in Tree.");

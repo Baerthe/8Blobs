@@ -9,13 +9,7 @@ using Entities.Interfaces;
 [GlobalClass]
 public partial class LevelEntity : Node2D, IEntity
 {
-    [ExportCategory("Stats")]
-    [ExportGroup("Components")]
-    [ExportSubgroup("TileMaps")]
-    [Export] public TileMapLayer ForegroundLayer { get; private set; }
-    [Export] public TileMapLayer BackgroundLayer { get; private set; }
-    [ExportSubgroup("Markers")]
-    [Export] public Node2D PlayerSpawn { get; private set; }
+    public IMap Map { get; private set; }
     public IData Data { get; set; }
     public override void _Ready()
     {
@@ -30,13 +24,9 @@ public partial class LevelEntity : Node2D, IEntity
             return;
         }
         Data = data ?? throw new ArgumentNullException(nameof(data));
+        var mapScene = ResourceLoader.Load<PackedScene>((Data as LevelData)?.Map.ResourcePath) ?? throw new InvalidOperationException("LevelData does not contain a valid Map scene!");
+        Map = mapScene.Instantiate<IMap>();
+        AddChild(Map as Node2D);
     }
-    public void NullCheck()
-    {
-        byte failure = 0;
-        if (ForegroundLayer == null) { GD.PrintErr($"ERROR: {this.Name} does not have ForegroundLayer set!"); failure++; }
-        if (BackgroundLayer == null) { GD.PrintErr($"ERROR: {this.Name} does not have BackgroundLayer set!"); failure++; }
-        if (PlayerSpawn == null) { GD.PrintErr($"ERROR: {this.Name} does not have PlayerSpawn set!"); failure++; }
-        if (failure > 0) throw new InvalidOperationException($"{this.Name} has failed null checking with {failure} missing components!");
-    }
+    public void NullCheck() { } // No components to check currently
 }

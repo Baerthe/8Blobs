@@ -178,7 +178,7 @@ public sealed partial class PlayerSystem : Node2D, IGameSystem
         }
         _playerRef = _heroTemplate.Instantiate<HeroEntity>();
         _playerRef.Inject(hero);
-        _playerRef.Position = _levelRef.PlayerSpawn.Position;
+        _playerRef.Position = _levelRef.Map.PlayerSpawn.Position;
         _playerRef.CurrentHealth = hero.Stats.MaxHealth;
         _playerRef.Hide();
         AddChild(_playerRef);

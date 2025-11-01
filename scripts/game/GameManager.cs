@@ -63,13 +63,14 @@ public partial class GameManager : Node2D
         // Start loading systems and scenes
         CurrentLevelData = _levelService.CurrentLevel;
         LoadingProgress = 10;
-        var levelload = ResourceLoader.Load<PackedScene>(CurrentLevelData.Entity.ResourcePath);
+        var levelload = ResourceLoader.Load<PackedScene>(Templates.LevelTemplate.ResourcePath);
         var chestLoad = ResourceLoader.Load<PackedScene>(Templates.ChestTemplate.ResourcePath);
         var mobLoad = ResourceLoader.Load<PackedScene>(Templates.MobTemplate.ResourcePath);
         var heroLoad = ResourceLoader.Load<PackedScene>(Templates.HeroTemplate.ResourcePath);
         LoadingProgress = 50;
         // Instantiate level entity
         _levelInstance = levelload.Instantiate<LevelEntity>();
+        _levelInstance.Inject(CurrentLevelData);
         AddChild(_levelInstance);
         _levelInstance.AddToGroup("level");
         LoadingProgress = 70;

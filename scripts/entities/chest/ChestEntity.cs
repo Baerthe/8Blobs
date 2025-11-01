@@ -12,7 +12,7 @@ public partial class ChestEntity : Node2D, IEntity
     [ExportCategory("Components")]
     [ExportGroup("Components")]
     [Export] public CollisionObject2D Hitbox { get; private set; }
-    [Export] public Sprite2D Sprite { get; private set; }
+    [Export] public AnimatedSprite2D Sprite { get; private set; }
     public ChestData Data { get; private set; }
     public override void _Ready()
     {
@@ -33,7 +33,7 @@ public partial class ChestEntity : Node2D, IEntity
             return;
         }
         Data = (ChestData)data ?? throw new ArgumentNullException(nameof(data));
-        Sprite.Texture = Data.Sprite;
+        Sprite.SpriteFrames = Data.Sprite;
     }
     public void NullCheck()
     {
