@@ -52,8 +52,8 @@ public sealed partial class MapSystem : Node2D, IGameSystem
     public void OnInit()
 	{
 		if (IsInitialized) return;
-        _playerRef = GetTree().GetFirstNodeInGroup("player") as HeroEntity;
         _levelRef = GetTree().GetFirstNodeInGroup("level") as LevelEntity;
+        _playerRef = GetTree().GetFirstNodeInGroup("player") as HeroEntity;
 		LoadTiles();
 		IsInitialized = true;
 	}

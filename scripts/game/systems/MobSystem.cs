@@ -95,6 +95,7 @@ public sealed partial class MobSystem : Node2D, IGameSystem
         foreach (var mob in _spawnQueue)
         {
             byte pathIndex = (byte)_random.RandiRange(0, _mobSpawners.Length - 1);
+            _mobSpawners[pathIndex].ProgressRatio = _random.Randf();
             mob.Position = _mobSpawners[pathIndex].GlobalPosition;
             mob.Show();
             _activeMobs.Add(mob);

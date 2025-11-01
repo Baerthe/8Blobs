@@ -11,6 +11,7 @@ using Core.Interface;
 public sealed partial class ChestSystem : Node2D, IGameSystem
 {
     public bool IsInitialized { get; private set; } = false;
+    private LevelEntity _levelRef;
     private HeroEntity _playerRef;
     private Path2D _chestPath;
     private PathFollow2D _chestSpawner;
@@ -40,7 +41,8 @@ public sealed partial class ChestSystem : Node2D, IGameSystem
     public void OnInit()
     {
         if (IsInitialized) return;
-        _playerRef = GetTree().GetFirstNodeInGroup("Player") as HeroEntity;
+        _levelRef = GetTree().GetFirstNodeInGroup("level") as LevelEntity;
+        _playerRef = GetTree().GetFirstNodeInGroup("player") as HeroEntity;
         _chestPath = CreatePath();
         _chestSpawner = new PathFollow2D();
         _chestPath.AddChild(_chestSpawner);
@@ -52,10 +54,10 @@ public sealed partial class ChestSystem : Node2D, IGameSystem
     /// </summary>
     public void OnPulseTimeOut()
     {
-        _offsetBetweenChestAndPlayer = _playerRef.Position - _chestPath.Position;
+        _chestPath.GlobalPosition = _playerRef.GlobalPosition - _offsetBetweenChestAndPlayer;
     }
     /// <summary>
-    /// Creates a circular Path2D for chest spawning.
+    /// Creates a circular Path2D for chest spawning, its always slightly outside the player's viewport.
     /// </summary>
     private Path2D CreatePath()
     {
@@ -65,11 +67,15 @@ public sealed partial class ChestSystem : Node2D, IGameSystem
         for (int i = 1; i <= 10; i++)
         {
             var angle = i * (Mathf.Pi * 2 / 10);
-            var radius = 48;
+            var radius = 400;
             var x = radius * Mathf.Cos(angle);
             var y = radius * Mathf.Sin(angle);
             path.Curve.AddPoint(new Vector2(x, y));
         }
+        path.GlobalPosition = _playerRef.GlobalPosition;
+        path.GlobalPosition -= new Vector2(200, 200);
+        _offsetBetweenChestAndPlayer = _playerRef.GlobalPosition - path.GlobalPosition;
+        _levelRef.AddChild(path);
         return path;
     }
     /// <summary>
@@ -78,7 +84,11 @@ public sealed partial class ChestSystem : Node2D, IGameSystem
     private void OnChestSpawnTimeout()
     {
         if (!IsInitialized) return;
+        _chestPath.GlobalPosition = _offsetBetweenChestAndPlayer;
         _chestSpawner.ProgressRatio = GD.Randf();
-        // TODO: Add logic to check for existing chests and limit the number of active chests.
+        var chestInstance = _chestTemplate.Instantiate<ChestEntity>();
+        chestInstance.GlobalPosition = _chestSpawner.GlobalPosition;
+        chestInstance.AddToGroup("chests");
+        _levelRef.AddChild(chestInstance);
     }
 }
